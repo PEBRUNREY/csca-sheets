@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sets and inequalities</title>
+<style>
+:root{
+  --bg:#f6f5f1; --bar:rgba(246,245,241,.94); --surface:#fff; --ink:#1b2430; --muted:#5b6674; --line:#d9d6cc;
+  --accent:#2457a6; --accent-ink:#fff; --accent-soft:#e0e9f7;
+  --hint:#8a5300; --hint-soft:#fbf0d9;
+  --good:#17803d; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --c1:#2457a6; --c2:#c2410c; --c3:#2f7d57;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.brand{font-weight:700;margin-right:auto;font-size:1.02rem;min-width:0}
+.prog{min-width:130px;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ptxtrow{display:flex;justify-content:space-between;gap:10px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar>span{display:block;height:100%;width:0;background:var(--good);transition:width .25s}
+.chips{max-width:900px;margin:0 auto;padding:0 14px 8px;display:flex;gap:6px;overflow-x:auto}
+.chips a{flex:none;min-width:34px;text-align:center;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.chips a:hover{border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:5px 11px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-weight:600;font-size:.93rem;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:32px;padding:3px 10px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:6px 2px;font-size:.9rem}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px 90px}
+h1{font-size:clamp(1.55rem,5vw,2.1rem);line-height:1.15;margin:24px 0 4px;text-wrap:balance}
+h2{font-size:1.3rem;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 16px}
+.small{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.how ol{margin:6px 0 10px;padding-left:22px}
+.how li{margin-bottom:3px}
+.part{margin-top:34px;scroll-margin-top:96px}
+.part>h2{padding-top:6px;border-top:3px solid var(--accent)}
+.pn{color:var(--accent)}
+.intro{color:var(--muted);max-width:68ch;margin:4px 0 8px}
+.task{scroll-margin-top:100px}
+.task.done{border-color:var(--good)}
+.thead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:4px}
+.tnum{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.ttitle{font-weight:700}
+.tdone{margin-left:auto;color:var(--good);font-weight:800;visibility:hidden}
+.task.done .tdone{visibility:visible}
+.ttext{margin:2px 0 10px;max-width:70ch}
+.tw{overflow-x:auto;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.tbl{border-collapse:collapse;font-size:.97rem;min-width:min(100%,0px)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:center;vertical-align:middle;white-space:nowrap}
+.tbl thead th{background:var(--accent-soft)}
+.tbl tbody th,.tbl tr>th:first-child{background:var(--bg);text-align:left;font-weight:600}
+.tbl td.wd{white-space:normal;text-align:left;font-size:.9rem;color:var(--muted)}
+.how .tbl td:first-child{text-align:left;white-space:normal}
+.fld{width:4.6em;max-width:100%;padding:5px 7px;border:1.5px solid var(--line);border-radius:7px;background:var(--bg);text-align:center;font-size:1rem;min-height:36px}
+.fld.sel{width:auto;max-width:15em;text-align:left;padding-right:4px}
+.fld:focus{border-color:var(--accent)}
+.fld.ok{border-color:var(--good);background:var(--good-soft)}
+.fld.bad{border-color:var(--bad);background:var(--bad-soft)}
+.bl{margin:8px 0;line-height:2.3}
+.bl .fld{margin:0 3px}
+.mc{margin:10px 0}.mcq{margin:0 0 6px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 12px;margin:6px 0;min-height:44px}
+.opt .lab{font-weight:700;color:var(--muted);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.open{margin:10px 0}
+.oq{margin:0 0 4px;font-weight:600}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);padding:8px 10px;resize:vertical;min-height:48px}
+.ta:focus{border-color:var(--accent)}
+.ref{margin-top:6px;background:var(--good-soft);border-left:4px solid var(--good);padding:7px 11px;border-radius:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.hintbox{margin-top:10px;background:var(--hint-soft);border-left:4px solid var(--hint);padding:8px 12px;border-radius:6px}
+.hintbox b{color:var(--hint)}
+.msg{min-height:1.4em;margin-top:8px;font-weight:600;font-size:.95rem}
+.msg.good{color:var(--good)}.msg.warn{color:var(--bad)}
+.tick{margin-top:8px}
+.tickbtn[aria-pressed=true]{background:var(--good-soft);border-color:var(--good)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.nlabel{font-weight:700;margin-bottom:6px}
+.notice .ta{background:var(--surface)}
+.rulebox{margin-top:10px;background:var(--surface);border-left:5px solid var(--accent);padding:10px 14px;border-radius:8px}
+.rulebox.plain{margin:12px 0;border:1px solid var(--line);border-left:5px solid var(--accent)}
+.rulebox[hidden]{display:none}
+.worked{margin:12px 0;border:1px dashed var(--line);padding:10px 14px;border-radius:8px;background:var(--surface)}
+.careful{margin:12px 0;background:var(--hint-soft);border-left:5px solid var(--hint);padding:10px 14px;border-radius:8px}
+.figrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.figrow>div{flex:1 1 260px;min-width:0}
+.figone{max-width:460px;margin:8px 0}.figstack{max-width:520px;margin:8px 0}
+.plot{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.plot .ax{stroke:var(--muted);stroke-width:1.2}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .tk{stroke:var(--muted);stroke-width:1}
+.plot text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.plot .tl,.plot .pl{fill:var(--muted);font-size:11px}
+.plot .pl{fill:var(--ink);font-weight:600}
+.plot .asy{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.8}
+.plot .cv{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plot .c1{stroke:var(--c1)}.plot .c2{stroke:var(--c2)}.plot .c3{stroke:var(--c3)}
+.plot .cl{font-size:13px;font-weight:700}
+.plot .c1t{fill:var(--c1)}.plot .c2t{fill:var(--c2)}.plot .c3t{fill:var(--c3)}
+.plot .pt{fill:var(--ink)}
+.plot .pt.hol{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.timerrow{display:flex;gap:12px;align-items:center;margin:8px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2rem}
+.timer.low{color:var(--bad)}
+.q .qq{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:600}
+.qn{color:var(--accent)}
+.qpart{margin-left:auto;font-weight:400;color:var(--muted);font-size:.85rem}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin-top:6px}
+@media (max-width:560px){.qopts{grid-template-columns:1fr}.topin{gap:4px 10px}.brand{flex:1 1 100%}.prog{flex:1}}
+.qfb{min-height:1.3em;font-weight:600;font-size:.92rem;margin-top:2px}
+.qfb.good{color:var(--good)}.qfb.bad{color:var(--bad)}
+.result{margin-top:10px;font-weight:700;font-size:1.15rem}
+
+.back{flex:none;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.back:hover{border-color:var(--accent)}
+.nextlink{margin:34px 0 0;font-weight:700;font-size:1.05rem}
+.nextlink a{display:inline-block;text-decoration:none;border:1.5px solid var(--accent);border-radius:10px;padding:10px 16px}
+.geo{width:100%;max-width:420px;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.geo line,.geo path,.geo polygon,.geo circle,.geo ellipse,.geo polyline{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.geo .hid{stroke-dasharray:5 4;stroke:var(--muted)}
+.geo .acc{stroke:var(--c1);stroke-width:2.2}.geo .acc2{stroke:var(--c2);stroke-width:2.2}.geo .acc3{stroke:var(--c3);stroke-width:2.2}
+.geo .dot{fill:var(--ink);stroke:none}
+.geo text{fill:var(--ink);font-size:13px;font-weight:600;stroke:none;paint-order:stroke}
+.geo .mt{fill:var(--muted);font-weight:400;font-size:12px}
+.geo .fillsoft{fill:var(--accent-soft);stroke:var(--c1)}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript. / Для этой страницы нужен JavaScript.</noscript>
+<script>
+const SUBJECT = {"id": "math", "title_en": "Mathematics", "title_ru": "Математика", "exam": {"questions": 48, "minutes": 60}};
+const NAV = {"home": "../index.html", "subject": "index.html", "next": {"href": "functions.html", "title": {"en": "Functions", "ru": "Функции"}}};
+/* Shared UI text and helpers for every sheet. English + Russian.
+   T(en, ru) makes a bilingual string. Math and Chinese terms are shared. */
+const T = (en, ru) => ({ en, ru });
+
+const UI = {
+  en: {
+    progress: 'Progress',
+    reset: 'Reset', resetSure: 'Click again to erase',
+    check: 'Check', hint: 'Hint', showAns: 'Show answers',
+    allGood: 'All correct. Well done.',
+    some: (a, b) => `${a} of ${b} correct. Red cells are wrong, try again.`,
+    fill: 'Fill in every answer first.',
+    mine: 'My answer', ref: 'Answer', gotIt: 'I got it', notYet: 'Not yet', gotItOn: 'Marked as understood',
+    notice: 'What I notice', noticePh: 'Write one sentence in your own words…',
+    showRule: 'Show the rule', stuck: 'I am stuck, show the rule anyway',
+    rule: 'Rule', careful: 'Careful', worked: 'Worked example',
+    exam: 'Exam-style check', start: (m) => `Start ${m} timer`,
+    examIntro: (min, q, per, mins, n) => `The real exam gives ${min} minutes for ${q} questions, about ${per} seconds each. Give yourself ${mins} minutes for these ${n}, then press Check my answers. For every wrong answer, go back to the Part named and redo its tasks.`,
+    back: 'Back to the list of topics', topics: 'Topics', next: 'Next topic', stop: 'Stop timer', timeUp: 'Time is up',
+    checkAll: 'Check my answers', score: (a, b) => `Score: ${a} / ${b}`,
+    review: 'Review', again: 'Try again',
+    howTitle: 'How to use this sheet',
+    steps: [
+      'Do the tasks in order. Fill in every empty cell, then press Check.',
+      'Where you see **What I notice**, write one sentence in your own words. The rule unlocks after that.',
+      'Read the **Rule**, then do the **Try it** tasks.',
+      'Finish with the exam-style questions at the end.'
+    ],
+    topic: 'Topic', partCol: 'Part', wording: 'How the exam words it',
+    photoNote: 'Your progress is saved on this device only.',
+    parts: 'Parts', none: 'none', task: 'Task', part: 'Part',
+    opt: { yes: 'yes', no: 'no', same: 'same', opposite: 'opposite', neither: 'neither', up: 'always goes up', down: 'always goes down', change: 'changes direction', yaxis: 'the y-axis', origin: 'the origin', xaxis: 'the x-axis' }
+  },
+  ru: {
+    progress: 'Прогресс',
+    reset: 'Сбросить', resetSure: 'Нажмите ещё раз, чтобы стереть',
+    check: 'Проверить', hint: 'Подсказка', showAns: 'Показать ответы',
+    allGood: 'Всё верно. Отлично.',
+    some: (a, b) => `Верно ${a} из ${b}. Красные ячейки неверны, попробуйте ещё раз.`,
+    fill: 'Сначала заполните все ответы.',
+    mine: 'Мой ответ', ref: 'Ответ', gotIt: 'Я понял(а)', notYet: 'Пока нет', gotItOn: 'Отмечено: понял(а)',
+    notice: 'Что я заметил(а)', noticePh: 'Напишите одно предложение своими словами…',
+    showRule: 'Показать правило', stuck: 'Не получается, показать правило',
+    rule: 'Правило', careful: 'Осторожно', worked: 'Разобранный пример',
+    exam: 'Проверка в формате экзамена', start: (m) => `Запустить таймер ${m}`,
+    examIntro: (min, q, per, mins, n) => `На настоящем экзамене даётся ${min} минут на ${q} вопросов, то есть около ${per} секунд на вопрос. Дайте себе ${mins} мин. на эти ${n}. Затем нажмите «Проверить ответы». За каждый неверный ответ вернитесь к названной части и повторите её задания.`,
+    back: 'Назад к списку тем', topics: 'Темы', next: 'Следующая тема', stop: 'Остановить таймер', timeUp: 'Время вышло',
+    checkAll: 'Проверить ответы', score: (a, b) => `Результат: ${a} / ${b}`,
+    review: 'Повторить', again: 'Ещё раз',
+    howTitle: 'Как пользоваться листом',
+    steps: [
+      'Выполняйте задания по порядку. Заполните все пустые ячейки и нажмите «Проверить».',
+      'Там, где написано **Что я заметил(а)**, напишите одно предложение своими словами. После этого откроется правило.',
+      'Прочитайте **Правило**, затем выполните задания **Попробуйте сами**.',
+      'В конце решите вопросы в формате экзамена.'
+    ],
+    topic: 'Тема', partCol: 'Часть', wording: 'Как это формулируют на экзамене',
+    photoNote: 'Ваш прогресс сохраняется только на этом устройстве.',
+    parts: 'Части', none: 'нет', task: 'Задание', part: 'Часть',
+    opt: { yes: 'да', no: 'нет', same: 'одинаковые', opposite: 'противоположные', neither: 'ни то, ни другое', up: 'всегда растёт', down: 'всегда убывает', change: 'меняет направление', yaxis: 'оси y', origin: 'начала координат', xaxis: 'оси x' }
+  }
+};
+
+/* option helpers */
+const O = (k) => ({ k });                      // key into UI.opt
+const YN = [O('yes'), O('no')];
+const SON = [O('same'), O('opposite'), O('neither')];
+const MON = [O('up'), O('down'), O('change')];
+const LR = [{ k: 'left', en: 'left', ru: 'влево' }, { k: 'right', en: 'right', ru: 'вправо' }];
+const COND = [{ k: 'suf', en: 'sufficient, not necessary', ru: 'достаточное, не необходимое' }, { k: 'nec', en: 'necessary, not sufficient', ru: 'необходимое, не достаточное' },
+  { k: 'both', en: 'necessary and sufficient', ru: 'необходимое и достаточное' }, { k: 'neither', en: 'neither', ru: 'ни то, ни другое' }];
+
+/* small static table */
+const mini = (rows) => ({ k: 'html', html: '<div class="tw"><table class="tbl">' + rows.map((r, i) => '<tr>' + r.map(c => i === 0 || c === r[0] ? `<th>${c}</th>` : `<td>${c}</td>`).join('') + '</tr>').join('') + '</table></div>' });
+
+/* Sheet: Sets, logic and inequalities (CSCA Mathematics). Uses helpers from engine/ui.js. */
+const SHEET = {
+  key: 'csca-math-sets-inequalities-v1',
+  title: T('Investigation sheet: Sets and inequalities', 'Исследовательский лист: множества и неравенства'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('Sets and inequalities usually open the CSCA Mathematics paper, and the other topics use them all the time: a domain is a set, a solution of an inequality is an interval. Typical questions:',
+           'Множества и неравенства обычно открывают работу CSCA по математике, и все остальные темы постоянно ими пользуются: область определения — это множество, решение неравенства — промежуток. Типичные вопросы:'),
+  symbols: T('Symbols: ∈ "belongs to", ∉ "does not belong to", ⊆ "is a subset of", ∩ intersection, ∪ union, ∁ complement, ∅ the empty set. N = natural numbers (0, 1, 2, …), Z = integers, Q = rational numbers, R = real numbers. Type fractions like 1/2.',
+             'Обозначения: ∈ «принадлежит», ∉ «не принадлежит», ⊆ «является подмножеством», ∩ пересечение, ∪ объединение, ∁ дополнение, ∅ пустое множество. N — натуральные числа (0, 1, 2, …), Z — целые, Q — рациональные, R — действительные. Дроби вводите так: 1/2.')
+};
+
+SHEET.figs = ({ h }) => ({
+  venn() {
+    return h('div', { html: `<svg class="geo" viewBox="0 0 360 200" role="img" aria-label="Venn diagram of A and B inside U">
+      <rect x="6" y="6" width="348" height="188" rx="10" fill="none" stroke="currentColor" style="stroke:var(--muted)"/>
+      <circle cx="140" cy="102" r="70" class="acc"/><circle cx="220" cy="102" r="70" class="acc2"/>
+      <text x="16" y="26">U</text><text x="92" y="40">A</text><text x="258" y="40">B</text>
+      <text x="100" y="108">1</text><text x="172" y="96">2</text><text x="180" y="122">3</text><text x="242" y="96">4</text><text x="250" y="124">5</text><text x="320" y="176">6</text>
+    </svg>` });
+  },
+  parab() {
+    return h('div', { html: `<svg class="geo" viewBox="0 0 360 220" role="img" aria-label="Parabola y = x² − x − 6 crossing the x-axis at −2 and 3">
+      <line x1="10" y1="120" x2="350" y2="120" style="stroke:var(--muted)"/>
+      <path d="M 52 22 Q 180 290 308 22" class="acc"/>
+      <circle cx="116" cy="120" r="4" class="dot"/><circle cx="244" cy="120" r="4" class="dot"/>
+      <text x="104" y="140">−2</text><text x="240" y="140">3</text>
+      <text x="60" y="110" class="mt">+</text><text x="300" y="110" class="mt">+</text><text x="176" y="160" class="mt">−</text>
+      <text x="268" y="40">y = x² − x − 6</text>
+    </svg>` });
+  }
+});
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('What is a set?', 'Что такое множество?'),
+  intro: T('A set 集合 is a collection of different objects, its elements 元素. We write a ∈ A when a is an element of A. A set can be written as a list {1, 2, 3} or by a rule {x | x² = 4} ("all x such that x² = 4").',
+           'Множество 集合 — это набор различных объектов, его элементов 元素. Пишем a ∈ A, если a — элемент A. Множество можно записать списком {1, 2, 3} или правилом {x | x² = 4} («все x, такие что x² = 4»).'),
+  items: [
+  { t: 'task', id: '1.1', title: T('Turn a rule into a list', 'Из правила — в список'),
+    text: T('A = {x | x² − 3x + 2 = 0}. Test each number: put it into x² − 3x + 2. The number is in A only when the result is 0.', 'A = {x | x² − 3x + 2 = 0}. Проверьте каждое число: подставьте его в x² − 3x + 2. Число лежит в A, только если получилось 0.'),
+    parts: [
+      { k: 'table', head: ['x', '0', '1', '2', '3'], rows: [['x² − 3x + 2', { a: '2' }, { a: '0' }, { a: '0' }, { a: '2' }], [T('in A?', 'в A?'), { a: 'no', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }, { a: 'no', sel: YN }]] },
+      { k: 'blanks', lines: [[T('So A = { ', 'Значит, A = { '), { a: '1', w: 2 }, ' , ', { a: '2', w: 2 }, ' }. ', T('How many elements does A have? ', 'Сколько элементов в A? '), { a: '2', w: 2 }]] }],
+    hint: T('For x = 3: 9 − 9 + 2 = 2, not 0. Write the smaller element first.', 'При x = 3: 9 − 9 + 2 = 2, а не 0. Меньший элемент пишите первым.') },
+  { t: 'task', id: '1.2', title: T('Which number sets?', 'Какие числовые множества?'),
+    text: T('N = {0, 1, 2, 3, …}, Z = all integers, Q = all fractions of integers, R = all real numbers (the whole number line). Decide.', 'N = {0, 1, 2, 3, …}, Z — все целые числа, Q — все дроби из целых чисел, R — все действительные числа (вся числовая прямая). Решите.'),
+    parts: [{ k: 'table', head: [T('Number', 'Число'), '∈ N ?', '∈ Z ?', '∈ Q ?', '∈ R ?'], rows: [
+      ['−2', { a: 'no', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }],
+      ['1/2', { a: 'no', sel: YN }, { a: 'no', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }],
+      ['√2', { a: 'no', sel: YN }, { a: 'no', sel: YN }, { a: 'no', sel: YN }, { a: 'yes', sel: YN }],
+      ['0', { a: 'yes', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }]] }],
+    hint: T('In Chinese textbooks 0 is a natural number. √2 cannot be written as a fraction of integers.', 'В китайских учебниках 0 — натуральное число. √2 нельзя записать дробью из целых чисел.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('N ⊆ Z ⊆ Q ⊆ R. Writing B ⊆ A (B is a subset 子集 of A) means every element of B is also in A. The empty set ∅ has no elements and is a subset of every set.', 'N ⊆ Z ⊆ Q ⊆ R. Запись B ⊆ A (B — подмножество 子集 A) означает, что каждый элемент B лежит и в A. Пустое множество ∅ не имеет элементов и является подмножеством любого множества.') },
+  { t: 'task', id: '1.3', title: T('Count the subsets', 'Посчитайте подмножества'),
+    text: T('List every subset (do not forget ∅ and the set itself), then count. The subsets of {a} are ∅ and {a}: that is 2.', 'Выпишите все подмножества (не забудьте ∅ и само множество), затем посчитайте. Подмножества {a}: ∅ и {a}, то есть 2.'),
+    parts: [{ k: 'table', head: [T('Set', 'Множество'), T('elements n', 'элементов n'), T('subsets', 'подмножеств')], rows: [['{a}', '1', '2'], ['{a, b}', '2', { a: '4' }], ['{a, b, c}', '3', { a: '8' }]] },
+      { k: 'blanks', lines: [[T('Each time one element is added, the number of subsets is multiplied by ', 'Каждый раз, когда добавляется один элемент, число подмножеств умножается на '), { a: '2', w: 2 }]] }],
+    hint: T('{a, b}: ∅, {a}, {b}, {a, b}. For {a, b, c}, take each of those four, once without c and once with c.', '{a, b}: ∅, {a}, {b}, {a, b}. Для {a, b, c} возьмите каждое из этих четырёх: один раз без c и один раз с c.') },
+  { t: 'notice', id: 'n1', rule: T('A set with n elements has 2ⁿ subsets. Without the set itself there are 2ⁿ − 1 proper subsets 真子集. Without ∅ as well there are 2ⁿ − 2 non-empty proper subsets.', 'У множества из n элементов 2ⁿ подмножеств. Без самого множества — 2ⁿ − 1 собственных подмножеств 真子集. Если убрать ещё и ∅, остаётся 2ⁿ − 2 непустых собственных подмножеств.') },
+  { t: 'task', id: '1.4', title: T('Try it', 'Попробуйте сами'),
+    text: T('A = {x ∈ N | x < 4}.', 'A = {x ∈ N | x < 4}.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('A has ', 'В A '), { a: '4', w: 2 }, T(' elements (remember 0).', ' элемента (не забудьте 0).')],
+      [T('Number of subsets: ', 'Число подмножеств: '), { a: '16', w: 3 }, T('   proper subsets: ', '   собственных подмножеств: '), { a: '15', w: 3 }]] },
+      { k: 'mc', q: T('Which statement is true?', 'Какое утверждение верно?'), opts: ['{1} ∈ A', '0 ∉ A', '∅ ⊆ A', '4 ∈ A'], a: 2 }],
+    hint: T('A = {0, 1, 2, 3}. ∈ links an element to a set; ⊆ links a set to a set.', 'A = {0, 1, 2, 3}. ∈ связывает элемент и множество, ⊆ связывает два множества.') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('Intersection, union, complement', 'Пересечение, объединение, дополнение'),
+  intro: T('Three operations make new sets from old ones: the intersection 交集 A ∩ B, the union 并集 A ∪ B and the complement 补集 ∁ᵤA. Find out what each one keeps.',
+           'Три операции строят новые множества из данных: пересечение 交集 A ∩ B, объединение 并集 A ∪ B и дополнение 补集 ∁ᵤA. Выясните, что оставляет каждая из них.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Read the diagram', 'Прочитайте диаграмму'),
+    text: T('U = {1, 2, 3, 4, 5, 6}, A = {1, 2, 3}, B = {2, 3, 4, 5}. The diagram shows where each number lives. Here are the three new sets: A ∩ B = {2, 3}, A ∪ B = {1, 2, 3, 4, 5}, ∁ᵤA = {4, 5, 6}. Tick which ones each number belongs to.', 'U = {1, 2, 3, 4, 5, 6}, A = {1, 2, 3}, B = {2, 3, 4, 5}. Диаграмма показывает, где лежит каждое число. Вот три новых множества: A ∩ B = {2, 3}, A ∪ B = {1, 2, 3, 4, 5}, ∁ᵤA = {4, 5, 6}. Отметьте, каким из них принадлежит каждое число.'),
+    parts: [{ k: 'fig', id: 'venn' },
+      { k: 'table', head: [T('Number', 'Число'), T('in A?', 'в A?'), T('in B?', 'в B?'), 'A ∩ B', 'A ∪ B', '∁ᵤA'], rows: [
+        ['1', '✓', '✗', { a: 'no', sel: YN }, { a: 'yes', sel: YN }, { a: 'no', sel: YN }],
+        ['3', '✓', '✓', { a: 'yes', sel: YN }, { a: 'yes', sel: YN }, { a: 'no', sel: YN }],
+        ['4', '✗', '✓', { a: 'no', sel: YN }, { a: 'yes', sel: YN }, { a: 'yes', sel: YN }],
+        ['6', '✗', '✗', { a: 'no', sel: YN }, { a: 'no', sel: YN }, { a: 'yes', sel: YN }]] }],
+    hint: T('Look up each number in the three lists given in the task.', 'Найдите каждое число в трёх списках из условия.') },
+  { t: 'notice', id: 'n2', rule: T('A ∩ B keeps the elements that are in A **and** in B. A ∪ B keeps the elements in A **or** B (or both). ∁ᵤA keeps the elements of U that are **not** in A.', 'A ∩ B оставляет элементы, которые лежат в A **и** в B. A ∪ B оставляет элементы, лежащие в A **или** в B (или в обоих). ∁ᵤA оставляет элементы U, которые **не** лежат в A.') },
+  { t: 'task', id: '2.2', title: T('Sets of real numbers', 'Множества действительных чисел'),
+    text: T('A = {x | −1 < x ≤ 3}, B = {x | x > 2}, U = R. Draw both on a number line, then fill in the gaps. Use the drop-downs for the type of bracket.', 'A = {x | −1 < x ≤ 3}, B = {x | x > 2}, U = R. Нарисуйте оба на числовой прямой, затем заполните пропуски. В выпадающих списках выберите вид скобки.'),
+    parts: [{ k: 'blanks', lines: [
+      ['A ∩ B = ', { a: '(', sel: ['(', '['] }, ' ', { a: '2', w: 2 }, ' , ', { a: '3', w: 2 }, ' ', { a: ']', sel: [')', ']'] }],
+      ['A ∪ B = ', { a: '(', sel: ['(', '['] }, ' ', { a: '-1', w: 2 }, ' , +∞)'],
+      ['∁ᵤA = {x | x ', { a: '≤', sel: ['<', '≤'] }, ' −1 ', T('or', 'или'), ' x ', { a: '>', sel: ['>', '≥'] }, ' 3}']] }],
+    hint: T('3 belongs to A, so it stays in A ∩ B. −1 is not in A, so the complement must contain −1.', '3 лежит в A, поэтому остаётся в A ∩ B. −1 не лежит в A, значит, дополнение содержит −1.') },
+  { t: 'task', id: '2.3', title: T('Counting people', 'Считаем людей'),
+    text: T('In a class of 30 students, 18 like maths, 15 like physics and 8 like both.', 'В классе 30 учеников: 18 любят математику, 15 — физику, 8 — оба предмета.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('Only maths: ', 'Только математику: '), { a: '10', w: 3 }, T('   only physics: ', '   только физику: '), { a: '7', w: 3 }],
+      [T('At least one of the two: ', 'Хотя бы один из двух: '), { a: '25', w: 3 }, T('   neither: ', '   ни один: '), { a: '5', w: 3 }]] },
+      { k: 'open', lines: [{ q: T('Why is 18 + 15 = 33 the wrong answer for "at least one"?', 'Почему 18 + 15 = 33 — неверный ответ для «хотя бы один»?'), a: T('The 8 students who like both are counted twice, so subtract them once: 18 + 15 − 8 = 25.', '8 учеников, любящих оба предмета, посчитаны дважды, поэтому их вычитают один раз: 18 + 15 − 8 = 25.') }] }],
+    hint: T('Draw two overlapping circles and put 8 in the middle first.', 'Нарисуйте два пересекающихся круга и сначала впишите 8 в середину.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('n(A ∪ B) = n(A) + n(B) − n(A ∩ B).', 'n(A ∪ B) = n(A) + n(B) − n(A ∩ B).') },
+  { t: 'task', id: '2.4', title: T('Try it: a parameter', 'Попробуйте сами: параметр'),
+    text: T('A = {1, 3, a}, B = {1, a²} and B ⊆ A. Then a² must equal 3 or a. Find every possible a. Remember: the elements of a set must all be different.', 'A = {1, 3, a}, B = {1, a²} и B ⊆ A. Тогда a² равно 3 или a. Найдите все возможные a. Помните: все элементы множества должны быть различны.'),
+    parts: [{ k: 'open', lines: [{ q: T('Possible values of a', 'Возможные значения a'), a: T('a = √3, a = −√3 or a = 0. (a² = a also gives a = 1, but then A = {1, 3, 1} repeats 1, so a = 1 is rejected.)', 'a = √3, a = −√3 или a = 0. (a² = a даёт ещё a = 1, но тогда A = {1, 3, 1} повторяет 1, поэтому a = 1 не подходит.)') }] }],
+    hint: T('Solve a² = 3 and a² = a separately, then check each answer in A and B.', 'Решите отдельно a² = 3 и a² = a, затем проверьте каждый ответ в A и B.') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('Conditions: sufficient and necessary', 'Условия: достаточное и необходимое'),
+  intro: T('p ⇒ q means "if p is true, then q is true". The exam asks whether p is a sufficient condition 充分条件, a necessary condition 必要条件, both 充要条件, or neither.',
+           'p ⇒ q означает «если p верно, то q верно». На экзамене спрашивают, является ли p достаточным условием 充分条件, необходимым условием 必要条件, тем и другим 充要条件 или ни тем, ни другим.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Which way does it work?', 'В какую сторону работает?'),
+    text: T('For each pair, decide if p ⇒ q is always true, and if q ⇒ p is always true. To show "no", one counterexample is enough.', 'Для каждой пары решите, всегда ли верно p ⇒ q и всегда ли верно q ⇒ p. Чтобы показать «нет», достаточно одного контрпримера.'),
+    parts: [{ k: 'table', head: ['p', 'q', 'p ⇒ q ?', 'q ⇒ p ?'], rows: [
+      ['x = 2', 'x² = 4', { a: 'yes', sel: YN }, { a: 'no', sel: YN }],
+      ['x > 1', 'x > 3', { a: 'no', sel: YN }, { a: 'yes', sel: YN }],
+      ['x + 1 = 3', 'x = 2', { a: 'yes', sel: YN }, { a: 'yes', sel: YN }],
+      ['x² > 0', 'x > 0', { a: 'no', sel: YN }, { a: 'yes', sel: YN }]] }],
+    hint: T('Row 1: x = −2 also gives x² = 4. Row 2: x = 2 is bigger than 1 but not bigger than 3.', 'Строка 1: x = −2 тоже даёт x² = 4. Строка 2: x = 2 больше 1, но не больше 3.') },
+  { t: 'notice', id: 'n3', rule: T('If p ⇒ q, then p is **sufficient** for q, and q is **necessary** for p. If both p ⇒ q and q ⇒ p, p is necessary and sufficient (充要条件). Shortcut with sets: if the set of p is inside the set of q, then p is sufficient for q ("small ⇒ big").', 'Если p ⇒ q, то p **достаточно** для q, а q **необходимо** для p. Если верно и p ⇒ q, и q ⇒ p, p — необходимое и достаточное условие (充要条件). Приём с множествами: если множество p лежит внутри множества q, то p достаточно для q («маленькое ⇒ большое»).') },
+  { t: 'task', id: '3.2', title: T('Name the condition', 'Назовите условие'),
+    text: T('Use the shortcut. The set of "x > 3" is (3, +∞) and the set of "x > 1" is (1, +∞).', 'Используйте приём. Множество «x > 3» — это (3, +∞), множество «x > 1» — это (1, +∞).'),
+    parts: [{ k: 'table', head: ['p', 'q', T('p is … for q', 'p — … для q')], rows: [
+      ['x > 3', 'x > 1', { a: 'suf', sel: COND }],
+      ['x > 1', 'x > 3', { a: 'nec', sel: COND }],
+      ['x² = 1', 'x = 1', { a: 'nec', sel: COND }],
+      ['∣x∣ < 2', '−2 < x < 2', { a: 'both', sel: COND }],
+      ['x > 0', 'x < 1', { a: 'neither', sel: COND }]] }],
+    hint: T('Ask: is the set of p inside the set of q? Is the set of q inside the set of p?', 'Спросите себя: лежит ли множество p внутри множества q? А множество q внутри множества p?') },
+  { t: 'task', id: '3.3', title: T('Negating "for all" and "there exists"', 'Отрицание «для всех» и «существует»'),
+    text: T('∀ means "for all" (全称量词), ∃ means "there exists" (存在量词). The statement "every student passed" is false as soon as one student failed.', '∀ значит «для всех» (全称量词), ∃ значит «существует» (存在量词). Утверждение «все ученики сдали» ложно, как только хотя бы один не сдал.'),
+    parts: [
+      { k: 'mc', q: T('The negation of "∀x ∈ R, x² ≥ 0" is', 'Отрицание утверждения «∀x ∈ R, x² ≥ 0» —'), opts: ['∀x ∈ R, x² < 0', '∃x ∈ R, x² < 0', '∃x ∈ R, x² ≥ 0', '∀x ∈ R, x² ≤ 0'], a: 1 },
+      { k: 'mc', q: T('The negation of "∃x ∈ R, x² + 1 < 0" is', 'Отрицание утверждения «∃x ∈ R, x² + 1 < 0» —'), opts: ['∃x ∈ R, x² + 1 ≥ 0', '∀x ∈ R, x² + 1 < 0', '∃x ∈ R, x² + 1 > 0', '∀x ∈ R, x² + 1 ≥ 0'], a: 3 }],
+    hint: T('Two changes: swap ∀ and ∃, and negate only the last part (< becomes ≥).', 'Два изменения: поменяйте ∀ и ∃ местами и отрицайте только последнюю часть (< становится ≥).') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('To negate a statement with a quantifier: change ∀ to ∃ (or ∃ to ∀) and negate the condition. Do not touch the set "x ∈ R".', 'Чтобы построить отрицание утверждения с квантором, замените ∀ на ∃ (или ∃ на ∀) и отрицайте условие. Множество «x ∈ R» не меняется.') }
+  ]},
+
+/* ================= PART 4 ================= */
+{ id: 4, title: T('Linear and quadratic inequalities', 'Линейные и квадратные неравенства'),
+  intro: T('An inequality 不等式 compares two expressions with <, ≤, > or ≥. Its solution is usually an interval. First find out which moves keep the sign.',
+           'Неравенство 不等式 сравнивает два выражения знаками <, ≤, > или ≥. Его решение обычно является промежутком. Сначала выясните, какие действия сохраняют знак.'),
+  items: [
+  { t: 'task', id: '4.1', title: T('Which moves keep the sign?', 'Какие действия сохраняют знак?'),
+    text: T('Start from the true statement 2 < 5. Do the same thing to both sides and choose the sign that makes the new statement true.', 'Начните с верного утверждения 2 < 5. Сделайте одно и то же с обеими частями и выберите знак, при котором новое утверждение верно.'),
+    parts: [{ k: 'table', head: [T('Move', 'Действие'), T('Left', 'Слева'), T('Sign', 'Знак'), T('Right', 'Справа')], rows: [
+      [T('add 3', 'прибавить 3'), '5', { a: '<', sel: ['<', '>'] }, '8'],
+      [T('subtract 7', 'вычесть 7'), '−5', { a: '<', sel: ['<', '>'] }, '−2'],
+      [T('multiply by 4', 'умножить на 4'), '8', { a: '<', sel: ['<', '>'] }, '20'],
+      [T('multiply by −1', 'умножить на −1'), '−2', { a: '>', sel: ['<', '>'] }, '−5'],
+      [T('divide by −2', 'разделить на −2'), '−1', { a: '>', sel: ['<', '>'] }, '−2.5']] }],
+    hint: T('On a number line, −2 is to the right of −5, so −2 is bigger.', 'На числовой прямой −2 правее −5, значит, −2 больше.') },
+  { t: 'notice', id: 'n4', rule: T('Adding or subtracting a number, and multiplying or dividing by a **positive** number, keep the sign. Multiplying or dividing by a **negative** number flips it.', 'Прибавление и вычитание числа, а также умножение и деление на **положительное** число сохраняют знак. Умножение и деление на **отрицательное** число меняют его на противоположный.') },
+  { t: 'task', id: '4.2', title: T('The sign of a quadratic', 'Знак квадратного трёхчлена'),
+    text: T('y = x² − x − 6 = (x + 2)(x − 3). Fill in the values, then read the sign.', 'y = x² − x − 6 = (x + 2)(x − 3). Заполните значения, затем определите знак.'),
+    parts: [
+      { k: 'fig', id: 'parab' },
+      { k: 'table', head: ['x', '−3', '−2', '0', '3', '4'], rows: [['x² − x − 6', { a: '6' }, { a: '0' }, { a: '-6' }, { a: '0' }, { a: '6' }]] },
+      { k: 'blanks', lines: [
+        [T('y < 0 for x between ', 'y < 0 при x между '), { a: '-2', w: 3 }, T(' and ', ' и '), { a: '3', w: 3 }],
+        [T('y > 0 when x < −2 or x > 3: ', 'y > 0 при x < −2 или x > 3: '), { a: 'yes', sel: YN }]] }],
+    hint: T('The roots are where the graph meets the x-axis. The parabola opens upwards, so it is below the axis only between the roots.', 'Корни — это точки, где график пересекает ось x. Парабола направлена ветвями вверх, поэтому она ниже оси только между корнями.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('For ax² + bx + c with a > 0 and two roots x₁ < x₂: it is **negative between the roots** (x₁ < x < x₂) and **positive outside** them (x < x₁ or x > x₂). If a < 0, first multiply by −1 and flip the sign. If there are no roots (b² − 4ac < 0) and a > 0, the expression is positive for every x.', 'Для ax² + bx + c при a > 0 и двух корнях x₁ < x₂: выражение **отрицательно между корнями** (x₁ < x < x₂) и **положительно вне их** (x < x₁ или x > x₂). Если a < 0, сначала умножьте на −1 и поменяйте знак. Если корней нет (b² − 4ac < 0) и a > 0, выражение положительно при всех x.') },
+  { t: 'task', id: '4.3', title: T('Try it', 'Попробуйте сами'),
+    text: T('Solve. Write the end points of each interval; choose the type of bracket.', 'Решите. Запишите концы каждого промежутка и выберите вид скобки.'),
+    parts: [
+      { k: 'blanks', lines: [
+        ['(a) x² − 4x + 3 ≤ 0:   x ∈ ', { a: '[', sel: ['(', '['] }, ' ', { a: '1', w: 2 }, ' , ', { a: '3', w: 2 }, ' ', { a: ']', sel: [')', ']'] }],
+        ['(b) −x² + x + 2 > 0:   x ∈ ', { a: '(', sel: ['(', '['] }, ' ', { a: '-1', w: 2 }, ' , ', { a: '2', w: 2 }, ' ', { a: ')', sel: [')', ']'] }]] },
+      { k: 'mc', q: T('(c) The solution set of x² + 2x + 3 > 0 is', '(c) Множество решений x² + 2x + 3 > 0 —'), opts: ['∅', 'R', '(−3, 1)', '(−∞, −1)'], a: 1 }],
+    hint: T('(a) x² − 4x + 3 = (x − 1)(x − 3). (b) Multiply by −1 first: x² − x − 2 < 0. (c) b² − 4ac = 4 − 12 < 0.', '(a) x² − 4x + 3 = (x − 1)(x − 3). (b) Сначала умножьте на −1: x² − x − 2 < 0. (c) b² − 4ac = 4 − 12 < 0.') },
+  { t: 'task', id: '4.4', title: T('Working backwards', 'Обратная задача'),
+    text: T('The solution set of x² + ax + b < 0 is (1, 2). So 1 and 2 are the roots, and x² + ax + b = (x − 1)(x − 2).', 'Множество решений x² + ax + b < 0 — это (1, 2). Значит, 1 и 2 — корни, и x² + ax + b = (x − 1)(x − 2).'),
+    parts: [{ k: 'blanks', lines: [['a = ', { a: '-3', w: 3 }, '   b = ', { a: '2', w: 3 }]] }],
+    hint: T('Multiply out (x − 1)(x − 2).', 'Раскройте скобки (x − 1)(x − 2).') }
+  ]},
+
+/* ================= PART 5 ================= */
+{ id: 5, title: T('Fractions, absolute values and the basic inequality', 'Дроби, модули и основное неравенство'),
+  intro: T('Three more kinds of inequality come up on the exam: fractions (分式不等式), absolute values (绝对值不等式) and the minimum problems solved with the basic inequality 基本不等式.',
+           'На экзамене встречаются ещё три вида неравенств: дробные (分式不等式), с модулем (绝对值不等式) и задачи на минимум, которые решаются основным неравенством 基本不等式.'),
+  items: [
+  { t: 'task', id: '5.1', title: T('A fraction', 'Дробь'),
+    text: T('Solve (x − 1)/(x + 2) ≤ 0. Fill in the table. Write "none" where the fraction has no value.', 'Решите (x − 1)/(x + 2) ≤ 0. Заполните таблицу. Где у дроби нет значения, напишите «нет».'),
+    parts: [
+      { k: 'table', head: ['x', '−3', '−2', '0', '1', '2'], rows: [['(x − 1)/(x + 2)', { a: '4' }, { a: 'none' }, { a: '-1/2' }, { a: '0' }, { a: '1/4' }]] },
+      { k: 'blanks', lines: [[T('Solution: ', 'Решение: '), { a: '(', sel: ['(', '['] }, ' ', { a: '-2', w: 2 }, ' , ', { a: '1', w: 2 }, ' ', { a: ']', sel: [')', ']'] }]] }],
+    hint: T('The fraction changes sign only at x = 1 (top is 0) and x = −2 (bottom is 0). −2 can never be in the answer.', 'Дробь меняет знак только при x = 1 (числитель 0) и x = −2 (знаменатель 0). −2 никогда не входит в ответ.') },
+  { t: 'notice', id: 'n5', rule: T('A/B has the same sign as A·B. So (x − 1)/(x + 2) ≤ 0 is solved like (x − 1)(x + 2) ≤ 0, but the zero of the denominator is always left out.', 'Дробь A/B имеет тот же знак, что и A·B. Поэтому (x − 1)/(x + 2) ≤ 0 решается как (x − 1)(x + 2) ≤ 0, но нуль знаменателя всегда исключается.') },
+  { t: 'task', id: '5.2', title: T('Absolute value is a distance', 'Модуль — это расстояние'),
+    text: T('∣x − 2∣ is the distance between x and 2 on the number line. Fill in the table.', '∣x − 2∣ — это расстояние между x и 2 на числовой прямой. Заполните таблицу.'),
+    parts: [
+      { k: 'table', head: ['x', '−2', '−1', '0', '2', '5', '6'], rows: [['∣x − 2∣', { a: '4' }, { a: '3' }, { a: '2' }, { a: '0' }, { a: '3' }, { a: '4' }]] },
+      { k: 'blanks', lines: [
+        [T('∣x − 2∣ < 3 means the distance from 2 is less than 3, so ', '∣x − 2∣ < 3 значит, что расстояние до 2 меньше 3, поэтому '), { a: '-1', w: 2 }, ' < x < ', { a: '5', w: 2 }],
+        [T('∣2x − 1∣ ≥ 3 means 2x − 1 ≤ −3 or 2x − 1 ≥ 3, so x ≤ ', '∣2x − 1∣ ≥ 3 значит 2x − 1 ≤ −3 или 2x − 1 ≥ 3, поэтому x ≤ '), { a: '-1', w: 2 }, T(' or x ≥ ', ' или x ≥ '), { a: '2', w: 2 }]] }],
+    hint: T('Go 3 steps left and 3 steps right from 2.', 'Отступите от 2 на 3 шага влево и на 3 шага вправо.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('∣u∣ < a (a > 0) means −a < u < a. ∣u∣ > a means u < −a or u > a.', '∣u∣ < a (a > 0) означает −a < u < a. ∣u∣ > a означает u < −a или u > a.') },
+  { t: 'task', id: '5.3', title: T('Same product, different sums', 'Одно произведение, разные суммы'),
+    text: T('All these pairs of positive numbers have product ab = 16. Fill in the sums.', 'У всех этих пар положительных чисел произведение ab = 16. Заполните суммы.'),
+    parts: [
+      { k: 'table', head: ['a', '1', '2', '4', '8', '16'], rows: [['b', { a: '16' }, { a: '8' }, { a: '4' }, { a: '2' }, { a: '1' }], ['a + b', { a: '17' }, { a: '10' }, { a: '8' }, { a: '10' }, { a: '17' }]] },
+      { k: 'blanks', lines: [[T('The smallest sum is ', 'Наименьшая сумма равна '), { a: '8', w: 2 }, T(', when a ', ', когда a '), { a: '=', sel: ['<', '=', '>'] }, ' b. ', T('And 2√(ab) = 2√16 = ', 'А 2√(ab) = 2√16 = '), { a: '8', w: 2 }]] }],
+    hint: T('b = 16 / a.', 'b = 16 / a.') },
+  { t: 'notice', id: 'n5b', rule: T('Basic inequality: for a, b > 0, a + b ≥ 2√(ab), with equality only when a = b. If the product ab is fixed, the smallest sum is 2√(ab). Check three things: both positive, product fixed, equality possible (一正二定三相等).', 'Основное неравенство: при a, b > 0 a + b ≥ 2√(ab), и равенство только при a = b. Если произведение ab постоянно, наименьшая сумма равна 2√(ab). Проверьте три условия: оба положительны, произведение постоянно, равенство достижимо (一正二定三相等).') },
+  { t: 'task', id: '5.4', title: T('Try it: minimum values', 'Попробуйте сами: наименьшие значения'),
+    text: T('Find each minimum value and the x where it happens.', 'Найдите каждое наименьшее значение и x, при котором оно достигается.'),
+    parts: [{ k: 'table', head: [T('Expression', 'Выражение'), T('minimum', 'минимум'), T('at x =', 'при x =')], rows: [
+      ['x + 4/x  (x > 0)', { a: '4' }, { a: '2' }],
+      ['x + 9/x  (x > 0)', { a: '6' }, { a: '3' }],
+      ['x + 1/(x − 1)  (x > 1)', { a: '3' }, { a: '2' }]] }],
+    hint: T('The product x · (4/x) = 4 is fixed. For the last one write x = (x − 1) + 1.', 'Произведение x · (4/x) = 4 постоянно. В последнем запишите x = (x − 1) + 1.') }
+  ]}
+];
+
+const EXAM = [
+  { part: 2, q: T('U = {1, 2, 3, 4, 5}, A = {1, 3}, B = {2, 3, 4}. Then A ∪ (∁ᵤB) =', 'U = {1, 2, 3, 4, 5}, A = {1, 3}, B = {2, 3, 4}. Тогда A ∪ (∁ᵤB) ='), o: ['{1}', '{1, 3, 5}', '{1, 5}', '{3, 5}'], a: 1 },
+  { part: 4, q: T('A = {x | x² − 2x − 3 < 0}, B = {x | x > 0}. Then A ∩ B =', 'A = {x | x² − 2x − 3 < 0}, B = {x | x > 0}. Тогда A ∩ B ='), o: ['(−1, 3)', '(−1, 0)', '(0, 3)', '(3, +∞)'], a: 2 },
+  { part: 1, q: T('The number of subsets of {a, b, c} is', 'Число подмножеств множества {a, b, c} равно'), o: ['8', '3', '6', '7'], a: 0 },
+  { part: 3, q: T('"x > 2" is a ______ condition for "x² > 4".', '«x > 2» — ______ условие для «x² > 4».'), o: [T('necessary but not sufficient', 'необходимое, но не достаточное'), T('necessary and sufficient', 'необходимое и достаточное'), T('neither sufficient nor necessary', 'ни достаточное, ни необходимое'), T('sufficient but not necessary', 'достаточное, но не необходимое')], a: 3 },
+  { part: 3, q: T('The negation of "∃x ∈ R, x² + 1 < 0" is', 'Отрицание утверждения «∃x ∈ R, x² + 1 < 0» —'), o: ['∀x ∈ R, x² + 1 ≥ 0', '∃x ∈ R, x² + 1 ≥ 0', '∀x ∈ R, x² + 1 < 0', '∃x ∈ R, x² + 1 > 0'], a: 0 },
+  { part: 4, q: T('The solution set of −x² + 3x + 4 ≥ 0 is', 'Множество решений −x² + 3x + 4 ≥ 0 —'), o: ['[−4, 1]', '[−1, 4]', '(−∞, −1] ∪ [4, +∞)', '(−1, 4)'], a: 1 },
+  { part: 5, q: T('The solution set of (x + 1)/(x − 2) < 0 is', 'Множество решений (x + 1)/(x − 2) < 0 —'), o: ['(−∞, −1)', '[−1, 2)', '(−1, 2)', '(2, +∞)'], a: 2 },
+  { part: 5, q: T('The solution set of ∣x − 1∣ ≤ 2 is', 'Множество решений ∣x − 1∣ ≤ 2 —'), o: ['[−1, 3]', '[−3, 1]', '(−1, 3)', '(−∞, −1] ∪ [3, +∞)'], a: 0 },
+  { part: 5, q: T('For x > 0, the minimum value of x + 9/x is', 'При x > 0 наименьшее значение x + 9/x равно'), o: ['3', '9', '10', '6'], a: 3 },
+  { part: 2, q: T('Of 40 students, 25 play basketball, 20 play football and 10 play both. How many play neither?', 'Из 40 учеников 25 играют в баскетбол, 20 — в футбол, 10 — в обе игры. Сколько не играют ни в одну?'), o: ['5', '0', '15', '10'], a: 0 },
+  { part: 1, q: T('A = {0, 1, 2}. Which statement is correct?', 'A = {0, 1, 2}. Какое утверждение верно?'), o: ['{1} ∈ A', '∅ = A', '0 ∈ A', '{0, 3} ⊆ A'], a: 2 },
+  { part: 4, q: T('The solution set of x² + ax + b < 0 is (1, 2). Then a + b =', 'Множество решений x² + ax + b < 0 — (1, 2). Тогда a + b ='), o: ['1', '−1', '5', '−5'], a: 1 }
+];
+
+const TOPICS = [
+  [T('Elements and subsets 集合 / 子集', 'Элементы и подмножества 集合 / 子集'), 1, '"The number of subsets of the set A is"'],
+  [T('Intersection, union, complement 交集 / 并集 / 补集', 'Пересечение, объединение, дополнение 交集 / 并集 / 补集'), 2, '"Given A = …, B = …, then A ∩ B ="'],
+  [T('Sufficient and necessary conditions 充分条件 / 必要条件', 'Достаточные и необходимые условия 充分条件 / 必要条件'), 3, '"p is a … condition for q"; "the negation of the proposition … is"'],
+  [T('Quadratic inequalities 一元二次不等式', 'Квадратные неравенства 一元二次不等式'), 4, '"The solution set of the inequality … is"'],
+  [T('Fractions, absolute values, minimum 基本不等式', 'Дроби, модули, минимум 基本不等式'), 5, '"If x > 0, the minimum value of … is"']
+];
+
+</script>
+<script>
+/* Engine for every CSCA investigation sheet. No external dependencies.
+   Globals set by build.py: SUBJECT (subject.json), NAV (links). Set by the sheet: SHEET, PARTS, EXAM, TOPICS. */
+(function () {
+  const KEY = SHEET.key;
+  let state = { lang: null, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false } };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  /* saved exam answers are option indices: if the questions or option order change, start the exam fresh */
+  const EXAMSIG = (() => { let x = 5381; const t = EXAM.map(q => q.a + ':' + q.o.map(o => typeof o === 'string' ? o : o.en).join('|')).join('#');
+    for (let i = 0; i < t.length; i++) x = (x * 33 + t.charCodeAt(i)) >>> 0; return x.toString(36); })();
+  if (state.quiz.sig !== EXAMSIG) state.quiz = { ans: {}, checked: false, sig: EXAMSIG };
+  const SUBJ = (typeof SUBJECT !== 'undefined' && SUBJECT) || {};
+  const LINKS = (typeof NAV !== 'undefined' && NAV) || {};
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem('csca-lang', state.lang);
+      const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+      if (total) localStorage.setItem('csca-progress:' + KEY, JSON.stringify({ done, total, quiz: state.quiz.checked ? state.quiz.score : null, n: EXAM.length }));
+    } catch (e) {}
+  }
+  try { const g = localStorage.getItem('csca-lang'); if (g === 'en' || g === 'ru') state.lang = g; } catch (e) {}
+  if (!state.lang) state.lang = /^ru|^kk|^uk|^be/i.test(navigator.language || '') ? 'ru' : 'en';
+  let lang = state.lang;
+  const ui = () => UI[lang];
+  const tr = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] != null ? v[lang] : v.en));
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(c)); }
+    return el;
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fmt = (s) => esc(tr(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const P = (s, cls) => h('p', { class: cls, html: fmt(s) });
+
+  /* ---------- answer checking ---------- */
+  const NONE = /^(none|no value|undefined|undef|dne|n\/a|нет|нет значения|не существует|не определено|нет ответа|∅|—|–|x|✗)$/i;
+  function num(raw) {
+    let s = String(raw).toLowerCase().trim()
+      .replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+      .replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, '');
+    if (!s) return NaN;
+    s = s.replace(/π|pi/g, 'P').replace(/√|sqrt/g, 'S');
+    s = s.replace(/S(\d+(\.\d+)?|P)/g, 'Math.sqrt($1)').replace(/S\(/g, 'Math.sqrt(');
+    s = s.replace(/P/g, 'Math.PI');
+    s = s.replace(/(\d|\))(?=Math|\()/g, '$1*');
+    if (!/^[0-9+\-*/().]*$/.test(s.replace(/Math\.sqrt|Math\.PI/g, '1'))) return NaN;
+    try { const v = Function('"use strict";return (' + s + ')')(); return typeof v === 'number' && isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+  }
+  const norm = (s) => String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[()]/g, '');
+  function isCorrect(f, val) {
+    val = String(val == null ? '' : val).trim();
+    if (!val) return false;
+    if (f.sel) return val === f.exp;
+    if (f.exp === 'none') return NONE.test(val);
+    if (NONE.test(val)) return false;
+    const e = num(f.exp), v = num(val);
+    if (!isNaN(e) && !isNaN(v)) return Math.abs(e - v) < 1e-3;
+    return norm(val) === norm(f.exp);
+  }
+
+  /* ---------- figures (inline SVG) ---------- */
+  function plot(o) {
+    const W = o.w || 360, H = o.h || 250, m = { l: 30, r: 12, t: 14, b: 26 };
+    const X = (x) => m.l + (x - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const Y = (y) => H - m.b - (y - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="${esc(o.label || 'graph')}">`;
+    const ax0 = Y(Math.max(o.y0, Math.min(0, o.y1))), ay0 = X(Math.max(o.x0, Math.min(0, o.x1)));
+    s += `<line class="ax" x1="${m.l}" y1="${ax0}" x2="${W - m.r}" y2="${ax0}"/><line class="ax" x1="${ay0}" y1="${m.t}" x2="${ay0}" y2="${H - m.b}"/>`;
+    (o.xt || []).forEach(t => { const x = X(t.v);
+      if (o.xlow) s += `<line class="grid" x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}"/><text class="tl" x="${x}" y="${H - 8}" text-anchor="middle">${t.l}</text>`;
+      else s += `<line class="tk" x1="${x}" y1="${ax0 - 3}" x2="${x}" y2="${ax0 + 3}"/><text class="tl" x="${x}" y="${ax0 + 15}" text-anchor="middle">${t.l}</text>`; });
+    (o.yt || []).forEach(t => { const y = Y(t.v); s += `<line class="tk" x1="${ay0 - 3}" y1="${y}" x2="${ay0 + 3}" y2="${y}"/><text class="tl" x="${ay0 - 6}" y="${y + 4}" text-anchor="end">${t.l}</text>`; });
+    (o.vlines || []).forEach(v => { s += `<line class="asy" x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H - m.b}"/>`; });
+    (o.curves || []).forEach(c => {
+      let d = '', pen = false, py = null; const N = 500;
+      for (let i = 0; i <= N; i++) {
+        const x = c.x0 != null ? c.x0 + (c.x1 - c.x0) * i / N : o.x0 + (o.x1 - o.x0) * i / N, y = c.f(x);
+        const bad = !isFinite(y) || y < o.y0 - 0.5 || y > o.y1 + 0.5 || (py != null && Math.abs(y - py) > (o.y1 - o.y0) * 0.6);
+        if (bad) { pen = false; py = null; continue; }
+        d += (pen ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; py = y;
+      }
+      s += `<path d="${d}" class="cv ${c.cls || 'c1'}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`;
+    });
+    (o.segs || []).forEach(g => { s += `<line class="asy" x1="${X(g[0])}" y1="${Y(g[1])}" x2="${X(g[2])}" y2="${Y(g[3])}"/>`; });
+    (o.pts || []).forEach(p => {
+      s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" class="${p.hollow ? 'pt hol' : 'pt'}"/>`;
+      if (p.l) s += `<text class="pl" x="${X(p.x) + (p.dx || 7)}" y="${Y(p.y) + (p.dy || -7)}" text-anchor="${p.anc || 'start'}">${p.l}</text>`;
+    });
+    (o.tx || []).forEach(t => { s += `<text class="cl ${t.cls || ''}" x="${X(t.x)}" y="${Y(t.y)}" text-anchor="${t.anc || 'start'}">${t.t}</text>`; });
+    return s + '</svg>';
+  }
+  const piT = (a, b) => { const r = []; for (let k = a; k <= b; k++) if (k) r.push({ v: k * Math.PI, l: (k === 1 ? '' : k === -1 ? '−' : k) + 'π' }); return r; };
+  const FIGS = SHEET.figs ? SHEET.figs({ h, plot, piT, esc }) : {};
+
+  /* ---------- rendering ---------- */
+  const root = document.getElementById('app');
+  const EXAMID = PARTS.length + 1;
+  let tasksIndex = [];     // {id, el, ctx}
+  let uid = 0;
+
+  function selOptions(opts) { return opts.map(o => typeof o === 'string' ? { v: o, t: o } : o.en != null ? { v: o.k, t: tr(o) } : { v: o.k, t: ui().opt[o.k] }); }
+
+  function buildTask(it) {
+    const ctx = { id: it.id, fields: [], opens: [], el: null, msg: null };
+    const st = (state.tasks[it.id] = state.tasks[it.id] || {});
+    const key = (pi, n) => `${it.id}|${pi}|${n}`;
+    const card = h('article', { class: 'card task', id: 't' + it.id.replace('.', '-') });
+    ctx.el = card;
+    const head = h('div', { class: 'thead' }, h('span', { class: 'tnum' }, ui().task + ' ' + it.id), h('span', { class: 'ttitle' }, tr(it.title)), h('span', { class: 'tdone', 'aria-hidden': 'true' }, '✓'));
+    card.append(head, P(it.text, 'ttext'));
+
+    const mkField = (pi, n, spec, extra) => {
+      const k = key(pi, n);
+      let el, f;
+      if (spec.sel) {
+        const opts = selOptions(spec.sel);
+        el = h('select', { class: 'fld sel', 'aria-label': 'answer' }, h('option', { value: '' }, '—'), opts.map(o => h('option', { value: o.v }, o.t)));
+        f = { el, exp: spec.a, sel: true };
+      } else {
+        el = h('input', { class: 'fld', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', style: spec.w ? `width:${spec.w + 1.2}em` : null, 'aria-label': 'answer' });
+        f = { el, exp: spec.a };
+      }
+      el.value = state.inputs[k] || '';
+      el.addEventListener('input', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); st.checked = false; save(); });
+      el.addEventListener('change', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); save(); });
+      f.key = k; ctx.fields.push(f);
+      return el;
+    };
+
+    it.parts.forEach((part, pi) => {
+      let n = 0;
+      if (part.k === 'html') card.append(h('div', { html: typeof part.html === 'string' ? part.html : tr(part.html) }));
+      else if (part.k === 'fig') card.append(FIGS[part.id]());
+      else if (part.k === 'table') {
+        const tbl = h('table', { class: 'tbl' });
+        tbl.append(h('thead', null, h('tr', null, part.head.map(c => h('th', null, tr(c))))));
+        const tb = h('tbody');
+        part.rows.forEach(r => tb.append(h('tr', null, r.map((c, ci) => ci === 0 ? h('th', { scope: 'row' }, tr(c)) : (typeof c === 'string' ? h('td', null, c) : h('td', null, mkField(pi, n++, c)))))));
+        tbl.append(tb); card.append(h('div', { class: 'tw' }, tbl));
+      } else if (part.k === 'blanks') {
+        part.lines.forEach(line => card.append(h('p', { class: 'bl' }, line.map(seg => typeof seg === 'string' ? seg : seg.en != null ? tr(seg) : mkField(pi, n++, seg)))));
+      } else if (part.k === 'mc') {
+        const k = key(pi, 0), box = h('div', { class: 'mc' });
+        box.append(P(part.q, 'mcq'));
+        const f = { key: k, mc: true, exp: String(part.a), btns: [] };
+        part.opts.forEach((o, i) => {
+          const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': 'false' }, h('span', { class: 'lab' }, 'abcd'[i] + ')'), h('span', null, tr(o)));
+          b.addEventListener('click', () => { state.inputs[k] = String(i); f.btns.forEach((x, j) => { x.setAttribute('aria-pressed', String(i === j)); x.classList.remove('ok', 'bad'); }); st.checked = false; save(); });
+          if (state.inputs[k] === String(i)) b.setAttribute('aria-pressed', 'true');
+          f.btns.push(b); box.append(b);
+        });
+        ctx.fields.push(f); card.append(box);
+      } else if (part.k === 'open') {
+        part.lines.forEach((ln, li) => {
+          const k = key(pi, 'o' + li);
+          const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().mine, 'aria-label': ui().mine });
+          ta.value = state.inputs[k] || '';
+          ta.addEventListener('input', () => { state.inputs[k] = ta.value; save(); });
+          const ans = h('div', { class: 'ref', hidden: true }, h('b', null, ui().ref + ': '), h('span', { html: fmt(ln.a) }));
+          card.append(h('div', { class: 'open' }, P(ln.q, 'oq'), ta, ans));
+          ctx.opens.push({ ans, k: key(pi, 'o' + li) });
+        });
+      }
+    });
+
+    const msg = h('div', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+    ctx.msg = msg;
+    const tickRow = h('div', { class: 'tick', hidden: true });
+    const tickBtn = h('button', { type: 'button', class: 'btn tickbtn' });
+    const updTick = () => { const on = st.self; tickBtn.textContent = on ? '✓ ' + ui().gotItOn : ui().gotIt; tickBtn.setAttribute('aria-pressed', String(!!on)); };
+    tickBtn.addEventListener('click', () => { st.self = !st.self; updTick(); recalc(it, ctx); save(); });
+    tickRow.append(tickBtn); updTick();
+    ctx.tickRow = tickRow;
+
+    const hintBox = h('div', { class: 'hintbox', hidden: true }, h('b', null, ui().hint + ': '), tr(it.hint));
+    const bar = h('div', { class: 'acts' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => doCheck(it, ctx) }, ui().check),
+      it.hint ? h('button', { type: 'button', class: 'btn', onclick: () => { hintBox.hidden = !hintBox.hidden; } }, ui().hint) : null,
+      h('button', { type: 'button', class: 'btn ghost', onclick: () => doShow(it, ctx) }, ui().showAns));
+    card.append(bar, hintBox, msg, tickRow);
+    if (st.checked) { applyMarks(ctx, false); revealOpens(ctx); }
+    else if (st.revealed) revealOpens(ctx);
+    if (st.done) card.classList.add('done');
+    return card;
+  }
+
+  function applyMarks(ctx, say) {
+    let good = 0, total = ctx.fields.length, empty = 0;
+    ctx.fields.forEach(f => {
+      if (f.mc) {
+        const v = state.inputs[f.key]; if (v == null) { empty++; return; }
+        const ok = v === f.exp; if (ok) good++;
+        f.btns.forEach((b, i) => { b.classList.remove('ok', 'bad'); if (String(i) === v) b.classList.add(ok ? 'ok' : 'bad'); if (ok && String(i) === v) b.classList.add('ok'); });
+        return;
+      }
+      const v = state.inputs[f.key] || '';
+      if (!v.trim()) { empty++; f.el.classList.remove('ok'); f.el.classList.add('bad'); return; }
+      const ok = isCorrect(f, v); if (ok) good++;
+      f.el.classList.toggle('ok', ok); f.el.classList.toggle('bad', !ok);
+    });
+    return { good, total, empty };
+  }
+  function revealOpens(ctx) { ctx.opens.forEach(o => { o.ans.hidden = false; }); if (ctx.opens.length) ctx.tickRow.hidden = false; }
+
+  function doCheck(it, ctx) {
+    const st = state.tasks[it.id];
+    const r = applyMarks(ctx, true);
+    st.checked = true; st.revealed = true; revealOpens(ctx);
+    st.auto = ctx.fields.length === 0 ? true : r.good === r.total;
+    if (ctx.fields.length) {
+      if (r.empty && r.good < r.total && r.empty === r.total - r.good) ctx.msg.textContent = ui().fill;
+      else ctx.msg.textContent = r.good === r.total ? ui().allGood : ui().some(r.good, r.total);
+      ctx.msg.className = 'msg ' + (r.good === r.total ? 'good' : 'warn');
+    } else { ctx.msg.textContent = ''; }
+    recalc(it, ctx); save();
+  }
+  function doShow(it, ctx) {
+    const st = state.tasks[it.id];
+    ctx.fields.forEach(f => {
+      if (f.mc) { state.inputs[f.key] = f.exp; f.btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(String(i) === f.exp)); b.classList.remove('bad'); b.classList.toggle('ok', String(i) === f.exp); }); return; }
+      const shown = f.sel ? f.exp : (f.exp === 'none' ? ui().none : f.exp.replace(/^-/, '−'));
+      f.el.value = f.sel ? f.exp : shown; state.inputs[f.key] = f.el.value;
+      f.el.classList.remove('bad'); f.el.classList.add('ok');
+    });
+    st.checked = true; st.revealed = true; st.shown = true; revealOpens(ctx);
+    ctx.msg.textContent = ''; save();
+  }
+  function recalc(it, ctx) {
+    const st = state.tasks[it.id];
+    const hasOpen = ctx.opens.length > 0, hasAuto = ctx.fields.length > 0;
+    const ok = (!hasAuto || (st.auto && !st.shown)) && (!hasOpen || st.self);
+    st.done = !!ok;
+    ctx.el.classList.toggle('done', st.done);
+    updateProgress(); save();
+  }
+
+  function buildNotice(it) {
+    const st = (state.notices[it.id] = state.notices[it.id] || { text: '', open: false });
+    const card = h('article', { class: 'card notice' });
+    const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().noticePh, 'aria-label': ui().notice });
+    ta.value = st.text || '';
+    const ruleBox = h('div', { class: 'rulebox' }, h('b', null, ui().rule + '. '), h('span', { html: fmt(it.rule) }));
+    const btn = h('button', { type: 'button', class: 'btn primary' }, '🔒 ' + ui().showRule);
+    const stuck = h('button', { type: 'button', class: 'linkbtn' }, ui().stuck);
+    const sync = () => { const open = st.open || (ta.value.trim().length >= 8); ruleBox.hidden = !open; btn.disabled = open; btn.hidden = open; stuck.hidden = open; };
+    ta.addEventListener('input', () => { st.text = ta.value; if (ta.value.trim().length >= 8) st.open = true; sync(); save(); });
+    btn.addEventListener('click', () => { st.open = true; sync(); save(); });
+    stuck.addEventListener('click', () => { st.open = true; sync(); save(); });
+    btn.disabled = true;
+    card.append(h('div', { class: 'nlabel' }, '✎ ' + ui().notice), ta, h('div', { class: 'acts' }, stuck), ruleBox);
+    // before the writing is long enough the "show" button stays hidden; students can still press the link below the box
+    sync();
+    return card;
+  }
+
+  function buildExam() {
+    const sec = h('section', { class: 'part', id: 'part-' + EXAMID });
+    sec.append(h('h2', null, `${EXAMID}. ${ui().exam}`));
+    const ex = SUBJ.exam || { questions: 48, minutes: 60 };
+    const per = Math.round(ex.minutes * 60 / ex.questions);
+    const mins = Math.max(1, Math.ceil(EXAM.length * per / 60)), full = mins * 60;
+    sec.append(P(ui().examIntro(ex.minutes, ex.questions, per, mins, EXAM.length)));
+    const mm = String(mins).padStart(2, '0') + ':00';
+    const timer = h('span', { class: 'timer', role: 'timer' }, mm);
+    let tick = null, left = full;
+    const tbtn = h('button', { type: 'button', class: 'btn' }, ui().start(mm));
+    const drawT = () => { timer.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); timer.classList.toggle('low', left < 60); };
+    tbtn.addEventListener('click', () => {
+      if (tick) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); return; }
+      left = full; drawT(); tbtn.textContent = ui().stop;
+      tick = setInterval(() => { left--; drawT(); if (left <= 0) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); timer.textContent = ui().timeUp; } }, 1000);
+    });
+    sec.append(h('div', { class: 'timerrow' }, tbtn, timer));
+    const qs = state.quiz;
+    const cards = [];
+    EXAM.forEach((q, i) => {
+      const card = h('article', { class: 'card q' });
+      card.append(h('div', { class: 'qq' }, h('span', { class: 'qn' }, (i + 1) + '.'), h('span', null, tr(q.q)), h('span', { class: 'qpart' }, `(${ui().part.toLowerCase()} ${q.part})`)));
+      const opts = h('div', { class: 'qopts' }); const btns = [];
+      q.o.forEach((o, j) => {
+        const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': String(qs.ans[i] === j) }, h('span', { class: 'lab' }, 'abcd'[j] + ')'), h('span', null, tr(o)));
+        b.addEventListener('click', () => { qs.ans[i] = j; qs.checked = false; btns.forEach((x, k) => { x.setAttribute('aria-pressed', String(k === j)); x.classList.remove('ok', 'bad'); }); fb.textContent = ''; result.textContent = ''; save(); });
+        btns.push(b); opts.append(b);
+      });
+      const fb = h('div', { class: 'qfb' });
+      card.append(opts, fb); cards.push({ btns, fb, q, i }); sec.append(card);
+    });
+    const result = h('div', { class: 'result', role: 'status', 'aria-live': 'polite' });
+    const mark = () => {
+      let sc = 0;
+      cards.forEach(({ btns, fb, q, i }) => {
+        const a = qs.ans[i]; btns.forEach(b => b.classList.remove('ok', 'bad'));
+        if (a == null) { fb.textContent = lang === 'ru' ? 'Нет ответа' : 'No answer'; fb.className = 'qfb bad'; return; }
+        if (a === q.a) { sc++; btns[a].classList.add('ok'); fb.textContent = '✓'; fb.className = 'qfb good'; }
+        else { btns[a].classList.add('bad'); fb.className = 'qfb bad'; fb.innerHTML = `✗ ${ui().review}: <a href="#part-${q.part}">${lang === 'ru' ? 'часть' : 'Part'} ${q.part}</a>`; }
+      });
+      result.textContent = ui().score(sc, EXAM.length); qs.checked = true; qs.score = sc; save();
+    };
+    const go = h('button', { type: 'button', class: 'btn primary', onclick: mark }, ui().checkAll);
+    const again = h('button', { type: 'button', class: 'btn', onclick: () => { qs.ans = {}; qs.checked = false; save(); render(); document.getElementById('part-' + EXAMID).scrollIntoView(); } }, ui().again);
+    sec.append(h('div', { class: 'acts' }, go, again), result);
+    if (qs.checked) mark();
+    return sec;
+  }
+
+  function updateProgress() {
+    const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const b = document.getElementById('pbar'); if (b) b.style.width = pct + '%';
+    const t = document.getElementById('ptxt'); if (t) t.textContent = `${done} / ${total}`;
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.title = tr(SHEET.title);
+    tasksIndex = [];
+    root.textContent = '';
+    /* top bar */
+    const langSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Language' }, ['en', 'ru'].map(l => h('button', { type: 'button', 'aria-pressed': String(l === lang), onclick: () => { lang = state.lang = l; save(); render(); } }, l === 'en' ? 'EN' : 'RU')));
+    let rs = false, rt = null;
+    const resetBtn = h('button', { type: 'button', class: 'btn ghost small' }, ui().reset);
+    resetBtn.addEventListener('click', () => {
+      if (!rs) { rs = true; resetBtn.textContent = ui().resetSure; rt = setTimeout(() => { rs = false; resetBtn.textContent = ui().reset; }, 3500); return; }
+      clearTimeout(rt); state = { lang, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false, sig: EXAMSIG } }; save(); render(); window.scrollTo(0, 0);
+    });
+    const top = h('header', { class: 'topbar' }, h('div', { class: 'topin' },
+      LINKS.subject ? h('a', { class: 'back', href: LINKS.subject, 'aria-label': ui().back }, '← ' + ui().topics) : null,
+      h('div', { class: 'brand' }, h('span', { class: 'bt' }, tr(SHEET.title))),
+      h('div', { class: 'prog', 'aria-label': ui().progress }, h('div', { class: 'ptxtrow' }, h('span', null, ui().progress), h('span', { id: 'ptxt' }, '0 / 0')), h('div', { class: 'bar' }, h('span', { id: 'pbar' }))),
+      langSeg, resetBtn),
+      h('nav', { class: 'chips', 'aria-label': ui().parts }, PARTS.map(p => h('a', { href: '#part-' + p.id }, p.id + '')), h('a', { href: '#part-' + EXAMID }, String(EXAMID))));
+    root.append(top);
+    const wrap = h('main', { class: 'wrap' });
+    wrap.append(h('h1', null, tr(SHEET.title)), h('p', { class: 'sub' }, tr(SHEET.sub)));
+    /* how to use */
+    const how = h('section', { class: 'card how' }, h('h2', null, ui().howTitle), h('ol', null, ui().steps.map(s => h('li', { html: fmt(s) }))), P(SHEET.stats));
+    const tt = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, ui().topic), h('th', null, ui().partCol), h('th', null, ui().wording))),
+      h('tbody', null, TOPICS.map(r => h('tr', null, h('td', null, tr(r[0])), h('td', null, h('a', { href: '#part-' + r[1] }, r[1] + '')), h('td', { class: 'wd' }, r[2])))));
+    how.append(h('div', { class: 'tw' }, tt), P(SHEET.symbols, 'small'), P(ui().photoNote, 'small'));
+    wrap.append(how);
+    PARTS.forEach(p => {
+      const sec = h('section', { class: 'part', id: 'part-' + p.id }, h('h2', null, h('span', { class: 'pn' }, ui().part + ' ' + p.id + '.'), ' ' + tr(p.title)), P(p.intro, 'intro'));
+      p.items.forEach(it => {
+        if (it.t === 'task') { const el = buildTask(it); tasksIndex.push({ id: it.id }); sec.append(el); }
+        else if (it.t === 'notice') sec.append(buildNotice(it));
+        else if (it.t === 'rule') sec.append(h('div', { class: 'rulebox plain' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'worked') sec.append(h('div', { class: 'worked' }, h('b', null, ui().worked + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'note') sec.append(h('div', { class: 'careful' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+      });
+      wrap.append(sec);
+    });
+    wrap.append(buildExam());
+    if (LINKS.next) wrap.append(h('p', { class: 'nextlink' }, h('a', { href: LINKS.next.href }, ui().next + ': ' + tr(LINKS.next.title) + ' →')));
+    root.append(wrap);
+    updateProgress();
+  }
+  render();
+  save();
+  if (window.__FN_TEST) window.__fnt = { num, isCorrect };
+})();
+
+</script>
+</body>
+</html>

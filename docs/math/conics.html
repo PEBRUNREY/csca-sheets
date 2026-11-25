@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ellipse, hyperbola, parabola</title>
+<style>
+:root{
+  --bg:#f6f5f1; --bar:rgba(246,245,241,.94); --surface:#fff; --ink:#1b2430; --muted:#5b6674; --line:#d9d6cc;
+  --accent:#2457a6; --accent-ink:#fff; --accent-soft:#e0e9f7;
+  --hint:#8a5300; --hint-soft:#fbf0d9;
+  --good:#17803d; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --c1:#2457a6; --c2:#c2410c; --c3:#2f7d57;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.brand{font-weight:700;margin-right:auto;font-size:1.02rem;min-width:0}
+.prog{min-width:130px;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ptxtrow{display:flex;justify-content:space-between;gap:10px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar>span{display:block;height:100%;width:0;background:var(--good);transition:width .25s}
+.chips{max-width:900px;margin:0 auto;padding:0 14px 8px;display:flex;gap:6px;overflow-x:auto}
+.chips a{flex:none;min-width:34px;text-align:center;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.chips a:hover{border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:5px 11px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-weight:600;font-size:.93rem;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:32px;padding:3px 10px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:6px 2px;font-size:.9rem}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px 90px}
+h1{font-size:clamp(1.55rem,5vw,2.1rem);line-height:1.15;margin:24px 0 4px;text-wrap:balance}
+h2{font-size:1.3rem;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 16px}
+.small{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.how ol{margin:6px 0 10px;padding-left:22px}
+.how li{margin-bottom:3px}
+.part{margin-top:34px;scroll-margin-top:96px}
+.part>h2{padding-top:6px;border-top:3px solid var(--accent)}
+.pn{color:var(--accent)}
+.intro{color:var(--muted);max-width:68ch;margin:4px 0 8px}
+.task{scroll-margin-top:100px}
+.task.done{border-color:var(--good)}
+.thead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:4px}
+.tnum{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.ttitle{font-weight:700}
+.tdone{margin-left:auto;color:var(--good);font-weight:800;visibility:hidden}
+.task.done .tdone{visibility:visible}
+.ttext{margin:2px 0 10px;max-width:70ch}
+.tw{overflow-x:auto;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.tbl{border-collapse:collapse;font-size:.97rem;min-width:min(100%,0px)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:center;vertical-align:middle;white-space:nowrap}
+.tbl thead th{background:var(--accent-soft)}
+.tbl tbody th,.tbl tr>th:first-child{background:var(--bg);text-align:left;font-weight:600}
+.tbl td.wd{white-space:normal;text-align:left;font-size:.9rem;color:var(--muted)}
+.how .tbl td:first-child{text-align:left;white-space:normal}
+.fld{width:4.6em;max-width:100%;padding:5px 7px;border:1.5px solid var(--line);border-radius:7px;background:var(--bg);text-align:center;font-size:1rem;min-height:36px}
+.fld.sel{width:auto;max-width:15em;text-align:left;padding-right:4px}
+.fld:focus{border-color:var(--accent)}
+.fld.ok{border-color:var(--good);background:var(--good-soft)}
+.fld.bad{border-color:var(--bad);background:var(--bad-soft)}
+.bl{margin:8px 0;line-height:2.3}
+.bl .fld{margin:0 3px}
+.mc{margin:10px 0}.mcq{margin:0 0 6px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 12px;margin:6px 0;min-height:44px}
+.opt .lab{font-weight:700;color:var(--muted);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.open{margin:10px 0}
+.oq{margin:0 0 4px;font-weight:600}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);padding:8px 10px;resize:vertical;min-height:48px}
+.ta:focus{border-color:var(--accent)}
+.ref{margin-top:6px;background:var(--good-soft);border-left:4px solid var(--good);padding:7px 11px;border-radius:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.hintbox{margin-top:10px;background:var(--hint-soft);border-left:4px solid var(--hint);padding:8px 12px;border-radius:6px}
+.hintbox b{color:var(--hint)}
+.msg{min-height:1.4em;margin-top:8px;font-weight:600;font-size:.95rem}
+.msg.good{color:var(--good)}.msg.warn{color:var(--bad)}
+.tick{margin-top:8px}
+.tickbtn[aria-pressed=true]{background:var(--good-soft);border-color:var(--good)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.nlabel{font-weight:700;margin-bottom:6px}
+.notice .ta{background:var(--surface)}
+.rulebox{margin-top:10px;background:var(--surface);border-left:5px solid var(--accent);padding:10px 14px;border-radius:8px}
+.rulebox.plain{margin:12px 0;border:1px solid var(--line);border-left:5px solid var(--accent)}
+.rulebox[hidden]{display:none}
+.worked{margin:12px 0;border:1px dashed var(--line);padding:10px 14px;border-radius:8px;background:var(--surface)}
+.careful{margin:12px 0;background:var(--hint-soft);border-left:5px solid var(--hint);padding:10px 14px;border-radius:8px}
+.figrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.figrow>div{flex:1 1 260px;min-width:0}
+.figone{max-width:460px;margin:8px 0}.figstack{max-width:520px;margin:8px 0}
+.plot{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.plot .ax{stroke:var(--muted);stroke-width:1.2}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .tk{stroke:var(--muted);stroke-width:1}
+.plot text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.plot .tl,.plot .pl{fill:var(--muted);font-size:11px}
+.plot .pl{fill:var(--ink);font-weight:600}
+.plot .asy{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.8}
+.plot .cv{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plot .c1{stroke:var(--c1)}.plot .c2{stroke:var(--c2)}.plot .c3{stroke:var(--c3)}
+.plot .cl{font-size:13px;font-weight:700}
+.plot .c1t{fill:var(--c1)}.plot .c2t{fill:var(--c2)}.plot .c3t{fill:var(--c3)}
+.plot .pt{fill:var(--ink)}
+.plot .pt.hol{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.timerrow{display:flex;gap:12px;align-items:center;margin:8px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2rem}
+.timer.low{color:var(--bad)}
+.q .qq{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:600}
+.qn{color:var(--accent)}
+.qpart{margin-left:auto;font-weight:400;color:var(--muted);font-size:.85rem}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin-top:6px}
+@media (max-width:560px){.qopts{grid-template-columns:1fr}.topin{gap:4px 10px}.brand{flex:1 1 100%}.prog{flex:1}}
+.qfb{min-height:1.3em;font-weight:600;font-size:.92rem;margin-top:2px}
+.qfb.good{color:var(--good)}.qfb.bad{color:var(--bad)}
+.result{margin-top:10px;font-weight:700;font-size:1.15rem}
+
+.back{flex:none;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.back:hover{border-color:var(--accent)}
+.nextlink{margin:34px 0 0;font-weight:700;font-size:1.05rem}
+.nextlink a{display:inline-block;text-decoration:none;border:1.5px solid var(--accent);border-radius:10px;padding:10px 16px}
+.geo{width:100%;max-width:420px;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.geo line,.geo path,.geo polygon,.geo circle,.geo ellipse,.geo polyline{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.geo .hid{stroke-dasharray:5 4;stroke:var(--muted)}
+.geo .acc{stroke:var(--c1);stroke-width:2.2}.geo .acc2{stroke:var(--c2);stroke-width:2.2}.geo .acc3{stroke:var(--c3);stroke-width:2.2}
+.geo .dot{fill:var(--ink);stroke:none}
+.geo text{fill:var(--ink);font-size:13px;font-weight:600;stroke:none;paint-order:stroke}
+.geo .mt{fill:var(--muted);font-weight:400;font-size:12px}
+.geo .fillsoft{fill:var(--accent-soft);stroke:var(--c1)}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript. / Для этой страницы нужен JavaScript.</noscript>
+<script>
+const SUBJECT = {"id": "math", "title_en": "Mathematics", "title_ru": "Математика", "exam": {"questions": 48, "minutes": 60}};
+const NAV = {"home": "../index.html", "subject": "index.html", "next": {"href": "solid-geometry.html", "title": {"en": "Solid geometry", "ru": "Стереометрия"}}};
+/* Shared UI text and helpers for every sheet. English + Russian.
+   T(en, ru) makes a bilingual string. Math and Chinese terms are shared. */
+const T = (en, ru) => ({ en, ru });
+
+const UI = {
+  en: {
+    progress: 'Progress',
+    reset: 'Reset', resetSure: 'Click again to erase',
+    check: 'Check', hint: 'Hint', showAns: 'Show answers',
+    allGood: 'All correct. Well done.',
+    some: (a, b) => `${a} of ${b} correct. Red cells are wrong, try again.`,
+    fill: 'Fill in every answer first.',
+    mine: 'My answer', ref: 'Answer', gotIt: 'I got it', notYet: 'Not yet', gotItOn: 'Marked as understood',
+    notice: 'What I notice', noticePh: 'Write one sentence in your own words…',
+    showRule: 'Show the rule', stuck: 'I am stuck, show the rule anyway',
+    rule: 'Rule', careful: 'Careful', worked: 'Worked example',
+    exam: 'Exam-style check', start: (m) => `Start ${m} timer`,
+    examIntro: (min, q, per, mins, n) => `The real exam gives ${min} minutes for ${q} questions, about ${per} seconds each. Give yourself ${mins} minutes for these ${n}, then press Check my answers. For every wrong answer, go back to the Part named and redo its tasks.`,
+    back: 'Back to the list of topics', topics: 'Topics', next: 'Next topic', stop: 'Stop timer', timeUp: 'Time is up',
+    checkAll: 'Check my answers', score: (a, b) => `Score: ${a} / ${b}`,
+    review: 'Review', again: 'Try again',
+    howTitle: 'How to use this sheet',
+    steps: [
+      'Do the tasks in order. Fill in every empty cell, then press Check.',
+      'Where you see **What I notice**, write one sentence in your own words. The rule unlocks after that.',
+      'Read the **Rule**, then do the **Try it** tasks.',
+      'Finish with the exam-style questions at the end.'
+    ],
+    topic: 'Topic', partCol: 'Part', wording: 'How the exam words it',
+    photoNote: 'Your progress is saved on this device only.',
+    parts: 'Parts', none: 'none', task: 'Task', part: 'Part',
+    opt: { yes: 'yes', no: 'no', same: 'same', opposite: 'opposite', neither: 'neither', up: 'always goes up', down: 'always goes down', change: 'changes direction', yaxis: 'the y-axis', origin: 'the origin', xaxis: 'the x-axis' }
+  },
+  ru: {
+    progress: 'Прогресс',
+    reset: 'Сбросить', resetSure: 'Нажмите ещё раз, чтобы стереть',
+    check: 'Проверить', hint: 'Подсказка', showAns: 'Показать ответы',
+    allGood: 'Всё верно. Отлично.',
+    some: (a, b) => `Верно ${a} из ${b}. Красные ячейки неверны, попробуйте ещё раз.`,
+    fill: 'Сначала заполните все ответы.',
+    mine: 'Мой ответ', ref: 'Ответ', gotIt: 'Я понял(а)', notYet: 'Пока нет', gotItOn: 'Отмечено: понял(а)',
+    notice: 'Что я заметил(а)', noticePh: 'Напишите одно предложение своими словами…',
+    showRule: 'Показать правило', stuck: 'Не получается, показать правило',
+    rule: 'Правило', careful: 'Осторожно', worked: 'Разобранный пример',
+    exam: 'Проверка в формате экзамена', start: (m) => `Запустить таймер ${m}`,
+    examIntro: (min, q, per, mins, n) => `На настоящем экзамене даётся ${min} минут на ${q} вопросов, то есть около ${per} секунд на вопрос. Дайте себе ${mins} мин. на эти ${n}. Затем нажмите «Проверить ответы». За каждый неверный ответ вернитесь к названной части и повторите её задания.`,
+    back: 'Назад к списку тем', topics: 'Темы', next: 'Следующая тема', stop: 'Остановить таймер', timeUp: 'Время вышло',
+    checkAll: 'Проверить ответы', score: (a, b) => `Результат: ${a} / ${b}`,
+    review: 'Повторить', again: 'Ещё раз',
+    howTitle: 'Как пользоваться листом',
+    steps: [
+      'Выполняйте задания по порядку. Заполните все пустые ячейки и нажмите «Проверить».',
+      'Там, где написано **Что я заметил(а)**, напишите одно предложение своими словами. После этого откроется правило.',
+      'Прочитайте **Правило**, затем выполните задания **Попробуйте сами**.',
+      'В конце решите вопросы в формате экзамена.'
+    ],
+    topic: 'Тема', partCol: 'Часть', wording: 'Как это формулируют на экзамене',
+    photoNote: 'Ваш прогресс сохраняется только на этом устройстве.',
+    parts: 'Части', none: 'нет', task: 'Задание', part: 'Часть',
+    opt: { yes: 'да', no: 'нет', same: 'одинаковые', opposite: 'противоположные', neither: 'ни то, ни другое', up: 'всегда растёт', down: 'всегда убывает', change: 'меняет направление', yaxis: 'оси y', origin: 'начала координат', xaxis: 'оси x' }
+  }
+};
+
+/* option helpers */
+const O = (k) => ({ k });                      // key into UI.opt
+const YN = [O('yes'), O('no')];
+const SON = [O('same'), O('opposite'), O('neither')];
+const MON = [O('up'), O('down'), O('change')];
+const LR = [{ k: 'left', en: 'left', ru: 'влево' }, { k: 'right', en: 'right', ru: 'вправо' }];
+const COND = [{ k: 'suf', en: 'sufficient, not necessary', ru: 'достаточное, не необходимое' }, { k: 'nec', en: 'necessary, not sufficient', ru: 'необходимое, не достаточное' },
+  { k: 'both', en: 'necessary and sufficient', ru: 'необходимое и достаточное' }, { k: 'neither', en: 'neither', ru: 'ни то, ни другое' }];
+
+/* small static table */
+const mini = (rows) => ({ k: 'html', html: '<div class="tw"><table class="tbl">' + rows.map((r, i) => '<tr>' + r.map(c => i === 0 || c === r[0] ? `<th>${c}</th>` : `<td>${c}</td>`).join('') + '</tr>').join('') + '</table></div>' });
+
+/* Sheet: Conic sections (CSCA Mathematics): ellipse, hyperbola, parabola. */
+const SHEET = {
+  key: 'csca-math-conics-v1',
+  title: T('Investigation sheet: Ellipse, hyperbola, parabola', 'Исследовательский лист: эллипс, гипербола, парабола'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('Each conic section 圆锥曲线 is defined by distances. Once you know a, b, c for an equation, most exam questions are one line: foci, eccentricity, asymptotes, focus and directrix. Typical questions:',
+           'Каждое коническое сечение 圆锥曲线 определяется через расстояния. Если вы знаете a, b, c для уравнения, большинство экзаменационных вопросов решаются в одну строку: фокусы, эксцентриситет, асимптоты, фокус и директриса. Типичные вопросы:'),
+  symbols: T('Symbols: F₁, F₂ are the foci 焦点, a, b, c are lengths with a, b, c > 0, e is the eccentricity 离心率. ∣PF₁∣ is the distance from P to F₁. Type √5 as sqrt(5), fractions like 9/5.',
+             'Обозначения: F₁, F₂ — фокусы 焦点, a, b, c — длины, a, b, c > 0, e — эксцентриситет 离心率. ∣PF₁∣ — расстояние от P до F₁. √5 вводите как sqrt(5), дроби как 9/5.')
+};
+
+SHEET.figs = ({ h, plot }) => ({
+  ellipse() {
+    const up = x => 3 * Math.sqrt(Math.max(0, 1 - x * x / 25)), dn = x => -up(x);
+    const s = plot({ label: 'Ellipse x²/25 + y²/9 = 1 with foci (−4, 0) and (4, 0) and a point P(4, 9/5)', w: 420, h: 260, x0: -6, x1: 6, y0: -3.8, y1: 3.8,
+      xt: [{ v: -5, l: '−5' }, { v: 5, l: '5' }], yt: [{ v: 3, l: '3' }, { v: -3, l: '−3' }],
+      curves: [{ f: up, cls: 'c1', x0: -5, x1: 5 }, { f: dn, cls: 'c1', x0: -5, x1: 5 }],
+      segs: [[-4, 0, 4, 1.8], [4, 0, 4, 1.8]],
+      pts: [{ x: -4, y: 0, l: 'F₁(−4, 0)', dy: -9, dx: 4 }, { x: 4, y: 0, l: 'F₂(4, 0)', dy: 18, anc: 'end', dx: 4 }, { x: 4, y: 1.8, l: 'P', dx: 6, dy: -6 }],
+      tx: [{ x: -5.9, y: 3.4, t: 'x²/25 + y²/9 = 1', cls: 'c1t' }] });
+    return h('div', { class: 'figone', html: s });
+  },
+  hyperbola() {
+    const r = x => 4 * Math.sqrt(Math.max(0, x * x / 9 - 1));
+    const s = plot({ label: 'Hyperbola x²/9 − y²/16 = 1 with foci (−5, 0) and (5, 0) and asymptotes y = ±4x/3', w: 420, h: 300, x0: -8, x1: 8, y0: -7, y1: 7,
+      xt: [{ v: -3, l: '−3' }, { v: 3, l: '3' }], yt: [{ v: 4, l: '4' }, { v: -4, l: '−4' }],
+      curves: [{ f: r, cls: 'c2', x0: 3, x1: 8 }, { f: x => -r(x), cls: 'c2', x0: 3, x1: 8 }, { f: r, cls: 'c2', x0: -8, x1: -3 }, { f: x => -r(x), cls: 'c2', x0: -8, x1: -3 },
+        { f: x => 4 * x / 3, cls: 'c3', dash: true }, { f: x => -4 * x / 3, cls: 'c3', dash: true }],
+      pts: [{ x: -5, y: 0, l: 'F₁(−5, 0)', dy: -9, anc: 'middle', dx: 0 }, { x: 5, y: 0, l: 'F₂(5, 0)', dy: -9, anc: 'middle', dx: 0 }, { x: 3, y: 0 }, { x: -3, y: 0 }],
+      tx: [{ x: 7.9, y: 6.2, t: 'y = 4x/3', cls: 'c3t', anc: 'end' }, { x: -7.9, y: -2.6, t: 'x²/9 − y²/16 = 1', cls: 'c2t' }] });
+    return h('div', { class: 'figone', html: s });
+  },
+  parabola() {
+    const s = plot({ label: 'Parabola y² = 4x with focus (1, 0) and directrix x = −1', w: 380, h: 300, x0: -2.2, x1: 6, y0: -5.2, y1: 5.2,
+      xt: [{ v: -1, l: '−1' }, { v: 1, l: '1' }, { v: 4, l: '4' }], yt: [{ v: 2, l: '2' }, { v: 4, l: '4' }],
+      vlines: [-1], curves: [{ f: x => 2 * Math.sqrt(x), cls: 'c1', x0: 0, x1: 6 }, { f: x => -2 * Math.sqrt(x), cls: 'c1', x0: 0, x1: 6 }],
+      segs: [[1, 0, 4, 4], [-1, 4, 4, 4]],
+      pts: [{ x: 1, y: 0, l: 'F', dy: 16 }, { x: 4, y: 4, l: 'P(4, 4)', dx: 6, dy: 16 }],
+      tx: [{ x: -1.1, y: -4.6, t: 'x = −1', anc: 'end' }, { x: 5.9, y: -3.6, t: 'y² = 4x', cls: 'c1t', anc: 'end' }] });
+    return h('div', { class: 'figone', html: s });
+  }
+});
+
+const AX = [{ k: 'x', en: 'the x-axis', ru: 'оси x' }, { k: 'y', en: 'the y-axis', ru: 'оси y' }];
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('The ellipse', 'Эллипс'),
+  intro: T('Measure the distances from points of an ellipse 椭圆 to two fixed points F₁(−4, 0) and F₂(4, 0). Something stays the same.', 'Измерьте расстояния от точек эллипса 椭圆 до двух фиксированных точек F₁(−4, 0) и F₂(4, 0). Кое-что остаётся неизменным.'),
+  items: [
+  { t: 'task', id: '1.1', title: T('Two distances', 'Два расстояния'),
+    text: T('All four points lie on x²/25 + y²/9 = 1. Fill in the table.', 'Все четыре точки лежат на x²/25 + y²/9 = 1. Заполните таблицу.'),
+    parts: [{ k: 'fig', id: 'ellipse' },
+      { k: 'table', head: ['P', '∣PF₁∣', '∣PF₂∣', '∣PF₁∣ + ∣PF₂∣'], rows: [
+        ['(5, 0)', { a: '9' }, { a: '1' }, { a: '10' }],
+        ['(0, 3)', { a: '5' }, { a: '5' }, { a: '10' }],
+        ['(4, 9/5)', { a: '41/5' }, { a: '9/5' }, { a: '10' }],
+        ['(−5, 0)', { a: '1' }, { a: '9' }, { a: '10' }]] }],
+    hint: T('(0, 3) to (4, 0): √(16 + 9). (4, 9/5) to (−4, 0): √(64 + 81/25) = √(1681/25).', '(0, 3) до (4, 0): √(16 + 9). (4, 9/5) до (−4, 0): √(64 + 81/25) = √(1681/25).') },
+  { t: 'notice', id: 'n1', rule: T('An ellipse is the set of points P with ∣PF₁∣ + ∣PF₂∣ = 2a (a constant bigger than ∣F₁F₂∣ = 2c). Equation x²/a² + y²/b² = 1 (a > b > 0), foci (±c, 0), with a² = b² + c². Here a = 5, b = 3, c = 4. If the bigger number is under y², the foci are on the y-axis. Eccentricity e = c/a, and 0 < e < 1.', 'Эллипс — множество точек P, для которых ∣PF₁∣ + ∣PF₂∣ = 2a (постоянная больше ∣F₁F₂∣ = 2c). Уравнение x²/a² + y²/b² = 1 (a > b > 0), фокусы (±c, 0), причём a² = b² + c². Здесь a = 5, b = 3, c = 4. Если большее число стоит под y², фокусы лежат на оси y. Эксцентриситет e = c/a, и 0 < e < 1.') },
+  { t: 'task', id: '1.2', title: T('Read a, b, c', 'Найдите a, b, c'),
+    text: T('a² is always the bigger denominator.', 'a² — это всегда больший знаменатель.'),
+    parts: [{ k: 'table', head: [T('ellipse', 'эллипс'), 'a', 'b', 'c', T('foci on', 'фокусы на'), 'e'], rows: [
+      ['x²/4 + y²/3 = 1', { a: '2' }, { a: '√3' }, { a: '1' }, { a: 'x', sel: AX }, { a: '1/2' }],
+      ['x²/16 + y²/25 = 1', { a: '5' }, { a: '4' }, { a: '3' }, { a: 'y', sel: AX }, { a: '3/5' }],
+      ['x²/9 + y²/5 = 1', { a: '3' }, { a: '√5' }, { a: '2' }, { a: 'x', sel: AX }, { a: '2/3' }]] }],
+    hint: T('c = √(a² − b²). For the second row 25 > 16, so a² = 25 is under y².', 'c = √(a² − b²). Во второй строке 25 > 16, поэтому a² = 25 стоит под y².') },
+  { t: 'task', id: '1.3', title: T('Use the definition', 'Используйте определение'),
+    text: T('Ellipse x²/25 + y²/9 = 1, foci F₁ and F₂.', 'Эллипс x²/25 + y²/9 = 1, фокусы F₁ и F₂.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('(a) P is on the ellipse and ∣PF₁∣ = 3. Then ∣PF₂∣ = ', '(a) P лежит на эллипсе и ∣PF₁∣ = 3. Тогда ∣PF₂∣ = '), { a: '7', w: 3 }],
+      [T('(b) A line through F₁ meets the ellipse at A and B. The perimeter of △ABF₂ is ', '(b) Прямая через F₁ пересекает эллипс в точках A и B. Периметр △ABF₂ равен '), { a: '20', w: 3 }],
+      [T('(c) The major axis 长轴 has length 2a = ', '(c) Большая ось 长轴 имеет длину 2a = '), { a: '10', w: 3 }, T(', the minor axis 短轴 2b = ', ', малая ось 短轴 2b = '), { a: '6', w: 3 }]] }],
+    hint: T('(b) The perimeter is (∣AF₁∣ + ∣AF₂∣) + (∣BF₁∣ + ∣BF₂∣) = 2a + 2a.', '(b) Периметр равен (∣AF₁∣ + ∣AF₂∣) + (∣BF₁∣ + ∣BF₂∣) = 2a + 2a.') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('The hyperbola', 'Гипербола'),
+  intro: T('Now the foci are F₁(−5, 0) and F₂(5, 0), and the curve is the hyperbola 双曲线 x²/9 − y²/16 = 1. Try the same measurements.', 'Теперь фокусы F₁(−5, 0) и F₂(5, 0), а кривая — гипербола 双曲线 x²/9 − y²/16 = 1. Проведите те же измерения.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Sum or difference?', 'Сумма или разность?'),
+    text: T('Fill in the distances.', 'Заполните расстояния.'),
+    parts: [{ k: 'fig', id: 'hyperbola' },
+      { k: 'table', head: ['P', '∣PF₁∣', '∣PF₂∣', '∣PF₁∣ + ∣PF₂∣', '∣PF₁∣ − ∣PF₂∣'], rows: [
+        ['(3, 0)', { a: '8' }, { a: '2' }, { a: '10' }, { a: '6' }],
+        ['(5, 16/3)', { a: '34/3' }, { a: '16/3' }, { a: '50/3' }, { a: '6' }],
+        ['(−3, 0)', { a: '2' }, { a: '8' }, { a: '10' }, { a: '-6' }]] },
+      { k: 'blanks', lines: [[T('What stays the same? ', 'Что остаётся неизменным? '), { a: 'd', sel: [{ k: 's', en: 'the sum', ru: 'сумма' }, { k: 'd', en: 'the difference, without its sign', ru: 'разность, без учёта знака' }] }]] }],
+    hint: T('(5, 16/3) to (−5, 0): √(100 + 256/9) = √(1156/9) = 34/3.', '(5, 16/3) до (−5, 0): √(100 + 256/9) = √(1156/9) = 34/3.') },
+  { t: 'notice', id: 'n2', rule: T('A hyperbola is the set of points with ∣∣PF₁∣ − ∣PF₂∣∣ = 2a (smaller than 2c). Equation x²/a² − y²/b² = 1, foci (±c, 0), with c² = a² + b² (now c is the biggest). Asymptotes 渐近线 y = ±(b/a)x. Eccentricity e = c/a > 1. If the minus sign is in front of x², the foci are on the y-axis.', 'Гипербола — множество точек, для которых ∣∣PF₁∣ − ∣PF₂∣∣ = 2a (меньше 2c). Уравнение x²/a² − y²/b² = 1, фокусы (±c, 0), причём c² = a² + b² (теперь c — наибольшее). Асимптоты 渐近线 y = ±(b/a)x. Эксцентриситет e = c/a > 1. Если минус стоит перед x², фокусы лежат на оси y.') },
+  { t: 'task', id: '2.2', title: T('Read a, b, c', 'Найдите a, b, c'),
+    text: T('For hyperbolas a² is the denominator of the positive term (not necessarily the bigger one).', 'Для гиперболы a² — знаменатель положительного слагаемого (не обязательно больший).'),
+    parts: [{ k: 'table', head: [T('hyperbola', 'гипербола'), 'a', 'b', 'c', 'e', T('asymptote slope b/a', 'наклон асимптоты b/a')], rows: [
+      ['x²/9 − y²/16 = 1', { a: '3' }, { a: '4' }, { a: '5' }, { a: '5/3' }, { a: '4/3' }],
+      ['x²/4 − y² = 1', { a: '2' }, { a: '1' }, { a: '√5' }, { a: '√5/2' }, { a: '1/2' }],
+      ['x² − y² = 1', { a: '1' }, { a: '1' }, { a: '√2' }, { a: '√2' }, { a: '1' }]] }],
+    hint: T('c = √(a² + b²). y² means y²/1, so b = 1.', 'c = √(a² + b²). y² означает y²/1, поэтому b = 1.') },
+  { t: 'task', id: '2.3', title: T('Ellipse or hyperbola: do not mix them up', 'Эллипс или гипербола: не перепутайте'),
+    text: T('Choose the right relation and the right range for e.', 'Выберите верное соотношение и верный промежуток для e.'),
+    parts: [{ k: 'table', head: ['', T('relation', 'соотношение'), T('eccentricity', 'эксцентриситет')], rows: [
+      [T('ellipse', 'эллипс'), { a: 'a² = b² + c²', sel: ['a² = b² + c²', 'c² = a² + b²'] }, { a: '0 < e < 1', sel: ['0 < e < 1', 'e > 1', 'e = 1'] }],
+      [T('hyperbola', 'гипербола'), { a: 'c² = a² + b²', sel: ['a² = b² + c²', 'c² = a² + b²'] }, { a: 'e > 1', sel: ['0 < e < 1', 'e > 1', 'e = 1'] }]] }],
+    hint: T('Look at your tables in 1.2 and 2.2: which letter is the biggest?', 'Посмотрите на таблицы в 1.2 и 2.2: какая буква наибольшая?') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('The parabola', 'Парабола'),
+  intro: T('A parabola 抛物线 has one focus F and one straight line, the directrix 准线. Compare the distance from each point to F with its distance to the directrix.', 'У параболы 抛物线 один фокус F и одна прямая — директриса 准线. Сравните расстояние от каждой точки до F с расстоянием до директрисы.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Focus and directrix', 'Фокус и директриса'),
+    text: T('y² = 4x, F(1, 0), directrix x = −1. The distance from (x, y) to the line x = −1 is x + 1.', 'y² = 4x, F(1, 0), директриса x = −1. Расстояние от (x, y) до прямой x = −1 равно x + 1.'),
+    parts: [{ k: 'fig', id: 'parabola' },
+      { k: 'table', head: ['P', T('distance to F', 'расстояние до F'), T('distance to x = −1', 'расстояние до x = −1')], rows: [
+        ['(1, 2)', { a: '2' }, { a: '2' }], ['(4, 4)', { a: '5' }, { a: '5' }], ['(9, 6)', { a: '10' }, { a: '10' }]] }],
+    hint: T('(4, 4) to (1, 0): √(9 + 16).', '(4, 4) до (1, 0): √(9 + 16).') },
+  { t: 'notice', id: 'n3', rule: T('A parabola is the set of points equally far from the focus and the directrix. y² = 2px (p > 0): focus (p/2, 0), directrix x = −p/2, and for a point P(x₀, y₀) on it ∣PF∣ = x₀ + p/2. x² = 2py: focus (0, p/2), directrix y = −p/2.', 'Парабола — множество точек, равноудалённых от фокуса и директрисы. y² = 2px (p > 0): фокус (p/2, 0), директриса x = −p/2, и для точки P(x₀, y₀) на ней ∣PF∣ = x₀ + p/2. x² = 2py: фокус (0, p/2), директриса y = −p/2.') },
+  { t: 'task', id: '3.2', title: T('Find the focus and the directrix', 'Найдите фокус и директрису'),
+    text: T('First match the equation with 2p. A minus sign flips the parabola.', 'Сначала сопоставьте уравнение с 2p. Знак минус переворачивает параболу.'),
+    parts: [{ k: 'table', head: [T('parabola', 'парабола'), T('focus x', 'фокус x'), T('focus y', 'фокус y'), T('directrix', 'директриса')], rows: [
+      ['y² = 8x', { a: '2' }, { a: '0' }, { a: 'x = −2', sel: ['x = −2', 'x = 2', 'y = −2', 'x = −4'] }],
+      ['x² = 4y', { a: '0' }, { a: '1' }, { a: 'y = −1', sel: ['y = −1', 'y = 1', 'x = −1', 'y = −2'] }],
+      ['y² = −4x', { a: '-1' }, { a: '0' }, { a: 'x = 1', sel: ['x = −1', 'x = 1', 'y = 1', 'x = 2'] }]] }],
+    hint: T('y² = 8x means 2p = 8, p = 4, p/2 = 2.', 'y² = 8x означает 2p = 8, p = 4, p/2 = 2.') },
+  { t: 'task', id: '3.3', title: T('Try it', 'Попробуйте сами'),
+    text: T('Use "distance to focus = distance to directrix".', 'Используйте «расстояние до фокуса = расстояние до директрисы».'),
+    parts: [{ k: 'blanks', lines: [
+      [T('(a) P is on y² = 4x and its x-coordinate is 3. ∣PF∣ = ', '(a) P лежит на y² = 4x, её абсцисса равна 3. ∣PF∣ = '), { a: '4', w: 3 }],
+      [T('(b) P is on y² = 8x and ∣PF∣ = 5. The x-coordinate of P is ', '(b) P лежит на y² = 8x и ∣PF∣ = 5. Абсцисса P равна '), { a: '3', w: 3 }]] }],
+    hint: T('(b) ∣PF∣ = x₀ + 2.', '(b) ∣PF∣ = x₀ + 2.') }
+  ]}
+];
+
+const EXAM = [
+  { part: 1, q: T('The foci of the ellipse x²/25 + y²/9 = 1 are', 'Фокусы эллипса x²/25 + y²/9 = 1 —'), o: ['(±5, 0)', '(±4, 0)', '(0, ±4)', '(±3, 0)'], a: 1 },
+  { part: 1, q: T('The eccentricity of the ellipse x²/4 + y²/3 = 1 is', 'Эксцентриситет эллипса x²/4 + y²/3 = 1 равен'), o: ['√3/2', '1/4', '1/2', '2'], a: 2 },
+  { part: 1, q: T('P is on x²/25 + y²/9 = 1 and ∣PF₁∣ = 3. Then ∣PF₂∣ =', 'P лежит на x²/25 + y²/9 = 1 и ∣PF₁∣ = 3. Тогда ∣PF₂∣ ='), o: ['2', '3', '5', '7'], a: 3 },
+  { part: 1, q: T('The length of the major axis of x²/16 + y²/25 = 1 is', 'Длина большой оси эллипса x²/16 + y²/25 = 1 равна'), o: ['10', '8', '5', '4'], a: 0 },
+  { part: 2, q: T('The asymptotes of x²/9 − y²/16 = 1 are', 'Асимптоты гиперболы x²/9 − y²/16 = 1 —'), o: ['y = ±(3/4)x', 'y = ±(4/3)x', 'y = ±(9/16)x', 'y = ±(16/9)x'], a: 1 },
+  { part: 2, q: T('The eccentricity of x² − y² = 1 is', 'Эксцентриситет гиперболы x² − y² = 1 равен'), o: ['1', '2', '√2', '√2/2'], a: 2 },
+  { part: 2, q: T('The foci of the hyperbola x²/4 − y²/5 = 1 are', 'Фокусы гиперболы x²/4 − y²/5 = 1 —'), o: ['(±1, 0)', '(0, ±3)', '(±√5, 0)', '(±3, 0)'], a: 3 },
+  { part: 3, q: T('The focus of the parabola y² = 8x is', 'Фокус параболы y² = 8x —'), o: ['(2, 0)', '(4, 0)', '(0, 2)', '(8, 0)'], a: 0 },
+  { part: 3, q: T('The directrix of the parabola x² = 4y is', 'Директриса параболы x² = 4y —'), o: ['x = −1', 'y = −1', 'y = 1', 'y = −2'], a: 1 },
+  { part: 3, q: T('P is on y² = 4x and its x-coordinate is 3. The distance from P to the focus is', 'P лежит на y² = 4x, её абсцисса 3. Расстояние от P до фокуса равно'), o: ['3', '2', '4', '5'], a: 2 },
+  { part: 1, q: T('The ellipse with foci (±1, 0) and a = 2 is', 'Эллипс с фокусами (±1, 0) и a = 2 —'), o: ['x²/4 + y² = 1', 'x²/4 + y²/5 = 1', 'x²/3 + y²/4 = 1', 'x²/4 + y²/3 = 1'], a: 3 },
+  { part: 2, q: T('A hyperbola has foci on the x-axis, a = 1 and asymptotes y = ±2x. Its equation is', 'Фокусы гиперболы на оси x, a = 1, асимптоты y = ±2x. Её уравнение —'), o: ['x² − y²/4 = 1', 'x² − y²/2 = 1', 'x²/4 − y² = 1', 'y² − x²/4 = 1'], a: 0 }
+];
+
+const TOPICS = [
+  [T('Ellipse 椭圆', 'Эллипс 椭圆'), 1, '"The foci of the ellipse … are"; "the eccentricity of the ellipse is"'],
+  [T('Hyperbola 双曲线', 'Гипербола 双曲线'), 2, '"The equations of the asymptotes of the hyperbola … are"'],
+  [T('Parabola 抛物线', 'Парабола 抛物线'), 3, '"The coordinates of the focus of the parabola … are"; "the equation of the directrix is"']
+];
+
+</script>
+<script>
+/* Engine for every CSCA investigation sheet. No external dependencies.
+   Globals set by build.py: SUBJECT (subject.json), NAV (links). Set by the sheet: SHEET, PARTS, EXAM, TOPICS. */
+(function () {
+  const KEY = SHEET.key;
+  let state = { lang: null, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false } };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  /* saved exam answers are option indices: if the questions or option order change, start the exam fresh */
+  const EXAMSIG = (() => { let x = 5381; const t = EXAM.map(q => q.a + ':' + q.o.map(o => typeof o === 'string' ? o : o.en).join('|')).join('#');
+    for (let i = 0; i < t.length; i++) x = (x * 33 + t.charCodeAt(i)) >>> 0; return x.toString(36); })();
+  if (state.quiz.sig !== EXAMSIG) state.quiz = { ans: {}, checked: false, sig: EXAMSIG };
+  const SUBJ = (typeof SUBJECT !== 'undefined' && SUBJECT) || {};
+  const LINKS = (typeof NAV !== 'undefined' && NAV) || {};
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem('csca-lang', state.lang);
+      const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+      if (total) localStorage.setItem('csca-progress:' + KEY, JSON.stringify({ done, total, quiz: state.quiz.checked ? state.quiz.score : null, n: EXAM.length }));
+    } catch (e) {}
+  }
+  try { const g = localStorage.getItem('csca-lang'); if (g === 'en' || g === 'ru') state.lang = g; } catch (e) {}
+  if (!state.lang) state.lang = /^ru|^kk|^uk|^be/i.test(navigator.language || '') ? 'ru' : 'en';
+  let lang = state.lang;
+  const ui = () => UI[lang];
+  const tr = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] != null ? v[lang] : v.en));
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(c)); }
+    return el;
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fmt = (s) => esc(tr(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const P = (s, cls) => h('p', { class: cls, html: fmt(s) });
+
+  /* ---------- answer checking ---------- */
+  const NONE = /^(none|no value|undefined|undef|dne|n\/a|нет|нет значения|не существует|не определено|нет ответа|∅|—|–|x|✗)$/i;
+  function num(raw) {
+    let s = String(raw).toLowerCase().trim()
+      .replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+      .replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, '');
+    if (!s) return NaN;
+    s = s.replace(/π|pi/g, 'P').replace(/√|sqrt/g, 'S');
+    s = s.replace(/S(\d+(\.\d+)?|P)/g, 'Math.sqrt($1)').replace(/S\(/g, 'Math.sqrt(');
+    s = s.replace(/P/g, 'Math.PI');
+    s = s.replace(/(\d|\))(?=Math|\()/g, '$1*');
+    if (!/^[0-9+\-*/().]*$/.test(s.replace(/Math\.sqrt|Math\.PI/g, '1'))) return NaN;
+    try { const v = Function('"use strict";return (' + s + ')')(); return typeof v === 'number' && isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+  }
+  const norm = (s) => String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[()]/g, '');
+  function isCorrect(f, val) {
+    val = String(val == null ? '' : val).trim();
+    if (!val) return false;
+    if (f.sel) return val === f.exp;
+    if (f.exp === 'none') return NONE.test(val);
+    if (NONE.test(val)) return false;
+    const e = num(f.exp), v = num(val);
+    if (!isNaN(e) && !isNaN(v)) return Math.abs(e - v) < 1e-3;
+    return norm(val) === norm(f.exp);
+  }
+
+  /* ---------- figures (inline SVG) ---------- */
+  function plot(o) {
+    const W = o.w || 360, H = o.h || 250, m = { l: 30, r: 12, t: 14, b: 26 };
+    const X = (x) => m.l + (x - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const Y = (y) => H - m.b - (y - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="${esc(o.label || 'graph')}">`;
+    const ax0 = Y(Math.max(o.y0, Math.min(0, o.y1))), ay0 = X(Math.max(o.x0, Math.min(0, o.x1)));
+    s += `<line class="ax" x1="${m.l}" y1="${ax0}" x2="${W - m.r}" y2="${ax0}"/><line class="ax" x1="${ay0}" y1="${m.t}" x2="${ay0}" y2="${H - m.b}"/>`;
+    (o.xt || []).forEach(t => { const x = X(t.v);
+      if (o.xlow) s += `<line class="grid" x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}"/><text class="tl" x="${x}" y="${H - 8}" text-anchor="middle">${t.l}</text>`;
+      else s += `<line class="tk" x1="${x}" y1="${ax0 - 3}" x2="${x}" y2="${ax0 + 3}"/><text class="tl" x="${x}" y="${ax0 + 15}" text-anchor="middle">${t.l}</text>`; });
+    (o.yt || []).forEach(t => { const y = Y(t.v); s += `<line class="tk" x1="${ay0 - 3}" y1="${y}" x2="${ay0 + 3}" y2="${y}"/><text class="tl" x="${ay0 - 6}" y="${y + 4}" text-anchor="end">${t.l}</text>`; });
+    (o.vlines || []).forEach(v => { s += `<line class="asy" x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H - m.b}"/>`; });
+    (o.curves || []).forEach(c => {
+      let d = '', pen = false, py = null; const N = 500;
+      for (let i = 0; i <= N; i++) {
+        const x = c.x0 != null ? c.x0 + (c.x1 - c.x0) * i / N : o.x0 + (o.x1 - o.x0) * i / N, y = c.f(x);
+        const bad = !isFinite(y) || y < o.y0 - 0.5 || y > o.y1 + 0.5 || (py != null && Math.abs(y - py) > (o.y1 - o.y0) * 0.6);
+        if (bad) { pen = false; py = null; continue; }
+        d += (pen ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; py = y;
+      }
+      s += `<path d="${d}" class="cv ${c.cls || 'c1'}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`;
+    });
+    (o.segs || []).forEach(g => { s += `<line class="asy" x1="${X(g[0])}" y1="${Y(g[1])}" x2="${X(g[2])}" y2="${Y(g[3])}"/>`; });
+    (o.pts || []).forEach(p => {
+      s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" class="${p.hollow ? 'pt hol' : 'pt'}"/>`;
+      if (p.l) s += `<text class="pl" x="${X(p.x) + (p.dx || 7)}" y="${Y(p.y) + (p.dy || -7)}" text-anchor="${p.anc || 'start'}">${p.l}</text>`;
+    });
+    (o.tx || []).forEach(t => { s += `<text class="cl ${t.cls || ''}" x="${X(t.x)}" y="${Y(t.y)}" text-anchor="${t.anc || 'start'}">${t.t}</text>`; });
+    return s + '</svg>';
+  }
+  const piT = (a, b) => { const r = []; for (let k = a; k <= b; k++) if (k) r.push({ v: k * Math.PI, l: (k === 1 ? '' : k === -1 ? '−' : k) + 'π' }); return r; };
+  const FIGS = SHEET.figs ? SHEET.figs({ h, plot, piT, esc }) : {};
+
+  /* ---------- rendering ---------- */
+  const root = document.getElementById('app');
+  const EXAMID = PARTS.length + 1;
+  let tasksIndex = [];     // {id, el, ctx}
+  let uid = 0;
+
+  function selOptions(opts) { return opts.map(o => typeof o === 'string' ? { v: o, t: o } : o.en != null ? { v: o.k, t: tr(o) } : { v: o.k, t: ui().opt[o.k] }); }
+
+  function buildTask(it) {
+    const ctx = { id: it.id, fields: [], opens: [], el: null, msg: null };
+    const st = (state.tasks[it.id] = state.tasks[it.id] || {});
+    const key = (pi, n) => `${it.id}|${pi}|${n}`;
+    const card = h('article', { class: 'card task', id: 't' + it.id.replace('.', '-') });
+    ctx.el = card;
+    const head = h('div', { class: 'thead' }, h('span', { class: 'tnum' }, ui().task + ' ' + it.id), h('span', { class: 'ttitle' }, tr(it.title)), h('span', { class: 'tdone', 'aria-hidden': 'true' }, '✓'));
+    card.append(head, P(it.text, 'ttext'));
+
+    const mkField = (pi, n, spec, extra) => {
+      const k = key(pi, n);
+      let el, f;
+      if (spec.sel) {
+        const opts = selOptions(spec.sel);
+        el = h('select', { class: 'fld sel', 'aria-label': 'answer' }, h('option', { value: '' }, '—'), opts.map(o => h('option', { value: o.v }, o.t)));
+        f = { el, exp: spec.a, sel: true };
+      } else {
+        el = h('input', { class: 'fld', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', style: spec.w ? `width:${spec.w + 1.2}em` : null, 'aria-label': 'answer' });
+        f = { el, exp: spec.a };
+      }
+      el.value = state.inputs[k] || '';
+      el.addEventListener('input', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); st.checked = false; save(); });
+      el.addEventListener('change', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); save(); });
+      f.key = k; ctx.fields.push(f);
+      return el;
+    };
+
+    it.parts.forEach((part, pi) => {
+      let n = 0;
+      if (part.k === 'html') card.append(h('div', { html: typeof part.html === 'string' ? part.html : tr(part.html) }));
+      else if (part.k === 'fig') card.append(FIGS[part.id]());
+      else if (part.k === 'table') {
+        const tbl = h('table', { class: 'tbl' });
+        tbl.append(h('thead', null, h('tr', null, part.head.map(c => h('th', null, tr(c))))));
+        const tb = h('tbody');
+        part.rows.forEach(r => tb.append(h('tr', null, r.map((c, ci) => ci === 0 ? h('th', { scope: 'row' }, tr(c)) : (typeof c === 'string' ? h('td', null, c) : h('td', null, mkField(pi, n++, c)))))));
+        tbl.append(tb); card.append(h('div', { class: 'tw' }, tbl));
+      } else if (part.k === 'blanks') {
+        part.lines.forEach(line => card.append(h('p', { class: 'bl' }, line.map(seg => typeof seg === 'string' ? seg : seg.en != null ? tr(seg) : mkField(pi, n++, seg)))));
+      } else if (part.k === 'mc') {
+        const k = key(pi, 0), box = h('div', { class: 'mc' });
+        box.append(P(part.q, 'mcq'));
+        const f = { key: k, mc: true, exp: String(part.a), btns: [] };
+        part.opts.forEach((o, i) => {
+          const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': 'false' }, h('span', { class: 'lab' }, 'abcd'[i] + ')'), h('span', null, tr(o)));
+          b.addEventListener('click', () => { state.inputs[k] = String(i); f.btns.forEach((x, j) => { x.setAttribute('aria-pressed', String(i === j)); x.classList.remove('ok', 'bad'); }); st.checked = false; save(); });
+          if (state.inputs[k] === String(i)) b.setAttribute('aria-pressed', 'true');
+          f.btns.push(b); box.append(b);
+        });
+        ctx.fields.push(f); card.append(box);
+      } else if (part.k === 'open') {
+        part.lines.forEach((ln, li) => {
+          const k = key(pi, 'o' + li);
+          const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().mine, 'aria-label': ui().mine });
+          ta.value = state.inputs[k] || '';
+          ta.addEventListener('input', () => { state.inputs[k] = ta.value; save(); });
+          const ans = h('div', { class: 'ref', hidden: true }, h('b', null, ui().ref + ': '), h('span', { html: fmt(ln.a) }));
+          card.append(h('div', { class: 'open' }, P(ln.q, 'oq'), ta, ans));
+          ctx.opens.push({ ans, k: key(pi, 'o' + li) });
+        });
+      }
+    });
+
+    const msg = h('div', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+    ctx.msg = msg;
+    const tickRow = h('div', { class: 'tick', hidden: true });
+    const tickBtn = h('button', { type: 'button', class: 'btn tickbtn' });
+    const updTick = () => { const on = st.self; tickBtn.textContent = on ? '✓ ' + ui().gotItOn : ui().gotIt; tickBtn.setAttribute('aria-pressed', String(!!on)); };
+    tickBtn.addEventListener('click', () => { st.self = !st.self; updTick(); recalc(it, ctx); save(); });
+    tickRow.append(tickBtn); updTick();
+    ctx.tickRow = tickRow;
+
+    const hintBox = h('div', { class: 'hintbox', hidden: true }, h('b', null, ui().hint + ': '), tr(it.hint));
+    const bar = h('div', { class: 'acts' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => doCheck(it, ctx) }, ui().check),
+      it.hint ? h('button', { type: 'button', class: 'btn', onclick: () => { hintBox.hidden = !hintBox.hidden; } }, ui().hint) : null,
+      h('button', { type: 'button', class: 'btn ghost', onclick: () => doShow(it, ctx) }, ui().showAns));
+    card.append(bar, hintBox, msg, tickRow);
+    if (st.checked) { applyMarks(ctx, false); revealOpens(ctx); }
+    else if (st.revealed) revealOpens(ctx);
+    if (st.done) card.classList.add('done');
+    return card;
+  }
+
+  function applyMarks(ctx, say) {
+    let good = 0, total = ctx.fields.length, empty = 0;
+    ctx.fields.forEach(f => {
+      if (f.mc) {
+        const v = state.inputs[f.key]; if (v == null) { empty++; return; }
+        const ok = v === f.exp; if (ok) good++;
+        f.btns.forEach((b, i) => { b.classList.remove('ok', 'bad'); if (String(i) === v) b.classList.add(ok ? 'ok' : 'bad'); if (ok && String(i) === v) b.classList.add('ok'); });
+        return;
+      }
+      const v = state.inputs[f.key] || '';
+      if (!v.trim()) { empty++; f.el.classList.remove('ok'); f.el.classList.add('bad'); return; }
+      const ok = isCorrect(f, v); if (ok) good++;
+      f.el.classList.toggle('ok', ok); f.el.classList.toggle('bad', !ok);
+    });
+    return { good, total, empty };
+  }
+  function revealOpens(ctx) { ctx.opens.forEach(o => { o.ans.hidden = false; }); if (ctx.opens.length) ctx.tickRow.hidden = false; }
+
+  function doCheck(it, ctx) {
+    const st = state.tasks[it.id];
+    const r = applyMarks(ctx, true);
+    st.checked = true; st.revealed = true; revealOpens(ctx);
+    st.auto = ctx.fields.length === 0 ? true : r.good === r.total;
+    if (ctx.fields.length) {
+      if (r.empty && r.good < r.total && r.empty === r.total - r.good) ctx.msg.textContent = ui().fill;
+      else ctx.msg.textContent = r.good === r.total ? ui().allGood : ui().some(r.good, r.total);
+      ctx.msg.className = 'msg ' + (r.good === r.total ? 'good' : 'warn');
+    } else { ctx.msg.textContent = ''; }
+    recalc(it, ctx); save();
+  }
+  function doShow(it, ctx) {
+    const st = state.tasks[it.id];
+    ctx.fields.forEach(f => {
+      if (f.mc) { state.inputs[f.key] = f.exp; f.btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(String(i) === f.exp)); b.classList.remove('bad'); b.classList.toggle('ok', String(i) === f.exp); }); return; }
+      const shown = f.sel ? f.exp : (f.exp === 'none' ? ui().none : f.exp.replace(/^-/, '−'));
+      f.el.value = f.sel ? f.exp : shown; state.inputs[f.key] = f.el.value;
+      f.el.classList.remove('bad'); f.el.classList.add('ok');
+    });
+    st.checked = true; st.revealed = true; st.shown = true; revealOpens(ctx);
+    ctx.msg.textContent = ''; save();
+  }
+  function recalc(it, ctx) {
+    const st = state.tasks[it.id];
+    const hasOpen = ctx.opens.length > 0, hasAuto = ctx.fields.length > 0;
+    const ok = (!hasAuto || (st.auto && !st.shown)) && (!hasOpen || st.self);
+    st.done = !!ok;
+    ctx.el.classList.toggle('done', st.done);
+    updateProgress(); save();
+  }
+
+  function buildNotice(it) {
+    const st = (state.notices[it.id] = state.notices[it.id] || { text: '', open: false });
+    const card = h('article', { class: 'card notice' });
+    const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().noticePh, 'aria-label': ui().notice });
+    ta.value = st.text || '';
+    const ruleBox = h('div', { class: 'rulebox' }, h('b', null, ui().rule + '. '), h('span', { html: fmt(it.rule) }));
+    const btn = h('button', { type: 'button', class: 'btn primary' }, '🔒 ' + ui().showRule);
+    const stuck = h('button', { type: 'button', class: 'linkbtn' }, ui().stuck);
+    const sync = () => { const open = st.open || (ta.value.trim().length >= 8); ruleBox.hidden = !open; btn.disabled = open; btn.hidden = open; stuck.hidden = open; };
+    ta.addEventListener('input', () => { st.text = ta.value; if (ta.value.trim().length >= 8) st.open = true; sync(); save(); });
+    btn.addEventListener('click', () => { st.open = true; sync(); save(); });
+    stuck.addEventListener('click', () => { st.open = true; sync(); save(); });
+    btn.disabled = true;
+    card.append(h('div', { class: 'nlabel' }, '✎ ' + ui().notice), ta, h('div', { class: 'acts' }, stuck), ruleBox);
+    // before the writing is long enough the "show" button stays hidden; students can still press the link below the box
+    sync();
+    return card;
+  }
+
+  function buildExam() {
+    const sec = h('section', { class: 'part', id: 'part-' + EXAMID });
+    sec.append(h('h2', null, `${EXAMID}. ${ui().exam}`));
+    const ex = SUBJ.exam || { questions: 48, minutes: 60 };
+    const per = Math.round(ex.minutes * 60 / ex.questions);
+    const mins = Math.max(1, Math.ceil(EXAM.length * per / 60)), full = mins * 60;
+    sec.append(P(ui().examIntro(ex.minutes, ex.questions, per, mins, EXAM.length)));
+    const mm = String(mins).padStart(2, '0') + ':00';
+    const timer = h('span', { class: 'timer', role: 'timer' }, mm);
+    let tick = null, left = full;
+    const tbtn = h('button', { type: 'button', class: 'btn' }, ui().start(mm));
+    const drawT = () => { timer.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); timer.classList.toggle('low', left < 60); };
+    tbtn.addEventListener('click', () => {
+      if (tick) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); return; }
+      left = full; drawT(); tbtn.textContent = ui().stop;
+      tick = setInterval(() => { left--; drawT(); if (left <= 0) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); timer.textContent = ui().timeUp; } }, 1000);
+    });
+    sec.append(h('div', { class: 'timerrow' }, tbtn, timer));
+    const qs = state.quiz;
+    const cards = [];
+    EXAM.forEach((q, i) => {
+      const card = h('article', { class: 'card q' });
+      card.append(h('div', { class: 'qq' }, h('span', { class: 'qn' }, (i + 1) + '.'), h('span', null, tr(q.q)), h('span', { class: 'qpart' }, `(${ui().part.toLowerCase()} ${q.part})`)));
+      const opts = h('div', { class: 'qopts' }); const btns = [];
+      q.o.forEach((o, j) => {
+        const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': String(qs.ans[i] === j) }, h('span', { class: 'lab' }, 'abcd'[j] + ')'), h('span', null, tr(o)));
+        b.addEventListener('click', () => { qs.ans[i] = j; qs.checked = false; btns.forEach((x, k) => { x.setAttribute('aria-pressed', String(k === j)); x.classList.remove('ok', 'bad'); }); fb.textContent = ''; result.textContent = ''; save(); });
+        btns.push(b); opts.append(b);
+      });
+      const fb = h('div', { class: 'qfb' });
+      card.append(opts, fb); cards.push({ btns, fb, q, i }); sec.append(card);
+    });
+    const result = h('div', { class: 'result', role: 'status', 'aria-live': 'polite' });
+    const mark = () => {
+      let sc = 0;
+      cards.forEach(({ btns, fb, q, i }) => {
+        const a = qs.ans[i]; btns.forEach(b => b.classList.remove('ok', 'bad'));
+        if (a == null) { fb.textContent = lang === 'ru' ? 'Нет ответа' : 'No answer'; fb.className = 'qfb bad'; return; }
+        if (a === q.a) { sc++; btns[a].classList.add('ok'); fb.textContent = '✓'; fb.className = 'qfb good'; }
+        else { btns[a].classList.add('bad'); fb.className = 'qfb bad'; fb.innerHTML = `✗ ${ui().review}: <a href="#part-${q.part}">${lang === 'ru' ? 'часть' : 'Part'} ${q.part}</a>`; }
+      });
+      result.textContent = ui().score(sc, EXAM.length); qs.checked = true; qs.score = sc; save();
+    };
+    const go = h('button', { type: 'button', class: 'btn primary', onclick: mark }, ui().checkAll);
+    const again = h('button', { type: 'button', class: 'btn', onclick: () => { qs.ans = {}; qs.checked = false; save(); render(); document.getElementById('part-' + EXAMID).scrollIntoView(); } }, ui().again);
+    sec.append(h('div', { class: 'acts' }, go, again), result);
+    if (qs.checked) mark();
+    return sec;
+  }
+
+  function updateProgress() {
+    const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const b = document.getElementById('pbar'); if (b) b.style.width = pct + '%';
+    const t = document.getElementById('ptxt'); if (t) t.textContent = `${done} / ${total}`;
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.title = tr(SHEET.title);
+    tasksIndex = [];
+    root.textContent = '';
+    /* top bar */
+    const langSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Language' }, ['en', 'ru'].map(l => h('button', { type: 'button', 'aria-pressed': String(l === lang), onclick: () => { lang = state.lang = l; save(); render(); } }, l === 'en' ? 'EN' : 'RU')));
+    let rs = false, rt = null;
+    const resetBtn = h('button', { type: 'button', class: 'btn ghost small' }, ui().reset);
+    resetBtn.addEventListener('click', () => {
+      if (!rs) { rs = true; resetBtn.textContent = ui().resetSure; rt = setTimeout(() => { rs = false; resetBtn.textContent = ui().reset; }, 3500); return; }
+      clearTimeout(rt); state = { lang, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false, sig: EXAMSIG } }; save(); render(); window.scrollTo(0, 0);
+    });
+    const top = h('header', { class: 'topbar' }, h('div', { class: 'topin' },
+      LINKS.subject ? h('a', { class: 'back', href: LINKS.subject, 'aria-label': ui().back }, '← ' + ui().topics) : null,
+      h('div', { class: 'brand' }, h('span', { class: 'bt' }, tr(SHEET.title))),
+      h('div', { class: 'prog', 'aria-label': ui().progress }, h('div', { class: 'ptxtrow' }, h('span', null, ui().progress), h('span', { id: 'ptxt' }, '0 / 0')), h('div', { class: 'bar' }, h('span', { id: 'pbar' }))),
+      langSeg, resetBtn),
+      h('nav', { class: 'chips', 'aria-label': ui().parts }, PARTS.map(p => h('a', { href: '#part-' + p.id }, p.id + '')), h('a', { href: '#part-' + EXAMID }, String(EXAMID))));
+    root.append(top);
+    const wrap = h('main', { class: 'wrap' });
+    wrap.append(h('h1', null, tr(SHEET.title)), h('p', { class: 'sub' }, tr(SHEET.sub)));
+    /* how to use */
+    const how = h('section', { class: 'card how' }, h('h2', null, ui().howTitle), h('ol', null, ui().steps.map(s => h('li', { html: fmt(s) }))), P(SHEET.stats));
+    const tt = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, ui().topic), h('th', null, ui().partCol), h('th', null, ui().wording))),
+      h('tbody', null, TOPICS.map(r => h('tr', null, h('td', null, tr(r[0])), h('td', null, h('a', { href: '#part-' + r[1] }, r[1] + '')), h('td', { class: 'wd' }, r[2])))));
+    how.append(h('div', { class: 'tw' }, tt), P(SHEET.symbols, 'small'), P(ui().photoNote, 'small'));
+    wrap.append(how);
+    PARTS.forEach(p => {
+      const sec = h('section', { class: 'part', id: 'part-' + p.id }, h('h2', null, h('span', { class: 'pn' }, ui().part + ' ' + p.id + '.'), ' ' + tr(p.title)), P(p.intro, 'intro'));
+      p.items.forEach(it => {
+        if (it.t === 'task') { const el = buildTask(it); tasksIndex.push({ id: it.id }); sec.append(el); }
+        else if (it.t === 'notice') sec.append(buildNotice(it));
+        else if (it.t === 'rule') sec.append(h('div', { class: 'rulebox plain' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'worked') sec.append(h('div', { class: 'worked' }, h('b', null, ui().worked + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'note') sec.append(h('div', { class: 'careful' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+      });
+      wrap.append(sec);
+    });
+    wrap.append(buildExam());
+    if (LINKS.next) wrap.append(h('p', { class: 'nextlink' }, h('a', { href: LINKS.next.href }, ui().next + ': ' + tr(LINKS.next.title) + ' →')));
+    root.append(wrap);
+    updateProgress();
+  }
+  render();
+  save();
+  if (window.__FN_TEST) window.__fnt = { num, isCorrect };
+})();
+
+</script>
+</body>
+</html>

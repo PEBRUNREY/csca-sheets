@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vectors and complex numbers</title>
+<style>
+:root{
+  --bg:#f6f5f1; --bar:rgba(246,245,241,.94); --surface:#fff; --ink:#1b2430; --muted:#5b6674; --line:#d9d6cc;
+  --accent:#2457a6; --accent-ink:#fff; --accent-soft:#e0e9f7;
+  --hint:#8a5300; --hint-soft:#fbf0d9;
+  --good:#17803d; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --c1:#2457a6; --c2:#c2410c; --c3:#2f7d57;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.brand{font-weight:700;margin-right:auto;font-size:1.02rem;min-width:0}
+.prog{min-width:130px;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ptxtrow{display:flex;justify-content:space-between;gap:10px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar>span{display:block;height:100%;width:0;background:var(--good);transition:width .25s}
+.chips{max-width:900px;margin:0 auto;padding:0 14px 8px;display:flex;gap:6px;overflow-x:auto}
+.chips a{flex:none;min-width:34px;text-align:center;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.chips a:hover{border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:5px 11px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-weight:600;font-size:.93rem;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:32px;padding:3px 10px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:6px 2px;font-size:.9rem}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px 90px}
+h1{font-size:clamp(1.55rem,5vw,2.1rem);line-height:1.15;margin:24px 0 4px;text-wrap:balance}
+h2{font-size:1.3rem;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 16px}
+.small{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.how ol{margin:6px 0 10px;padding-left:22px}
+.how li{margin-bottom:3px}
+.part{margin-top:34px;scroll-margin-top:96px}
+.part>h2{padding-top:6px;border-top:3px solid var(--accent)}
+.pn{color:var(--accent)}
+.intro{color:var(--muted);max-width:68ch;margin:4px 0 8px}
+.task{scroll-margin-top:100px}
+.task.done{border-color:var(--good)}
+.thead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:4px}
+.tnum{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.ttitle{font-weight:700}
+.tdone{margin-left:auto;color:var(--good);font-weight:800;visibility:hidden}
+.task.done .tdone{visibility:visible}
+.ttext{margin:2px 0 10px;max-width:70ch}
+.tw{overflow-x:auto;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.tbl{border-collapse:collapse;font-size:.97rem;min-width:min(100%,0px)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:center;vertical-align:middle;white-space:nowrap}
+.tbl thead th{background:var(--accent-soft)}
+.tbl tbody th,.tbl tr>th:first-child{background:var(--bg);text-align:left;font-weight:600}
+.tbl td.wd{white-space:normal;text-align:left;font-size:.9rem;color:var(--muted)}
+.how .tbl td:first-child{text-align:left;white-space:normal}
+.fld{width:4.6em;max-width:100%;padding:5px 7px;border:1.5px solid var(--line);border-radius:7px;background:var(--bg);text-align:center;font-size:1rem;min-height:36px}
+.fld.sel{width:auto;max-width:15em;text-align:left;padding-right:4px}
+.fld:focus{border-color:var(--accent)}
+.fld.ok{border-color:var(--good);background:var(--good-soft)}
+.fld.bad{border-color:var(--bad);background:var(--bad-soft)}
+.bl{margin:8px 0;line-height:2.3}
+.bl .fld{margin:0 3px}
+.mc{margin:10px 0}.mcq{margin:0 0 6px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 12px;margin:6px 0;min-height:44px}
+.opt .lab{font-weight:700;color:var(--muted);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.open{margin:10px 0}
+.oq{margin:0 0 4px;font-weight:600}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);padding:8px 10px;resize:vertical;min-height:48px}
+.ta:focus{border-color:var(--accent)}
+.ref{margin-top:6px;background:var(--good-soft);border-left:4px solid var(--good);padding:7px 11px;border-radius:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.hintbox{margin-top:10px;background:var(--hint-soft);border-left:4px solid var(--hint);padding:8px 12px;border-radius:6px}
+.hintbox b{color:var(--hint)}
+.msg{min-height:1.4em;margin-top:8px;font-weight:600;font-size:.95rem}
+.msg.good{color:var(--good)}.msg.warn{color:var(--bad)}
+.tick{margin-top:8px}
+.tickbtn[aria-pressed=true]{background:var(--good-soft);border-color:var(--good)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.nlabel{font-weight:700;margin-bottom:6px}
+.notice .ta{background:var(--surface)}
+.rulebox{margin-top:10px;background:var(--surface);border-left:5px solid var(--accent);padding:10px 14px;border-radius:8px}
+.rulebox.plain{margin:12px 0;border:1px solid var(--line);border-left:5px solid var(--accent)}
+.rulebox[hidden]{display:none}
+.worked{margin:12px 0;border:1px dashed var(--line);padding:10px 14px;border-radius:8px;background:var(--surface)}
+.careful{margin:12px 0;background:var(--hint-soft);border-left:5px solid var(--hint);padding:10px 14px;border-radius:8px}
+.figrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.figrow>div{flex:1 1 260px;min-width:0}
+.figone{max-width:460px;margin:8px 0}.figstack{max-width:520px;margin:8px 0}
+.plot{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.plot .ax{stroke:var(--muted);stroke-width:1.2}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .tk{stroke:var(--muted);stroke-width:1}
+.plot text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.plot .tl,.plot .pl{fill:var(--muted);font-size:11px}
+.plot .pl{fill:var(--ink);font-weight:600}
+.plot .asy{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.8}
+.plot .cv{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plot .c1{stroke:var(--c1)}.plot .c2{stroke:var(--c2)}.plot .c3{stroke:var(--c3)}
+.plot .cl{font-size:13px;font-weight:700}
+.plot .c1t{fill:var(--c1)}.plot .c2t{fill:var(--c2)}.plot .c3t{fill:var(--c3)}
+.plot .pt{fill:var(--ink)}
+.plot .pt.hol{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.timerrow{display:flex;gap:12px;align-items:center;margin:8px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2rem}
+.timer.low{color:var(--bad)}
+.q .qq{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:600}
+.qn{color:var(--accent)}
+.qpart{margin-left:auto;font-weight:400;color:var(--muted);font-size:.85rem}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin-top:6px}
+@media (max-width:560px){.qopts{grid-template-columns:1fr}.topin{gap:4px 10px}.brand{flex:1 1 100%}.prog{flex:1}}
+.qfb{min-height:1.3em;font-weight:600;font-size:.92rem;margin-top:2px}
+.qfb.good{color:var(--good)}.qfb.bad{color:var(--bad)}
+.result{margin-top:10px;font-weight:700;font-size:1.15rem}
+
+.back{flex:none;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.back:hover{border-color:var(--accent)}
+.nextlink{margin:34px 0 0;font-weight:700;font-size:1.05rem}
+.nextlink a{display:inline-block;text-decoration:none;border:1.5px solid var(--accent);border-radius:10px;padding:10px 16px}
+.geo{width:100%;max-width:420px;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.geo line,.geo path,.geo polygon,.geo circle,.geo ellipse,.geo polyline{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.geo .hid{stroke-dasharray:5 4;stroke:var(--muted)}
+.geo .acc{stroke:var(--c1);stroke-width:2.2}.geo .acc2{stroke:var(--c2);stroke-width:2.2}.geo .acc3{stroke:var(--c3);stroke-width:2.2}
+.geo .dot{fill:var(--ink);stroke:none}
+.geo text{fill:var(--ink);font-size:13px;font-weight:600;stroke:none;paint-order:stroke}
+.geo .mt{fill:var(--muted);font-weight:400;font-size:12px}
+.geo .fillsoft{fill:var(--accent-soft);stroke:var(--c1)}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript. / Для этой страницы нужен JavaScript.</noscript>
+<script>
+const SUBJECT = {"id": "math", "title_en": "Mathematics", "title_ru": "Математика", "exam": {"questions": 48, "minutes": 60}};
+const NAV = {"home": "../index.html", "subject": "index.html", "next": {"href": "lines-circles.html", "title": {"en": "Lines and circles", "ru": "Прямые и окружности"}}};
+/* Shared UI text and helpers for every sheet. English + Russian.
+   T(en, ru) makes a bilingual string. Math and Chinese terms are shared. */
+const T = (en, ru) => ({ en, ru });
+
+const UI = {
+  en: {
+    progress: 'Progress',
+    reset: 'Reset', resetSure: 'Click again to erase',
+    check: 'Check', hint: 'Hint', showAns: 'Show answers',
+    allGood: 'All correct. Well done.',
+    some: (a, b) => `${a} of ${b} correct. Red cells are wrong, try again.`,
+    fill: 'Fill in every answer first.',
+    mine: 'My answer', ref: 'Answer', gotIt: 'I got it', notYet: 'Not yet', gotItOn: 'Marked as understood',
+    notice: 'What I notice', noticePh: 'Write one sentence in your own words…',
+    showRule: 'Show the rule', stuck: 'I am stuck, show the rule anyway',
+    rule: 'Rule', careful: 'Careful', worked: 'Worked example',
+    exam: 'Exam-style check', start: (m) => `Start ${m} timer`,
+    examIntro: (min, q, per, mins, n) => `The real exam gives ${min} minutes for ${q} questions, about ${per} seconds each. Give yourself ${mins} minutes for these ${n}, then press Check my answers. For every wrong answer, go back to the Part named and redo its tasks.`,
+    back: 'Back to the list of topics', topics: 'Topics', next: 'Next topic', stop: 'Stop timer', timeUp: 'Time is up',
+    checkAll: 'Check my answers', score: (a, b) => `Score: ${a} / ${b}`,
+    review: 'Review', again: 'Try again',
+    howTitle: 'How to use this sheet',
+    steps: [
+      'Do the tasks in order. Fill in every empty cell, then press Check.',
+      'Where you see **What I notice**, write one sentence in your own words. The rule unlocks after that.',
+      'Read the **Rule**, then do the **Try it** tasks.',
+      'Finish with the exam-style questions at the end.'
+    ],
+    topic: 'Topic', partCol: 'Part', wording: 'How the exam words it',
+    photoNote: 'Your progress is saved on this device only.',
+    parts: 'Parts', none: 'none', task: 'Task', part: 'Part',
+    opt: { yes: 'yes', no: 'no', same: 'same', opposite: 'opposite', neither: 'neither', up: 'always goes up', down: 'always goes down', change: 'changes direction', yaxis: 'the y-axis', origin: 'the origin', xaxis: 'the x-axis' }
+  },
+  ru: {
+    progress: 'Прогресс',
+    reset: 'Сбросить', resetSure: 'Нажмите ещё раз, чтобы стереть',
+    check: 'Проверить', hint: 'Подсказка', showAns: 'Показать ответы',
+    allGood: 'Всё верно. Отлично.',
+    some: (a, b) => `Верно ${a} из ${b}. Красные ячейки неверны, попробуйте ещё раз.`,
+    fill: 'Сначала заполните все ответы.',
+    mine: 'Мой ответ', ref: 'Ответ', gotIt: 'Я понял(а)', notYet: 'Пока нет', gotItOn: 'Отмечено: понял(а)',
+    notice: 'Что я заметил(а)', noticePh: 'Напишите одно предложение своими словами…',
+    showRule: 'Показать правило', stuck: 'Не получается, показать правило',
+    rule: 'Правило', careful: 'Осторожно', worked: 'Разобранный пример',
+    exam: 'Проверка в формате экзамена', start: (m) => `Запустить таймер ${m}`,
+    examIntro: (min, q, per, mins, n) => `На настоящем экзамене даётся ${min} минут на ${q} вопросов, то есть около ${per} секунд на вопрос. Дайте себе ${mins} мин. на эти ${n}. Затем нажмите «Проверить ответы». За каждый неверный ответ вернитесь к названной части и повторите её задания.`,
+    back: 'Назад к списку тем', topics: 'Темы', next: 'Следующая тема', stop: 'Остановить таймер', timeUp: 'Время вышло',
+    checkAll: 'Проверить ответы', score: (a, b) => `Результат: ${a} / ${b}`,
+    review: 'Повторить', again: 'Ещё раз',
+    howTitle: 'Как пользоваться листом',
+    steps: [
+      'Выполняйте задания по порядку. Заполните все пустые ячейки и нажмите «Проверить».',
+      'Там, где написано **Что я заметил(а)**, напишите одно предложение своими словами. После этого откроется правило.',
+      'Прочитайте **Правило**, затем выполните задания **Попробуйте сами**.',
+      'В конце решите вопросы в формате экзамена.'
+    ],
+    topic: 'Тема', partCol: 'Часть', wording: 'Как это формулируют на экзамене',
+    photoNote: 'Ваш прогресс сохраняется только на этом устройстве.',
+    parts: 'Части', none: 'нет', task: 'Задание', part: 'Часть',
+    opt: { yes: 'да', no: 'нет', same: 'одинаковые', opposite: 'противоположные', neither: 'ни то, ни другое', up: 'всегда растёт', down: 'всегда убывает', change: 'меняет направление', yaxis: 'оси y', origin: 'начала координат', xaxis: 'оси x' }
+  }
+};
+
+/* option helpers */
+const O = (k) => ({ k });                      // key into UI.opt
+const YN = [O('yes'), O('no')];
+const SON = [O('same'), O('opposite'), O('neither')];
+const MON = [O('up'), O('down'), O('change')];
+const LR = [{ k: 'left', en: 'left', ru: 'влево' }, { k: 'right', en: 'right', ru: 'вправо' }];
+const COND = [{ k: 'suf', en: 'sufficient, not necessary', ru: 'достаточное, не необходимое' }, { k: 'nec', en: 'necessary, not sufficient', ru: 'необходимое, не достаточное' },
+  { k: 'both', en: 'necessary and sufficient', ru: 'необходимое и достаточное' }, { k: 'neither', en: 'neither', ru: 'ни то, ни другое' }];
+
+/* small static table */
+const mini = (rows) => ({ k: 'html', html: '<div class="tw"><table class="tbl">' + rows.map((r, i) => '<tr>' + r.map(c => i === 0 || c === r[0] ? `<th>${c}</th>` : `<td>${c}</td>`).join('') + '</tr>').join('') + '</table></div>' });
+
+/* Sheet: Plane vectors and complex numbers (CSCA Mathematics). */
+const SHEET = {
+  key: 'csca-math-vectors-complex-v1',
+  title: T('Investigation sheet: Vectors and complex numbers', 'Исследовательский лист: векторы и комплексные числа'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('Vector and complex-number questions are quick calculations with coordinates. Typical questions:',
+           'Вопросы по векторам и комплексным числам — быстрые вычисления в координатах. Типичные вопросы:'),
+  symbols: T('Symbols: a = (x, y) is a vector, ∣a∣ its length, a·b the dot product, a ⊥ b "perpendicular", a ∥ b "parallel". i is the imaginary unit, i² = −1. For a complex number a + bi: a is the real part, b the imaginary part. Type √5 as sqrt(5).',
+             'Обозначения: a = (x, y) — вектор, ∣a∣ — его длина, a·b — скалярное произведение, a ⊥ b «перпендикулярны», a ∥ b «параллельны». i — мнимая единица, i² = −1. Для комплексного числа a + bi: a — действительная часть, b — мнимая. √5 вводите как sqrt(5).')
+};
+
+SHEET.figs = ({ h }) => ({
+  vec() {
+    const O = [40, 210], s = 40, P = (x, y) => [O[0] + x * s, O[1] - y * s];
+    const ar = (x0, y0, x1, y1, cls) => { const [a, b] = P(x0, y0), [c, d] = P(x1, y1); return `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="${cls}" marker-end="url(#ah)"/>`; };
+    return h('div', { html: `<svg class="geo" viewBox="0 0 260 240" role="img" aria-label="Vectors a = (2, 1) and b = (1, 3) and their sum a + b = (3, 4), drawn as a parallelogram">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink);stroke:none"/></marker></defs>
+      <line x1="20" y1="210" x2="250" y2="210" style="stroke:var(--muted)"/><line x1="40" y1="230" x2="40" y2="10" style="stroke:var(--muted)"/>
+      ${ar(2, 1, 3, 4, 'hid')}${ar(1, 3, 3, 4, 'hid')}
+      ${ar(0, 0, 2, 1, 'acc')}${ar(0, 0, 1, 3, 'acc2')}${ar(0, 0, 3, 4, 'acc3')}
+      <text x="124" y="200">a</text><text x="62" y="96">b</text><text x="140" y="96">a + b</text>
+      <text x="${P(1, 0)[0] - 3}" y="226" class="mt">1</text><text x="${P(2, 0)[0] - 3}" y="226" class="mt">2</text><text x="${P(3, 0)[0] - 3}" y="226" class="mt">3</text>
+      <text x="26" y="${P(0, 2)[1] + 4}" class="mt">2</text><text x="26" y="${P(0, 4)[1] + 4}" class="mt">4</text>
+    </svg>` });
+  }
+});
+
+const I4 = ['1', '−1', 'i', '−i'];
+const QD = [{ k: '1', en: 'I', ru: 'I' }, { k: '2', en: 'II', ru: 'II' }, { k: '3', en: 'III', ru: 'III' }, { k: '4', en: 'IV', ru: 'IV' }, { k: 'axis', en: 'on an axis', ru: 'на оси' }];
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('Vectors in coordinates', 'Векторы в координатах'),
+  intro: T('A plane vector 平面向量 has a length and a direction. In coordinates a = (x, y) means "x to the right, y up".', 'Вектор на плоскости 平面向量 имеет длину и направление. В координатах a = (x, y) означает «x вправо, y вверх».'),
+  items: [
+  { t: 'task', id: '1.1', title: T('Add, subtract, stretch', 'Сложите, вычтите, растяните'),
+    text: T('a = (2, 1), b = (1, 3). Look at the picture: walking along a and then along b ends at a + b.', 'a = (2, 1), b = (1, 3). Посмотрите на рисунок: пройдя по a, а затем по b, вы окажетесь в конце a + b.'),
+    parts: [{ k: 'fig', id: 'vec' },
+      { k: 'table', head: [T('vector', 'вектор'), 'x', 'y'], rows: [['a + b', { a: '3' }, { a: '4' }], ['a − b', { a: '1' }, { a: '-2' }], ['2a', { a: '4' }, { a: '2' }], ['2a − b', { a: '3' }, { a: '-1' }]] }],
+    hint: T('Work with each coordinate separately: (2 + 1, 1 + 3).', 'Работайте с каждой координатой отдельно: (2 + 1, 1 + 3).') },
+  { t: 'task', id: '1.2', title: T('From two points', 'По двум точкам'),
+    text: T('A(1, 2), B(4, 6). The vector AB goes from A to B.', 'A(1, 2), B(4, 6). Вектор AB идёт от A к B.'),
+    parts: [{ k: 'blanks', lines: [
+      ['AB = ( ', { a: '3', w: 2 }, ' , ', { a: '4', w: 2 }, ' )'],
+      [T('Length ∣AB∣ = √(3² + 4²) = ', 'Длина ∣AB∣ = √(3² + 4²) = '), { a: '5', w: 2 }],
+      [T('Midpoint of AB: ( ', 'Середина AB: ( '), { a: '5/2', w: 3 }, ' , ', { a: '4', w: 2 }, ' )']] }],
+    hint: T('AB = B − A (end minus start). The midpoint is the average of the coordinates.', 'AB = B − A (конец минус начало). Середина — среднее координат.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('AB = (x_B − x_A, y_B − y_A). For a = (x, y): ∣a∣ = √(x² + y²) and ka = (kx, ky). Vectors add and subtract coordinate by coordinate.', 'AB = (x_B − x_A, y_B − y_A). Для a = (x, y): ∣a∣ = √(x² + y²) и ka = (kx, ky). Векторы складываются и вычитаются покоординатно.') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('The dot product, angles, perpendicular and parallel', 'Скалярное произведение, углы, перпендикулярность и параллельность'),
+  intro: T('The dot product 数量积 turns two vectors into one number. It is the tool for angles and for "perpendicular" questions.', 'Скалярное произведение 数量积 превращает два вектора в одно число. Это инструмент для углов и вопросов о перпендикулярности.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Two ways to get one number', 'Два способа получить одно число'),
+    text: T('For each pair compute x₁x₂ + y₁y₂, and also ∣a∣·∣b∣·cos θ, where θ is the angle between the vectors (given).', 'Для каждой пары вычислите x₁x₂ + y₁y₂, а также ∣a∣·∣b∣·cos θ, где θ — угол между векторами (дан).'),
+    parts: [{ k: 'table', head: ['a', 'b', 'θ', 'x₁x₂ + y₁y₂', '∣a∣', '∣b∣', '∣a∣·∣b∣·cos θ'], rows: [
+      ['(1, 0)', '(1, 1)', '45°', { a: '1' }, { a: '1' }, { a: '√2' }, { a: '1' }],
+      ['(1, 0)', '(0, 2)', '90°', { a: '0' }, { a: '1' }, { a: '2' }, { a: '0' }],
+      ['(1, 0)', '(−1, √3)', '120°', { a: '-1' }, { a: '1' }, { a: '2' }, { a: '-1' }]] }],
+    hint: T('cos 45° = √2/2, cos 90° = 0, cos 120° = −1/2. ∣(−1, √3)∣ = √(1 + 3).', 'cos 45° = √2/2, cos 90° = 0, cos 120° = −1/2. ∣(−1, √3)∣ = √(1 + 3).') },
+  { t: 'notice', id: 'n2', rule: T('a·b = x₁x₂ + y₁y₂ = ∣a∣∣b∣cos θ. So cos θ = a·b / (∣a∣∣b∣). a ⊥ b exactly when a·b = 0. a ∥ b exactly when x₁y₂ − x₂y₁ = 0. Also a·a = ∣a∣².', 'a·b = x₁x₂ + y₁y₂ = ∣a∣∣b∣cos θ. Поэтому cos θ = a·b / (∣a∣∣b∣). a ⊥ b тогда и только тогда, когда a·b = 0. a ∥ b тогда и только тогда, когда x₁y₂ − x₂y₁ = 0. Кроме того, a·a = ∣a∣².') },
+  { t: 'task', id: '2.2', title: T('Find the unknown', 'Найдите неизвестное'),
+    text: T('a = (1, 2), b = (m, −1).', 'a = (1, 2), b = (m, −1).'),
+    parts: [{ k: 'blanks', lines: [
+      [T('If a ⊥ b: 1·m + 2·(−1) = 0, so m = ', 'Если a ⊥ b: 1·m + 2·(−1) = 0, поэтому m = '), { a: '2', w: 3 }],
+      [T('If a ∥ b: 1·(−1) − m·2 = 0, so m = ', 'Если a ∥ b: 1·(−1) − m·2 = 0, поэтому m = '), { a: '-1/2', w: 4 }]] }],
+    hint: T('Solve each linear equation for m.', 'Решите каждое линейное уравнение относительно m.') },
+  { t: 'task', id: '2.3', title: T('Lengths without coordinates', 'Длины без координат'),
+    text: T('∣a∣ = 2, ∣b∣ = 1 and the angle between them is 60°. Use ∣a + b∣² = (a + b)·(a + b) = ∣a∣² + 2a·b + ∣b∣².', '∣a∣ = 2, ∣b∣ = 1, угол между ними 60°. Используйте ∣a + b∣² = (a + b)·(a + b) = ∣a∣² + 2a·b + ∣b∣².'),
+    parts: [{ k: 'blanks', lines: [
+      ['a·b = 2·1·cos 60° = ', { a: '1', w: 3 }],
+      ['∣a + b∣² = ', { a: '7', w: 3 }, ' , ∣a + b∣ = ', { a: '√7', w: 4 }],
+      ['∣a − b∣² = ', { a: '3', w: 3 }, ' , ∣a − b∣ = ', { a: '√3', w: 4 }]] }],
+    hint: T('∣a − b∣² = ∣a∣² − 2a·b + ∣b∣² = 4 − 2 + 1.', '∣a − b∣² = ∣a∣² − 2a·b + ∣b∣² = 4 − 2 + 1.') },
+  { t: 'task', id: '2.4', title: T('Try it: the angle', 'Попробуйте сами: угол'),
+    text: T('a = (1, 1), b = (0, 2).', 'a = (1, 1), b = (0, 2).'),
+    parts: [{ k: 'blanks', lines: [['a·b = ', { a: '2', w: 3 }, '   cos θ = ', { a: '√2/2', w: 4 }, T('   θ (radians) = ', '   θ (в радианах) = '), { a: 'π/4', w: 4 }]] }],
+    hint: T('∣a∣ = √2, ∣b∣ = 2. cos θ = 2 / (2√2).', '∣a∣ = √2, ∣b∣ = 2. cos θ = 2 / (2√2).') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('Complex numbers', 'Комплексные числа'),
+  intro: T('There is no real number whose square is −1, so we invent one: i, the imaginary unit 虚数单位, with i² = −1. A complex number 复数 is z = a + bi with real a and b.', 'Не существует действительного числа, квадрат которого равен −1, поэтому вводят новое число: i, мнимую единицу 虚数单位, с i² = −1. Комплексное число 复数 — это z = a + bi с действительными a и b.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Powers of i', 'Степени i'),
+    text: T('Each power is the previous one times i. Use i² = −1.', 'Каждая степень — это предыдущая, умноженная на i. Используйте i² = −1.'),
+    parts: [{ k: 'table', head: ['n', '1', '2', '3', '4', '5', '6', '7', '8'], rows: [['iⁿ', 'i', '−1', { a: '−i', sel: I4 }, { a: '1', sel: I4 }, { a: 'i', sel: I4 }, { a: '−1', sel: I4 }, { a: '−i', sel: I4 }, { a: '1', sel: I4 }]] },
+      { k: 'blanks', lines: [[T('The pattern repeats every ', 'Закономерность повторяется каждые '), { a: '4', w: 2 }, T(' steps. So i²⁰²⁶ = ', ' шага. Поэтому i²⁰²⁶ = '), { a: '−1', sel: I4 }]] }],
+    hint: T('i³ = i²·i = −i. 2026 = 4·506 + 2.', 'i³ = i²·i = −i. 2026 = 4·506 + 2.') },
+  { t: 'task', id: '3.2', title: T('Calculate like with brackets', 'Считайте как со скобками'),
+    text: T('z₁ = 2 + 3i, z₂ = 1 − i. Work as with ordinary brackets, then replace i² by −1. Give the real and imaginary parts.', 'z₁ = 2 + 3i, z₂ = 1 − i. Действуйте как с обычными скобками, затем замените i² на −1. Запишите действительную и мнимую части.'),
+    parts: [{ k: 'table', head: [T('number', 'число'), T('real part', 'действит. часть'), T('imaginary part', 'мнимая часть')], rows: [
+      ['z₁ + z₂', { a: '3' }, { a: '2' }],
+      ['z₁ − z₂', { a: '1' }, { a: '4' }],
+      ['z₁·z₂', { a: '5' }, { a: '1' }],
+      [T('conjugate z̄₂ (共轭复数)', 'сопряжённое z̄₂ (共轭复数)'), { a: '1' }, { a: '1' }],
+      ['z₂·z̄₂', { a: '2' }, { a: '0' }]] }],
+    hint: T('(2 + 3i)(1 − i) = 2 − 2i + 3i − 3i². The conjugate of a + bi is a − bi.', '(2 + 3i)(1 − i) = 2 − 2i + 3i − 3i². Сопряжённое к a + bi — это a − bi.') },
+  { t: 'notice', id: 'n3', rule: T('(a + bi)(a − bi) = a² + b², a real number. To divide, multiply the top and the bottom by the conjugate of the bottom: z₁ / z₂ = z₁·z̄₂ / (z₂·z̄₂).', '(a + bi)(a − bi) = a² + b² — действительное число. Чтобы разделить, умножьте числитель и знаменатель на число, сопряжённое знаменателю: z₁ / z₂ = z₁·z̄₂ / (z₂·z̄₂).') },
+  { t: 'task', id: '3.3', title: T('Division', 'Деление'),
+    text: T('Compute z₁ / z₂ = (2 + 3i)/(1 − i) and (1 + i)/(1 − i).', 'Вычислите z₁ / z₂ = (2 + 3i)/(1 − i) и (1 + i)/(1 − i).'),
+    parts: [{ k: 'table', head: [T('number', 'число'), T('real part', 'действит. часть'), T('imaginary part', 'мнимая часть')], rows: [
+      ['(2 + 3i)/(1 − i)', { a: '-1/2' }, { a: '5/2' }],
+      ['(1 + i)/(1 − i)', { a: '0' }, { a: '1' }]] }],
+    hint: T('Multiply top and bottom by 1 + i. The bottom becomes 2. (2 + 3i)(1 + i) = −1 + 5i.', 'Умножьте числитель и знаменатель на 1 + i. Знаменатель станет 2. (2 + 3i)(1 + i) = −1 + 5i.') },
+  { t: 'task', id: '3.4', title: T('Points in the plane', 'Точки на плоскости'),
+    text: T('z = a + bi is drawn as the point (a, b) in the complex plane. Its modulus 模 ∣z∣ = √(a² + b²) is the distance to 0.', 'z = a + bi изображается точкой (a, b) на комплексной плоскости. Её модуль 模 ∣z∣ = √(a² + b²) — расстояние до 0.'),
+    parts: [{ k: 'table', head: ['z', T('point', 'точка'), '∣z∣', T('quadrant', 'четверть')], rows: [
+      ['3 − 4i', '(3, −4)', { a: '5' }, { a: '4', sel: QD }],
+      ['−1 + i', '(−1, 1)', { a: '√2' }, { a: '2', sel: QD }],
+      ['(1 + i)²', '(0, 2)', { a: '2' }, { a: 'axis', sel: QD }],
+      ['1/(1 + i)', '(1/2, −1/2)', { a: '√2/2' }, { a: '4', sel: QD }]] }],
+    hint: T('(1 + i)² = 1 + 2i + i² = 2i. 1/(1 + i) = (1 − i)/2.', '(1 + i)² = 1 + 2i + i² = 2i. 1/(1 + i) = (1 − i)/2.') },
+  { t: 'task', id: '3.5', title: T('Try it: a pure imaginary number', 'Попробуйте сами: чисто мнимое число'),
+    text: T('z is pure imaginary 纯虚数 when its real part is 0 and its imaginary part is not 0. z = (m² − 1) + (m + 1)i.', 'z — чисто мнимое число 纯虚数, когда его действительная часть равна 0, а мнимая не равна 0. z = (m² − 1) + (m + 1)i.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('m² − 1 = 0 gives m = 1 or m = ', 'm² − 1 = 0 даёт m = 1 или m = '), { a: '-1', w: 3 }],
+      [T('Which one keeps the imaginary part non-zero? m = ', 'Какое из них оставляет мнимую часть ненулевой? m = '), { a: '1', w: 3 }]] }],
+    hint: T('For m = −1 the imaginary part m + 1 is 0, so z = 0.', 'При m = −1 мнимая часть m + 1 равна 0, и z = 0.') }
+  ]}
+];
+
+const EXAM = [
+  { part: 1, q: T('a = (1, 2), b = (3, −1). Then 2a − b =', 'a = (1, 2), b = (3, −1). Тогда 2a − b ='), o: ['(5, 3)', '(−1, 5)', '(−1, 3)', '(1, 5)'], a: 1 },
+  { part: 2, q: T('a = (2, 1), b = (−1, k) and a ⊥ b. Then k =', 'a = (2, 1), b = (−1, k) и a ⊥ b. Тогда k ='), o: ['−2', '1/2', '2', '−1/2'], a: 2 },
+  { part: 2, q: T('a = (1, 2), b = (2, m) and a ∥ b. Then m =', 'a = (1, 2), b = (2, m) и a ∥ b. Тогда m ='), o: ['−1', '1', '−4', '4'], a: 3 },
+  { part: 2, q: T('∣a∣ = 1, ∣b∣ = 2 and the angle between a and b is 60°. Then a·b =', '∣a∣ = 1, ∣b∣ = 2, угол между a и b равен 60°. Тогда a·b ='), o: ['1', '2', '√3', '1/2'], a: 0 },
+  { part: 2, q: T('∣a∣ = 1, ∣b∣ = 2 and a·b = 1. Then ∣a − b∣ =', '∣a∣ = 1, ∣b∣ = 2 и a·b = 1. Тогда ∣a − b∣ ='), o: ['1', '√3', '√5', '√7'], a: 1 },
+  { part: 1, q: T('A(1, 3), B(4, −1). Then ∣AB∣ =', 'A(1, 3), B(4, −1). Тогда ∣AB∣ ='), o: ['3', '4', '5', '7'], a: 2 },
+  { part: 3, q: 'i(1 + i) =', o: ['1 + i', '1 − i', '−1 − i', '−1 + i'], a: 3 },
+  { part: 3, q: '(1 + i)/(1 − i) =', o: ['i', '−i', '1', '−1'], a: 0 },
+  { part: 3, q: T('z = 3 − 4i. Then ∣z∣ =', 'z = 3 − 4i. Тогда ∣z∣ ='), o: ['7', '5', '25', '1'], a: 1 },
+  { part: 3, q: T('In the complex plane, z = 1/(1 + i) lies in quadrant', 'На комплексной плоскости z = 1/(1 + i) лежит в четверти'), o: ['I', 'II', 'III', 'IV'], a: 3 },
+  { part: 3, q: 'i²⁰²⁶ =', o: ['1', 'i', '−1', '−i'], a: 2 },
+  { part: 3, q: T('The conjugate of z = 2 − i is', 'Число, сопряжённое к z = 2 − i, —'), o: ['2 + i', '−2 + i', '−2 − i', '1 − 2i'], a: 0 }
+];
+
+const TOPICS = [
+  [T('Vector operations in coordinates 坐标运算', 'Действия с векторами в координатах 坐标运算'), 1, '"Given a = (1, 2), b = (3, −1), then 2a − b ="'],
+  [T('Dot product, ⊥ and ∥ 数量积 / 垂直 / 平行', 'Скалярное произведение, ⊥ и ∥ 数量积 / 垂直 / 平行'), 2, '"If a ⊥ b, then k ="; "∣a − b∣ ="'],
+  [T('Complex numbers 复数', 'Комплексные числа 复数'), 3, '"i(1 + i) ="; "the point of z lies in quadrant …"; "∣z∣ ="']
+];
+
+</script>
+<script>
+/* Engine for every CSCA investigation sheet. No external dependencies.
+   Globals set by build.py: SUBJECT (subject.json), NAV (links). Set by the sheet: SHEET, PARTS, EXAM, TOPICS. */
+(function () {
+  const KEY = SHEET.key;
+  let state = { lang: null, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false } };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  /* saved exam answers are option indices: if the questions or option order change, start the exam fresh */
+  const EXAMSIG = (() => { let x = 5381; const t = EXAM.map(q => q.a + ':' + q.o.map(o => typeof o === 'string' ? o : o.en).join('|')).join('#');
+    for (let i = 0; i < t.length; i++) x = (x * 33 + t.charCodeAt(i)) >>> 0; return x.toString(36); })();
+  if (state.quiz.sig !== EXAMSIG) state.quiz = { ans: {}, checked: false, sig: EXAMSIG };
+  const SUBJ = (typeof SUBJECT !== 'undefined' && SUBJECT) || {};
+  const LINKS = (typeof NAV !== 'undefined' && NAV) || {};
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem('csca-lang', state.lang);
+      const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+      if (total) localStorage.setItem('csca-progress:' + KEY, JSON.stringify({ done, total, quiz: state.quiz.checked ? state.quiz.score : null, n: EXAM.length }));
+    } catch (e) {}
+  }
+  try { const g = localStorage.getItem('csca-lang'); if (g === 'en' || g === 'ru') state.lang = g; } catch (e) {}
+  if (!state.lang) state.lang = /^ru|^kk|^uk|^be/i.test(navigator.language || '') ? 'ru' : 'en';
+  let lang = state.lang;
+  const ui = () => UI[lang];
+  const tr = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] != null ? v[lang] : v.en));
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(c)); }
+    return el;
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fmt = (s) => esc(tr(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const P = (s, cls) => h('p', { class: cls, html: fmt(s) });
+
+  /* ---------- answer checking ---------- */
+  const NONE = /^(none|no value|undefined|undef|dne|n\/a|нет|нет значения|не существует|не определено|нет ответа|∅|—|–|x|✗)$/i;
+  function num(raw) {
+    let s = String(raw).toLowerCase().trim()
+      .replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+      .replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, '');
+    if (!s) return NaN;
+    s = s.replace(/π|pi/g, 'P').replace(/√|sqrt/g, 'S');
+    s = s.replace(/S(\d+(\.\d+)?|P)/g, 'Math.sqrt($1)').replace(/S\(/g, 'Math.sqrt(');
+    s = s.replace(/P/g, 'Math.PI');
+    s = s.replace(/(\d|\))(?=Math|\()/g, '$1*');
+    if (!/^[0-9+\-*/().]*$/.test(s.replace(/Math\.sqrt|Math\.PI/g, '1'))) return NaN;
+    try { const v = Function('"use strict";return (' + s + ')')(); return typeof v === 'number' && isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+  }
+  const norm = (s) => String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[()]/g, '');
+  function isCorrect(f, val) {
+    val = String(val == null ? '' : val).trim();
+    if (!val) return false;
+    if (f.sel) return val === f.exp;
+    if (f.exp === 'none') return NONE.test(val);
+    if (NONE.test(val)) return false;
+    const e = num(f.exp), v = num(val);
+    if (!isNaN(e) && !isNaN(v)) return Math.abs(e - v) < 1e-3;
+    return norm(val) === norm(f.exp);
+  }
+
+  /* ---------- figures (inline SVG) ---------- */
+  function plot(o) {
+    const W = o.w || 360, H = o.h || 250, m = { l: 30, r: 12, t: 14, b: 26 };
+    const X = (x) => m.l + (x - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const Y = (y) => H - m.b - (y - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="${esc(o.label || 'graph')}">`;
+    const ax0 = Y(Math.max(o.y0, Math.min(0, o.y1))), ay0 = X(Math.max(o.x0, Math.min(0, o.x1)));
+    s += `<line class="ax" x1="${m.l}" y1="${ax0}" x2="${W - m.r}" y2="${ax0}"/><line class="ax" x1="${ay0}" y1="${m.t}" x2="${ay0}" y2="${H - m.b}"/>`;
+    (o.xt || []).forEach(t => { const x = X(t.v);
+      if (o.xlow) s += `<line class="grid" x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}"/><text class="tl" x="${x}" y="${H - 8}" text-anchor="middle">${t.l}</text>`;
+      else s += `<line class="tk" x1="${x}" y1="${ax0 - 3}" x2="${x}" y2="${ax0 + 3}"/><text class="tl" x="${x}" y="${ax0 + 15}" text-anchor="middle">${t.l}</text>`; });
+    (o.yt || []).forEach(t => { const y = Y(t.v); s += `<line class="tk" x1="${ay0 - 3}" y1="${y}" x2="${ay0 + 3}" y2="${y}"/><text class="tl" x="${ay0 - 6}" y="${y + 4}" text-anchor="end">${t.l}</text>`; });
+    (o.vlines || []).forEach(v => { s += `<line class="asy" x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H - m.b}"/>`; });
+    (o.curves || []).forEach(c => {
+      let d = '', pen = false, py = null; const N = 500;
+      for (let i = 0; i <= N; i++) {
+        const x = c.x0 != null ? c.x0 + (c.x1 - c.x0) * i / N : o.x0 + (o.x1 - o.x0) * i / N, y = c.f(x);
+        const bad = !isFinite(y) || y < o.y0 - 0.5 || y > o.y1 + 0.5 || (py != null && Math.abs(y - py) > (o.y1 - o.y0) * 0.6);
+        if (bad) { pen = false; py = null; continue; }
+        d += (pen ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; py = y;
+      }
+      s += `<path d="${d}" class="cv ${c.cls || 'c1'}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`;
+    });
+    (o.segs || []).forEach(g => { s += `<line class="asy" x1="${X(g[0])}" y1="${Y(g[1])}" x2="${X(g[2])}" y2="${Y(g[3])}"/>`; });
+    (o.pts || []).forEach(p => {
+      s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" class="${p.hollow ? 'pt hol' : 'pt'}"/>`;
+      if (p.l) s += `<text class="pl" x="${X(p.x) + (p.dx || 7)}" y="${Y(p.y) + (p.dy || -7)}" text-anchor="${p.anc || 'start'}">${p.l}</text>`;
+    });
+    (o.tx || []).forEach(t => { s += `<text class="cl ${t.cls || ''}" x="${X(t.x)}" y="${Y(t.y)}" text-anchor="${t.anc || 'start'}">${t.t}</text>`; });
+    return s + '</svg>';
+  }
+  const piT = (a, b) => { const r = []; for (let k = a; k <= b; k++) if (k) r.push({ v: k * Math.PI, l: (k === 1 ? '' : k === -1 ? '−' : k) + 'π' }); return r; };
+  const FIGS = SHEET.figs ? SHEET.figs({ h, plot, piT, esc }) : {};
+
+  /* ---------- rendering ---------- */
+  const root = document.getElementById('app');
+  const EXAMID = PARTS.length + 1;
+  let tasksIndex = [];     // {id, el, ctx}
+  let uid = 0;
+
+  function selOptions(opts) { return opts.map(o => typeof o === 'string' ? { v: o, t: o } : o.en != null ? { v: o.k, t: tr(o) } : { v: o.k, t: ui().opt[o.k] }); }
+
+  function buildTask(it) {
+    const ctx = { id: it.id, fields: [], opens: [], el: null, msg: null };
+    const st = (state.tasks[it.id] = state.tasks[it.id] || {});
+    const key = (pi, n) => `${it.id}|${pi}|${n}`;
+    const card = h('article', { class: 'card task', id: 't' + it.id.replace('.', '-') });
+    ctx.el = card;
+    const head = h('div', { class: 'thead' }, h('span', { class: 'tnum' }, ui().task + ' ' + it.id), h('span', { class: 'ttitle' }, tr(it.title)), h('span', { class: 'tdone', 'aria-hidden': 'true' }, '✓'));
+    card.append(head, P(it.text, 'ttext'));
+
+    const mkField = (pi, n, spec, extra) => {
+      const k = key(pi, n);
+      let el, f;
+      if (spec.sel) {
+        const opts = selOptions(spec.sel);
+        el = h('select', { class: 'fld sel', 'aria-label': 'answer' }, h('option', { value: '' }, '—'), opts.map(o => h('option', { value: o.v }, o.t)));
+        f = { el, exp: spec.a, sel: true };
+      } else {
+        el = h('input', { class: 'fld', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', style: spec.w ? `width:${spec.w + 1.2}em` : null, 'aria-label': 'answer' });
+        f = { el, exp: spec.a };
+      }
+      el.value = state.inputs[k] || '';
+      el.addEventListener('input', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); st.checked = false; save(); });
+      el.addEventListener('change', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); save(); });
+      f.key = k; ctx.fields.push(f);
+      return el;
+    };
+
+    it.parts.forEach((part, pi) => {
+      let n = 0;
+      if (part.k === 'html') card.append(h('div', { html: typeof part.html === 'string' ? part.html : tr(part.html) }));
+      else if (part.k === 'fig') card.append(FIGS[part.id]());
+      else if (part.k === 'table') {
+        const tbl = h('table', { class: 'tbl' });
+        tbl.append(h('thead', null, h('tr', null, part.head.map(c => h('th', null, tr(c))))));
+        const tb = h('tbody');
+        part.rows.forEach(r => tb.append(h('tr', null, r.map((c, ci) => ci === 0 ? h('th', { scope: 'row' }, tr(c)) : (typeof c === 'string' ? h('td', null, c) : h('td', null, mkField(pi, n++, c)))))));
+        tbl.append(tb); card.append(h('div', { class: 'tw' }, tbl));
+      } else if (part.k === 'blanks') {
+        part.lines.forEach(line => card.append(h('p', { class: 'bl' }, line.map(seg => typeof seg === 'string' ? seg : seg.en != null ? tr(seg) : mkField(pi, n++, seg)))));
+      } else if (part.k === 'mc') {
+        const k = key(pi, 0), box = h('div', { class: 'mc' });
+        box.append(P(part.q, 'mcq'));
+        const f = { key: k, mc: true, exp: String(part.a), btns: [] };
+        part.opts.forEach((o, i) => {
+          const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': 'false' }, h('span', { class: 'lab' }, 'abcd'[i] + ')'), h('span', null, tr(o)));
+          b.addEventListener('click', () => { state.inputs[k] = String(i); f.btns.forEach((x, j) => { x.setAttribute('aria-pressed', String(i === j)); x.classList.remove('ok', 'bad'); }); st.checked = false; save(); });
+          if (state.inputs[k] === String(i)) b.setAttribute('aria-pressed', 'true');
+          f.btns.push(b); box.append(b);
+        });
+        ctx.fields.push(f); card.append(box);
+      } else if (part.k === 'open') {
+        part.lines.forEach((ln, li) => {
+          const k = key(pi, 'o' + li);
+          const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().mine, 'aria-label': ui().mine });
+          ta.value = state.inputs[k] || '';
+          ta.addEventListener('input', () => { state.inputs[k] = ta.value; save(); });
+          const ans = h('div', { class: 'ref', hidden: true }, h('b', null, ui().ref + ': '), h('span', { html: fmt(ln.a) }));
+          card.append(h('div', { class: 'open' }, P(ln.q, 'oq'), ta, ans));
+          ctx.opens.push({ ans, k: key(pi, 'o' + li) });
+        });
+      }
+    });
+
+    const msg = h('div', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+    ctx.msg = msg;
+    const tickRow = h('div', { class: 'tick', hidden: true });
+    const tickBtn = h('button', { type: 'button', class: 'btn tickbtn' });
+    const updTick = () => { const on = st.self; tickBtn.textContent = on ? '✓ ' + ui().gotItOn : ui().gotIt; tickBtn.setAttribute('aria-pressed', String(!!on)); };
+    tickBtn.addEventListener('click', () => { st.self = !st.self; updTick(); recalc(it, ctx); save(); });
+    tickRow.append(tickBtn); updTick();
+    ctx.tickRow = tickRow;
+
+    const hintBox = h('div', { class: 'hintbox', hidden: true }, h('b', null, ui().hint + ': '), tr(it.hint));
+    const bar = h('div', { class: 'acts' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => doCheck(it, ctx) }, ui().check),
+      it.hint ? h('button', { type: 'button', class: 'btn', onclick: () => { hintBox.hidden = !hintBox.hidden; } }, ui().hint) : null,
+      h('button', { type: 'button', class: 'btn ghost', onclick: () => doShow(it, ctx) }, ui().showAns));
+    card.append(bar, hintBox, msg, tickRow);
+    if (st.checked) { applyMarks(ctx, false); revealOpens(ctx); }
+    else if (st.revealed) revealOpens(ctx);
+    if (st.done) card.classList.add('done');
+    return card;
+  }
+
+  function applyMarks(ctx, say) {
+    let good = 0, total = ctx.fields.length, empty = 0;
+    ctx.fields.forEach(f => {
+      if (f.mc) {
+        const v = state.inputs[f.key]; if (v == null) { empty++; return; }
+        const ok = v === f.exp; if (ok) good++;
+        f.btns.forEach((b, i) => { b.classList.remove('ok', 'bad'); if (String(i) === v) b.classList.add(ok ? 'ok' : 'bad'); if (ok && String(i) === v) b.classList.add('ok'); });
+        return;
+      }
+      const v = state.inputs[f.key] || '';
+      if (!v.trim()) { empty++; f.el.classList.remove('ok'); f.el.classList.add('bad'); return; }
+      const ok = isCorrect(f, v); if (ok) good++;
+      f.el.classList.toggle('ok', ok); f.el.classList.toggle('bad', !ok);
+    });
+    return { good, total, empty };
+  }
+  function revealOpens(ctx) { ctx.opens.forEach(o => { o.ans.hidden = false; }); if (ctx.opens.length) ctx.tickRow.hidden = false; }
+
+  function doCheck(it, ctx) {
+    const st = state.tasks[it.id];
+    const r = applyMarks(ctx, true);
+    st.checked = true; st.revealed = true; revealOpens(ctx);
+    st.auto = ctx.fields.length === 0 ? true : r.good === r.total;
+    if (ctx.fields.length) {
+      if (r.empty && r.good < r.total && r.empty === r.total - r.good) ctx.msg.textContent = ui().fill;
+      else ctx.msg.textContent = r.good === r.total ? ui().allGood : ui().some(r.good, r.total);
+      ctx.msg.className = 'msg ' + (r.good === r.total ? 'good' : 'warn');
+    } else { ctx.msg.textContent = ''; }
+    recalc(it, ctx); save();
+  }
+  function doShow(it, ctx) {
+    const st = state.tasks[it.id];
+    ctx.fields.forEach(f => {
+      if (f.mc) { state.inputs[f.key] = f.exp; f.btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(String(i) === f.exp)); b.classList.remove('bad'); b.classList.toggle('ok', String(i) === f.exp); }); return; }
+      const shown = f.sel ? f.exp : (f.exp === 'none' ? ui().none : f.exp.replace(/^-/, '−'));
+      f.el.value = f.sel ? f.exp : shown; state.inputs[f.key] = f.el.value;
+      f.el.classList.remove('bad'); f.el.classList.add('ok');
+    });
+    st.checked = true; st.revealed = true; st.shown = true; revealOpens(ctx);
+    ctx.msg.textContent = ''; save();
+  }
+  function recalc(it, ctx) {
+    const st = state.tasks[it.id];
+    const hasOpen = ctx.opens.length > 0, hasAuto = ctx.fields.length > 0;
+    const ok = (!hasAuto || (st.auto && !st.shown)) && (!hasOpen || st.self);
+    st.done = !!ok;
+    ctx.el.classList.toggle('done', st.done);
+    updateProgress(); save();
+  }
+
+  function buildNotice(it) {
+    const st = (state.notices[it.id] = state.notices[it.id] || { text: '', open: false });
+    const card = h('article', { class: 'card notice' });
+    const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().noticePh, 'aria-label': ui().notice });
+    ta.value = st.text || '';
+    const ruleBox = h('div', { class: 'rulebox' }, h('b', null, ui().rule + '. '), h('span', { html: fmt(it.rule) }));
+    const btn = h('button', { type: 'button', class: 'btn primary' }, '🔒 ' + ui().showRule);
+    const stuck = h('button', { type: 'button', class: 'linkbtn' }, ui().stuck);
+    const sync = () => { const open = st.open || (ta.value.trim().length >= 8); ruleBox.hidden = !open; btn.disabled = open; btn.hidden = open; stuck.hidden = open; };
+    ta.addEventListener('input', () => { st.text = ta.value; if (ta.value.trim().length >= 8) st.open = true; sync(); save(); });
+    btn.addEventListener('click', () => { st.open = true; sync(); save(); });
+    stuck.addEventListener('click', () => { st.open = true; sync(); save(); });
+    btn.disabled = true;
+    card.append(h('div', { class: 'nlabel' }, '✎ ' + ui().notice), ta, h('div', { class: 'acts' }, stuck), ruleBox);
+    // before the writing is long enough the "show" button stays hidden; students can still press the link below the box
+    sync();
+    return card;
+  }
+
+  function buildExam() {
+    const sec = h('section', { class: 'part', id: 'part-' + EXAMID });
+    sec.append(h('h2', null, `${EXAMID}. ${ui().exam}`));
+    const ex = SUBJ.exam || { questions: 48, minutes: 60 };
+    const per = Math.round(ex.minutes * 60 / ex.questions);
+    const mins = Math.max(1, Math.ceil(EXAM.length * per / 60)), full = mins * 60;
+    sec.append(P(ui().examIntro(ex.minutes, ex.questions, per, mins, EXAM.length)));
+    const mm = String(mins).padStart(2, '0') + ':00';
+    const timer = h('span', { class: 'timer', role: 'timer' }, mm);
+    let tick = null, left = full;
+    const tbtn = h('button', { type: 'button', class: 'btn' }, ui().start(mm));
+    const drawT = () => { timer.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); timer.classList.toggle('low', left < 60); };
+    tbtn.addEventListener('click', () => {
+      if (tick) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); return; }
+      left = full; drawT(); tbtn.textContent = ui().stop;
+      tick = setInterval(() => { left--; drawT(); if (left <= 0) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); timer.textContent = ui().timeUp; } }, 1000);
+    });
+    sec.append(h('div', { class: 'timerrow' }, tbtn, timer));
+    const qs = state.quiz;
+    const cards = [];
+    EXAM.forEach((q, i) => {
+      const card = h('article', { class: 'card q' });
+      card.append(h('div', { class: 'qq' }, h('span', { class: 'qn' }, (i + 1) + '.'), h('span', null, tr(q.q)), h('span', { class: 'qpart' }, `(${ui().part.toLowerCase()} ${q.part})`)));
+      const opts = h('div', { class: 'qopts' }); const btns = [];
+      q.o.forEach((o, j) => {
+        const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': String(qs.ans[i] === j) }, h('span', { class: 'lab' }, 'abcd'[j] + ')'), h('span', null, tr(o)));
+        b.addEventListener('click', () => { qs.ans[i] = j; qs.checked = false; btns.forEach((x, k) => { x.setAttribute('aria-pressed', String(k === j)); x.classList.remove('ok', 'bad'); }); fb.textContent = ''; result.textContent = ''; save(); });
+        btns.push(b); opts.append(b);
+      });
+      const fb = h('div', { class: 'qfb' });
+      card.append(opts, fb); cards.push({ btns, fb, q, i }); sec.append(card);
+    });
+    const result = h('div', { class: 'result', role: 'status', 'aria-live': 'polite' });
+    const mark = () => {
+      let sc = 0;
+      cards.forEach(({ btns, fb, q, i }) => {
+        const a = qs.ans[i]; btns.forEach(b => b.classList.remove('ok', 'bad'));
+        if (a == null) { fb.textContent = lang === 'ru' ? 'Нет ответа' : 'No answer'; fb.className = 'qfb bad'; return; }
+        if (a === q.a) { sc++; btns[a].classList.add('ok'); fb.textContent = '✓'; fb.className = 'qfb good'; }
+        else { btns[a].classList.add('bad'); fb.className = 'qfb bad'; fb.innerHTML = `✗ ${ui().review}: <a href="#part-${q.part}">${lang === 'ru' ? 'часть' : 'Part'} ${q.part}</a>`; }
+      });
+      result.textContent = ui().score(sc, EXAM.length); qs.checked = true; qs.score = sc; save();
+    };
+    const go = h('button', { type: 'button', class: 'btn primary', onclick: mark }, ui().checkAll);
+    const again = h('button', { type: 'button', class: 'btn', onclick: () => { qs.ans = {}; qs.checked = false; save(); render(); document.getElementById('part-' + EXAMID).scrollIntoView(); } }, ui().again);
+    sec.append(h('div', { class: 'acts' }, go, again), result);
+    if (qs.checked) mark();
+    return sec;
+  }
+
+  function updateProgress() {
+    const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const b = document.getElementById('pbar'); if (b) b.style.width = pct + '%';
+    const t = document.getElementById('ptxt'); if (t) t.textContent = `${done} / ${total}`;
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.title = tr(SHEET.title);
+    tasksIndex = [];
+    root.textContent = '';
+    /* top bar */
+    const langSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Language' }, ['en', 'ru'].map(l => h('button', { type: 'button', 'aria-pressed': String(l === lang), onclick: () => { lang = state.lang = l; save(); render(); } }, l === 'en' ? 'EN' : 'RU')));
+    let rs = false, rt = null;
+    const resetBtn = h('button', { type: 'button', class: 'btn ghost small' }, ui().reset);
+    resetBtn.addEventListener('click', () => {
+      if (!rs) { rs = true; resetBtn.textContent = ui().resetSure; rt = setTimeout(() => { rs = false; resetBtn.textContent = ui().reset; }, 3500); return; }
+      clearTimeout(rt); state = { lang, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false, sig: EXAMSIG } }; save(); render(); window.scrollTo(0, 0);
+    });
+    const top = h('header', { class: 'topbar' }, h('div', { class: 'topin' },
+      LINKS.subject ? h('a', { class: 'back', href: LINKS.subject, 'aria-label': ui().back }, '← ' + ui().topics) : null,
+      h('div', { class: 'brand' }, h('span', { class: 'bt' }, tr(SHEET.title))),
+      h('div', { class: 'prog', 'aria-label': ui().progress }, h('div', { class: 'ptxtrow' }, h('span', null, ui().progress), h('span', { id: 'ptxt' }, '0 / 0')), h('div', { class: 'bar' }, h('span', { id: 'pbar' }))),
+      langSeg, resetBtn),
+      h('nav', { class: 'chips', 'aria-label': ui().parts }, PARTS.map(p => h('a', { href: '#part-' + p.id }, p.id + '')), h('a', { href: '#part-' + EXAMID }, String(EXAMID))));
+    root.append(top);
+    const wrap = h('main', { class: 'wrap' });
+    wrap.append(h('h1', null, tr(SHEET.title)), h('p', { class: 'sub' }, tr(SHEET.sub)));
+    /* how to use */
+    const how = h('section', { class: 'card how' }, h('h2', null, ui().howTitle), h('ol', null, ui().steps.map(s => h('li', { html: fmt(s) }))), P(SHEET.stats));
+    const tt = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, ui().topic), h('th', null, ui().partCol), h('th', null, ui().wording))),
+      h('tbody', null, TOPICS.map(r => h('tr', null, h('td', null, tr(r[0])), h('td', null, h('a', { href: '#part-' + r[1] }, r[1] + '')), h('td', { class: 'wd' }, r[2])))));
+    how.append(h('div', { class: 'tw' }, tt), P(SHEET.symbols, 'small'), P(ui().photoNote, 'small'));
+    wrap.append(how);
+    PARTS.forEach(p => {
+      const sec = h('section', { class: 'part', id: 'part-' + p.id }, h('h2', null, h('span', { class: 'pn' }, ui().part + ' ' + p.id + '.'), ' ' + tr(p.title)), P(p.intro, 'intro'));
+      p.items.forEach(it => {
+        if (it.t === 'task') { const el = buildTask(it); tasksIndex.push({ id: it.id }); sec.append(el); }
+        else if (it.t === 'notice') sec.append(buildNotice(it));
+        else if (it.t === 'rule') sec.append(h('div', { class: 'rulebox plain' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'worked') sec.append(h('div', { class: 'worked' }, h('b', null, ui().worked + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'note') sec.append(h('div', { class: 'careful' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+      });
+      wrap.append(sec);
+    });
+    wrap.append(buildExam());
+    if (LINKS.next) wrap.append(h('p', { class: 'nextlink' }, h('a', { href: LINKS.next.href }, ui().next + ': ' + tr(LINKS.next.title) + ' →')));
+    root.append(wrap);
+    updateProgress();
+  }
+  render();
+  save();
+  if (window.__FN_TEST) window.__fnt = { num, isCorrect };
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "order": 1,
+  "title_en": "Mathematics",
+  "title_ru": "Математика",
+  "zh": "数学",
+  "blurb_en": "Sets and inequalities, functions, trigonometry, sequences, derivatives, vectors and complex numbers, analytic and solid geometry, probability and statistics.",
+  "blurb_ru": "Множества и неравенства, функции, тригонометрия, последовательности, производные, векторы и комплексные числа, аналитическая и стереометрия, вероятность и статистика.",
+  "exam": { "questions": 48, "minutes": 60 }
+}

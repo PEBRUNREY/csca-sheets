@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trigonometry</title>
+<style>
+:root{
+  --bg:#f6f5f1; --bar:rgba(246,245,241,.94); --surface:#fff; --ink:#1b2430; --muted:#5b6674; --line:#d9d6cc;
+  --accent:#2457a6; --accent-ink:#fff; --accent-soft:#e0e9f7;
+  --hint:#8a5300; --hint-soft:#fbf0d9;
+  --good:#17803d; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --c1:#2457a6; --c2:#c2410c; --c3:#2f7d57;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.brand{font-weight:700;margin-right:auto;font-size:1.02rem;min-width:0}
+.prog{min-width:130px;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ptxtrow{display:flex;justify-content:space-between;gap:10px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar>span{display:block;height:100%;width:0;background:var(--good);transition:width .25s}
+.chips{max-width:900px;margin:0 auto;padding:0 14px 8px;display:flex;gap:6px;overflow-x:auto}
+.chips a{flex:none;min-width:34px;text-align:center;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.chips a:hover{border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:5px 11px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-weight:600;font-size:.93rem;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:32px;padding:3px 10px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:6px 2px;font-size:.9rem}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px 90px}
+h1{font-size:clamp(1.55rem,5vw,2.1rem);line-height:1.15;margin:24px 0 4px;text-wrap:balance}
+h2{font-size:1.3rem;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 16px}
+.small{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.how ol{margin:6px 0 10px;padding-left:22px}
+.how li{margin-bottom:3px}
+.part{margin-top:34px;scroll-margin-top:96px}
+.part>h2{padding-top:6px;border-top:3px solid var(--accent)}
+.pn{color:var(--accent)}
+.intro{color:var(--muted);max-width:68ch;margin:4px 0 8px}
+.task{scroll-margin-top:100px}
+.task.done{border-color:var(--good)}
+.thead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:4px}
+.tnum{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.ttitle{font-weight:700}
+.tdone{margin-left:auto;color:var(--good);font-weight:800;visibility:hidden}
+.task.done .tdone{visibility:visible}
+.ttext{margin:2px 0 10px;max-width:70ch}
+.tw{overflow-x:auto;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.tbl{border-collapse:collapse;font-size:.97rem;min-width:min(100%,0px)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:center;vertical-align:middle;white-space:nowrap}
+.tbl thead th{background:var(--accent-soft)}
+.tbl tbody th,.tbl tr>th:first-child{background:var(--bg);text-align:left;font-weight:600}
+.tbl td.wd{white-space:normal;text-align:left;font-size:.9rem;color:var(--muted)}
+.how .tbl td:first-child{text-align:left;white-space:normal}
+.fld{width:4.6em;max-width:100%;padding:5px 7px;border:1.5px solid var(--line);border-radius:7px;background:var(--bg);text-align:center;font-size:1rem;min-height:36px}
+.fld.sel{width:auto;max-width:15em;text-align:left;padding-right:4px}
+.fld:focus{border-color:var(--accent)}
+.fld.ok{border-color:var(--good);background:var(--good-soft)}
+.fld.bad{border-color:var(--bad);background:var(--bad-soft)}
+.bl{margin:8px 0;line-height:2.3}
+.bl .fld{margin:0 3px}
+.mc{margin:10px 0}.mcq{margin:0 0 6px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 12px;margin:6px 0;min-height:44px}
+.opt .lab{font-weight:700;color:var(--muted);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.open{margin:10px 0}
+.oq{margin:0 0 4px;font-weight:600}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);padding:8px 10px;resize:vertical;min-height:48px}
+.ta:focus{border-color:var(--accent)}
+.ref{margin-top:6px;background:var(--good-soft);border-left:4px solid var(--good);padding:7px 11px;border-radius:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.hintbox{margin-top:10px;background:var(--hint-soft);border-left:4px solid var(--hint);padding:8px 12px;border-radius:6px}
+.hintbox b{color:var(--hint)}
+.msg{min-height:1.4em;margin-top:8px;font-weight:600;font-size:.95rem}
+.msg.good{color:var(--good)}.msg.warn{color:var(--bad)}
+.tick{margin-top:8px}
+.tickbtn[aria-pressed=true]{background:var(--good-soft);border-color:var(--good)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.nlabel{font-weight:700;margin-bottom:6px}
+.notice .ta{background:var(--surface)}
+.rulebox{margin-top:10px;background:var(--surface);border-left:5px solid var(--accent);padding:10px 14px;border-radius:8px}
+.rulebox.plain{margin:12px 0;border:1px solid var(--line);border-left:5px solid var(--accent)}
+.rulebox[hidden]{display:none}
+.worked{margin:12px 0;border:1px dashed var(--line);padding:10px 14px;border-radius:8px;background:var(--surface)}
+.careful{margin:12px 0;background:var(--hint-soft);border-left:5px solid var(--hint);padding:10px 14px;border-radius:8px}
+.figrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.figrow>div{flex:1 1 260px;min-width:0}
+.figone{max-width:460px;margin:8px 0}.figstack{max-width:520px;margin:8px 0}
+.plot{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.plot .ax{stroke:var(--muted);stroke-width:1.2}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .tk{stroke:var(--muted);stroke-width:1}
+.plot text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.plot .tl,.plot .pl{fill:var(--muted);font-size:11px}
+.plot .pl{fill:var(--ink);font-weight:600}
+.plot .asy{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.8}
+.plot .cv{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plot .c1{stroke:var(--c1)}.plot .c2{stroke:var(--c2)}.plot .c3{stroke:var(--c3)}
+.plot .cl{font-size:13px;font-weight:700}
+.plot .c1t{fill:var(--c1)}.plot .c2t{fill:var(--c2)}.plot .c3t{fill:var(--c3)}
+.plot .pt{fill:var(--ink)}
+.plot .pt.hol{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.timerrow{display:flex;gap:12px;align-items:center;margin:8px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2rem}
+.timer.low{color:var(--bad)}
+.q .qq{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:600}
+.qn{color:var(--accent)}
+.qpart{margin-left:auto;font-weight:400;color:var(--muted);font-size:.85rem}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin-top:6px}
+@media (max-width:560px){.qopts{grid-template-columns:1fr}.topin{gap:4px 10px}.brand{flex:1 1 100%}.prog{flex:1}}
+.qfb{min-height:1.3em;font-weight:600;font-size:.92rem;margin-top:2px}
+.qfb.good{color:var(--good)}.qfb.bad{color:var(--bad)}
+.result{margin-top:10px;font-weight:700;font-size:1.15rem}
+
+.back{flex:none;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.back:hover{border-color:var(--accent)}
+.nextlink{margin:34px 0 0;font-weight:700;font-size:1.05rem}
+.nextlink a{display:inline-block;text-decoration:none;border:1.5px solid var(--accent);border-radius:10px;padding:10px 16px}
+.geo{width:100%;max-width:420px;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.geo line,.geo path,.geo polygon,.geo circle,.geo ellipse,.geo polyline{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.geo .hid{stroke-dasharray:5 4;stroke:var(--muted)}
+.geo .acc{stroke:var(--c1);stroke-width:2.2}.geo .acc2{stroke:var(--c2);stroke-width:2.2}.geo .acc3{stroke:var(--c3);stroke-width:2.2}
+.geo .dot{fill:var(--ink);stroke:none}
+.geo text{fill:var(--ink);font-size:13px;font-weight:600;stroke:none;paint-order:stroke}
+.geo .mt{fill:var(--muted);font-weight:400;font-size:12px}
+.geo .fillsoft{fill:var(--accent-soft);stroke:var(--c1)}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript. / Для этой страницы нужен JavaScript.</noscript>
+<script>
+const SUBJECT = {"id": "math", "title_en": "Mathematics", "title_ru": "Математика", "exam": {"questions": 48, "minutes": 60}};
+const NAV = {"home": "../index.html", "subject": "index.html", "next": {"href": "sequences.html", "title": {"en": "Sequences", "ru": "Последовательности"}}};
+/* Shared UI text and helpers for every sheet. English + Russian.
+   T(en, ru) makes a bilingual string. Math and Chinese terms are shared. */
+const T = (en, ru) => ({ en, ru });
+
+const UI = {
+  en: {
+    progress: 'Progress',
+    reset: 'Reset', resetSure: 'Click again to erase',
+    check: 'Check', hint: 'Hint', showAns: 'Show answers',
+    allGood: 'All correct. Well done.',
+    some: (a, b) => `${a} of ${b} correct. Red cells are wrong, try again.`,
+    fill: 'Fill in every answer first.',
+    mine: 'My answer', ref: 'Answer', gotIt: 'I got it', notYet: 'Not yet', gotItOn: 'Marked as understood',
+    notice: 'What I notice', noticePh: 'Write one sentence in your own words…',
+    showRule: 'Show the rule', stuck: 'I am stuck, show the rule anyway',
+    rule: 'Rule', careful: 'Careful', worked: 'Worked example',
+    exam: 'Exam-style check', start: (m) => `Start ${m} timer`,
+    examIntro: (min, q, per, mins, n) => `The real exam gives ${min} minutes for ${q} questions, about ${per} seconds each. Give yourself ${mins} minutes for these ${n}, then press Check my answers. For every wrong answer, go back to the Part named and redo its tasks.`,
+    back: 'Back to the list of topics', topics: 'Topics', next: 'Next topic', stop: 'Stop timer', timeUp: 'Time is up',
+    checkAll: 'Check my answers', score: (a, b) => `Score: ${a} / ${b}`,
+    review: 'Review', again: 'Try again',
+    howTitle: 'How to use this sheet',
+    steps: [
+      'Do the tasks in order. Fill in every empty cell, then press Check.',
+      'Where you see **What I notice**, write one sentence in your own words. The rule unlocks after that.',
+      'Read the **Rule**, then do the **Try it** tasks.',
+      'Finish with the exam-style questions at the end.'
+    ],
+    topic: 'Topic', partCol: 'Part', wording: 'How the exam words it',
+    photoNote: 'Your progress is saved on this device only.',
+    parts: 'Parts', none: 'none', task: 'Task', part: 'Part',
+    opt: { yes: 'yes', no: 'no', same: 'same', opposite: 'opposite', neither: 'neither', up: 'always goes up', down: 'always goes down', change: 'changes direction', yaxis: 'the y-axis', origin: 'the origin', xaxis: 'the x-axis' }
+  },
+  ru: {
+    progress: 'Прогресс',
+    reset: 'Сбросить', resetSure: 'Нажмите ещё раз, чтобы стереть',
+    check: 'Проверить', hint: 'Подсказка', showAns: 'Показать ответы',
+    allGood: 'Всё верно. Отлично.',
+    some: (a, b) => `Верно ${a} из ${b}. Красные ячейки неверны, попробуйте ещё раз.`,
+    fill: 'Сначала заполните все ответы.',
+    mine: 'Мой ответ', ref: 'Ответ', gotIt: 'Я понял(а)', notYet: 'Пока нет', gotItOn: 'Отмечено: понял(а)',
+    notice: 'Что я заметил(а)', noticePh: 'Напишите одно предложение своими словами…',
+    showRule: 'Показать правило', stuck: 'Не получается, показать правило',
+    rule: 'Правило', careful: 'Осторожно', worked: 'Разобранный пример',
+    exam: 'Проверка в формате экзамена', start: (m) => `Запустить таймер ${m}`,
+    examIntro: (min, q, per, mins, n) => `На настоящем экзамене даётся ${min} минут на ${q} вопросов, то есть около ${per} секунд на вопрос. Дайте себе ${mins} мин. на эти ${n}. Затем нажмите «Проверить ответы». За каждый неверный ответ вернитесь к названной части и повторите её задания.`,
+    back: 'Назад к списку тем', topics: 'Темы', next: 'Следующая тема', stop: 'Остановить таймер', timeUp: 'Время вышло',
+    checkAll: 'Проверить ответы', score: (a, b) => `Результат: ${a} / ${b}`,
+    review: 'Повторить', again: 'Ещё раз',
+    howTitle: 'Как пользоваться листом',
+    steps: [
+      'Выполняйте задания по порядку. Заполните все пустые ячейки и нажмите «Проверить».',
+      'Там, где написано **Что я заметил(а)**, напишите одно предложение своими словами. После этого откроется правило.',
+      'Прочитайте **Правило**, затем выполните задания **Попробуйте сами**.',
+      'В конце решите вопросы в формате экзамена.'
+    ],
+    topic: 'Тема', partCol: 'Часть', wording: 'Как это формулируют на экзамене',
+    photoNote: 'Ваш прогресс сохраняется только на этом устройстве.',
+    parts: 'Части', none: 'нет', task: 'Задание', part: 'Часть',
+    opt: { yes: 'да', no: 'нет', same: 'одинаковые', opposite: 'противоположные', neither: 'ни то, ни другое', up: 'всегда растёт', down: 'всегда убывает', change: 'меняет направление', yaxis: 'оси y', origin: 'начала координат', xaxis: 'оси x' }
+  }
+};
+
+/* option helpers */
+const O = (k) => ({ k });                      // key into UI.opt
+const YN = [O('yes'), O('no')];
+const SON = [O('same'), O('opposite'), O('neither')];
+const MON = [O('up'), O('down'), O('change')];
+const LR = [{ k: 'left', en: 'left', ru: 'влево' }, { k: 'right', en: 'right', ru: 'вправо' }];
+const COND = [{ k: 'suf', en: 'sufficient, not necessary', ru: 'достаточное, не необходимое' }, { k: 'nec', en: 'necessary, not sufficient', ru: 'необходимое, не достаточное' },
+  { k: 'both', en: 'necessary and sufficient', ru: 'необходимое и достаточное' }, { k: 'neither', en: 'neither', ru: 'ни то, ни другое' }];
+
+/* small static table */
+const mini = (rows) => ({ k: 'html', html: '<div class="tw"><table class="tbl">' + rows.map((r, i) => '<tr>' + r.map(c => i === 0 || c === r[0] ? `<th>${c}</th>` : `<td>${c}</td>`).join('') + '</tr>').join('') + '</table></div>' });
+
+/* Sheet: Trigonometry (CSCA Mathematics): radians, identities, sum and double-angle formulas, graph shifts, solving triangles. */
+const SHEET = {
+  key: 'csca-math-trigonometry-v1',
+  title: T('Investigation sheet: Trigonometry', 'Исследовательский лист: тригонометрия'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('The Functions sheet covers the graphs, periods and exact values of sin, cos and tan. This sheet adds what the exam asks next: radians, identities, the sum and double-angle formulas, moving graphs, and triangles. Typical questions:',
+           'Лист «Функции» охватывает графики, периоды и точные значения sin, cos и tan. Этот лист добавляет то, что экзамен спрашивает дальше: радианы, тождества, формулы суммы и двойного угла, сдвиги графиков и треугольники. Типичные вопросы:'),
+  symbols: T('Symbols: π ≈ 3.14. In a triangle ABC the side a is opposite the angle A, b is opposite B, c is opposite C. Type π as pi and √ as sqrt, for example sqrt(3)/2. Angles in degrees: type just the number, 120.',
+             'Обозначения: π ≈ 3,14. В треугольнике ABC сторона a лежит напротив угла A, b — напротив B, c — напротив C. π вводите как pi, √ как sqrt, например sqrt(3)/2. Углы в градусах — только число: 120.')
+};
+
+SHEET.figs = ({ h, plot }) => ({
+  circle() {
+    return h('div', { html: `<svg class="geo" viewBox="0 0 350 260" role="img" aria-label="Unit circle with the four quadrants and the signs of sin and cos">
+      <line x1="20" y1="130" x2="280" y2="130" style="stroke:var(--muted)"/><line x1="150" y1="10" x2="150" y2="250" style="stroke:var(--muted)"/>
+      <circle cx="150" cy="130" r="100"/>
+      <line x1="150" y1="130" x2="236.6" y2="80" class="acc"/><circle cx="236.6" cy="80" r="4" class="dot"/>
+      <line x1="236.6" y1="80" x2="236.6" y2="130" class="hid"/>
+      <text x="240" y="74">(cos α, sin α)</text><text x="176" y="124" class="mt">α</text>
+      <text x="196" y="40">I</text><text x="92" y="40">II</text><text x="88" y="230">III</text><text x="196" y="230">IV</text>
+      <text x="254" y="148" class="mt">1</text><text x="30" y="148" class="mt">−1</text><text x="156" y="26" class="mt">1</text><text x="156" y="246" class="mt">−1</text>
+    </svg>` });
+  },
+  shift() {
+    const s = plot({ label: 'sin x and sin(x − π/3)', xlow: true, w: 460, h: 210, x0: -0.6, x1: 2 * Math.PI + 1.4, y0: -1.4, y1: 1.5,
+      xt: [{ v: Math.PI / 3, l: 'π/3' }, { v: Math.PI / 2, l: 'π/2' }, { v: 5 * Math.PI / 6, l: '5π/6' }, { v: Math.PI, l: 'π' }, { v: 2 * Math.PI, l: '2π' }], yt: [{ v: 1, l: '1' }, { v: -1, l: '−1' }],
+      curves: [{ f: Math.sin, cls: 'c1' }, { f: x => Math.sin(x - Math.PI / 3), cls: 'c2' }],
+      pts: [{ x: Math.PI / 2, y: 1 }, { x: 5 * Math.PI / 6, y: 1 }],
+      tx: [{ x: 0.1, y: 1.25, t: 'y = sin x', cls: 'c1t' }, { x: 3.2, y: 1.25, t: 'y = sin(x − π/3)', cls: 'c2t' }] });
+    return h('div', { class: 'figstack', html: s });
+  },
+  tri() {
+    return h('div', { html: `<svg class="geo" viewBox="0 0 320 190" role="img" aria-label="Triangle ABC with side a opposite A, b opposite B, c opposite C">
+      <polygon points="30,165 290,165 200,30" class="acc"/>
+      <text x="14" y="180">A</text><text x="294" y="180">B</text><text x="200" y="22">C</text>
+      <text x="152" y="184" class="mt">c</text><text x="252" y="96" class="mt">a</text><text x="100" y="92" class="mt">b</text>
+    </svg>` });
+  }
+});
+
+const R = (k, en, ru) => ({ k, en, ru });
+const PM = [R('p', '+', '+'), R('m', '−', '−')];
+const RED = [R('s', 'sin α', 'sin α'), R('-s', '−sin α', '−sin α'), R('c', 'cos α', 'cos α'), R('-c', '−cos α', '−cos α')];
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('Radians and the unit circle', 'Радианы и единичная окружность'),
+  intro: T('Exam answers use radians 弧度, not degrees. An angle α on the unit circle 单位圆 sends a point to (cos α, sin α).',
+           'В ответах экзамена используются радианы 弧度, а не градусы. Угол α на единичной окружности 单位圆 переводит точку в (cos α, sin α).'),
+  items: [
+  { t: 'task', id: '1.1', title: T('Degrees to radians', 'Градусы в радианы'),
+    text: T('A full turn is 360°, and it is also 2π radians. Fill in the table.', 'Полный оборот — это 360°, и это же 2π радиан. Заполните таблицу.'),
+    parts: [
+      { k: 'table', head: [T('degrees', 'градусы'), '360°', '180°', '90°', '60°', '45°', '30°', '120°'], rows: [[T('radians', 'радианы'), '2π', { a: 'π' }, { a: 'π/2' }, { a: 'π/3' }, { a: 'π/4' }, { a: 'π/6' }, { a: '2π/3' }]] },
+      { k: 'table', head: [T('radians', 'радианы'), '3π/4', '5π/6', '3π/2'], rows: [[T('degrees', 'градусы'), { a: '135' }, { a: '150' }, { a: '270' }]] }],
+    hint: T('Half a turn: 180° = π. So 60° is one third of π.', 'Пол-оборота: 180° = π. Значит, 60° — это треть π.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('180° = π rad. Degrees → radians: multiply by π/180. Radians → degrees: multiply by 180/π. On a circle of radius r, an angle α (in radians) cuts an arc of length l = αr and a sector of area S = ½αr² = ½lr.', '180° = π рад. Градусы → радианы: умножьте на π/180. Радианы → градусы: умножьте на 180/π. На окружности радиуса r угол α (в радианах) отсекает дугу длины l = αr и сектор площади S = ½αr² = ½lr.') },
+  { t: 'task', id: '1.2', title: T('Signs in the four quadrants', 'Знаки в четырёх четвертях'),
+    text: T('The point for α is (cos α, sin α). Decide the sign of each value from the quadrant 象限 where the point lands.', 'Точка для α — это (cos α, sin α). Определите знак каждого значения по четверти 象限, в которую попадает точка.'),
+    parts: [{ k: 'fig', id: 'circle' },
+      { k: 'table', head: ['α', T('quadrant', 'четверть'), 'sin α', 'cos α', 'tan α'], rows: [
+        ['π/3', 'I', { a: 'p', sel: PM }, { a: 'p', sel: PM }, { a: 'p', sel: PM }],
+        ['2π/3', 'II', { a: 'p', sel: PM }, { a: 'm', sel: PM }, { a: 'm', sel: PM }],
+        ['4π/3', 'III', { a: 'm', sel: PM }, { a: 'm', sel: PM }, { a: 'p', sel: PM }],
+        ['5π/3', 'IV', { a: 'm', sel: PM }, { a: 'p', sel: PM }, { a: 'm', sel: PM }]] }],
+    hint: T('sin is the height (y), cos is the left-right position (x), and tan = sin / cos.', 'sin — это высота (y), cos — положение влево-вправо (x), а tan = sin / cos.') },
+  { t: 'notice', id: 'n1', rule: T('Quadrant I: all positive. II: only sin positive. III: only tan positive. IV: only cos positive. (Chinese memory line: 一全正，二正弦，三正切，四余弦.)', 'I четверть: все положительны. II: положителен только sin. III: только tan. IV: только cos. (Китайская запоминалка: 一全正，二正弦，三正切，四余弦.)') },
+  { t: 'task', id: '1.3', title: T('Arc and sector', 'Дуга и сектор'),
+    text: T('A sector has radius 2 and central angle π/3.', 'У сектора радиус 2 и центральный угол π/3.'),
+    parts: [{ k: 'blanks', lines: [[T('Arc length l = ', 'Длина дуги l = '), { a: '2π/3', w: 4 }, T('   area S = ', '   площадь S = '), { a: '2π/3', w: 4 }]] }],
+    hint: T('l = αr, S = ½lr.', 'l = αr, S = ½lr.') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('Identities and reduction formulas', 'Тождества и формулы приведения'),
+  intro: T('Two identities link sin, cos and tan of the same angle. The reduction formulas 诱导公式 turn the angle π − α, π + α or π/2 − α back into α.',
+           'Два тождества связывают sin, cos и tan одного угла. Формулы приведения 诱导公式 сводят углы π − α, π + α и π/2 − α к углу α.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Square and add', 'Возведите в квадрат и сложите'),
+    text: T('Fill in the table.', 'Заполните таблицу.'),
+    parts: [{ k: 'table', head: ['α', 'π/6', 'π/4', 'π/3', '2π/3'], rows: [
+      ['sin²α', { a: '1/4' }, { a: '1/2' }, { a: '3/4' }, { a: '3/4' }],
+      ['cos²α', { a: '3/4' }, { a: '1/2' }, { a: '1/4' }, { a: '1/4' }],
+      ['sin²α + cos²α', { a: '1' }, { a: '1' }, { a: '1' }, { a: '1' }]] }],
+    hint: T('sin π/6 = 1/2, so sin²(π/6) = 1/4. cos(2π/3) = −1/2, and its square is positive.', 'sin π/6 = 1/2, поэтому sin²(π/6) = 1/4. cos(2π/3) = −1/2, а его квадрат положителен.') },
+  { t: 'notice', id: 'n2', rule: T('sin²α + cos²α = 1 and tan α = sin α / cos α. (The point (cos α, sin α) lies on a circle of radius 1.)', 'sin²α + cos²α = 1 и tan α = sin α / cos α. (Точка (cos α, sin α) лежит на окружности радиуса 1.)') },
+  { t: 'task', id: '2.2', title: T('One value gives the others', 'Одно значение даёт остальные'),
+    text: T('sin α = 3/5 and α is in quadrant II (π/2 < α < π).', 'sin α = 3/5, и α лежит во II четверти (π/2 < α < π).'),
+    parts: [{ k: 'blanks', lines: [
+      ['cos²α = 1 − 9/25 = ', { a: '16/25', w: 4 }],
+      [T('In quadrant II cos α is negative, so cos α = ', 'Во II четверти cos α отрицателен, поэтому cos α = '), { a: '-4/5', w: 4 }],
+      ['tan α = ', { a: '-3/4', w: 4 }]] }],
+    hint: T('Take the square root of 16/25, then choose the sign from the quadrant.', 'Извлеките корень из 16/25, затем выберите знак по четверти.') },
+  { t: 'task', id: '2.3', title: T('Only tan is given', 'Дан только tan'),
+    text: T('tan α = 2. Find (sin α + cos α) / (sin α − cos α) without finding α. Divide the top and the bottom by cos α.', 'tan α = 2. Найдите (sin α + cos α) / (sin α − cos α), не находя α. Разделите числитель и знаменатель на cos α.'),
+    parts: [{ k: 'blanks', lines: [[T('It becomes (tan α + 1)/(tan α − 1) = ', 'Получается (tan α + 1)/(tan α − 1) = '), { a: '3', w: 3 }]] }],
+    hint: T('sin α / cos α = tan α and cos α / cos α = 1.', 'sin α / cos α = tan α, а cos α / cos α = 1.') },
+  { t: 'task', id: '2.4', title: T('Related angles', 'Связанные углы'),
+    text: T('Take α = π/6, so sin α = 1/2 and cos α = √3/2. Compute each value, then compare it with sin α or cos α.', 'Возьмите α = π/6: sin α = 1/2, cos α = √3/2. Вычислите каждое значение и сравните его с sin α или cos α.'),
+    parts: [{ k: 'table', head: [T('Expression', 'Выражение'), T('angle', 'угол'), T('value', 'значение'), T('equals', 'равно')], rows: [
+      ['sin(π − α)', '5π/6', { a: '1/2' }, { a: 's', sel: RED }],
+      ['cos(π − α)', '5π/6', { a: '-√3/2' }, { a: '-c', sel: RED }],
+      ['sin(π + α)', '7π/6', { a: '-1/2' }, { a: '-s', sel: RED }],
+      ['sin(−α)', '−π/6', { a: '-1/2' }, { a: '-s', sel: RED }],
+      ['cos(π/2 − α)', 'π/3', { a: '1/2' }, { a: 's', sel: RED }],
+      ['sin(π/2 + α)', '2π/3', { a: '√3/2' }, { a: 'c', sel: RED }]] }],
+    hint: T('Use the unit circle: 5π/6 is in quadrant II, 7π/6 in quadrant III.', 'Используйте единичную окружность: 5π/6 лежит во II четверти, 7π/6 — в III.') },
+  { t: 'notice', id: 'n2b', rule: T('With π ± α or −α the function keeps its name (sin stays sin). With π/2 ± α the name swaps (sin ↔ cos). The sign is the sign of the original function in the quadrant where the new angle lies, taking α as a small angle. (奇变偶不变，符号看象限.)', 'При π ± α и −α функция сохраняет название (sin остаётся sin). При π/2 ± α название меняется (sin ↔ cos). Знак — это знак исходной функции в той четверти, где лежит новый угол, если считать α маленьким углом. (奇变偶不变，符号看象限.)') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('Sum and double-angle formulas', 'Формулы суммы и двойного угла'),
+  intro: T('Is sin(a + b) the same as sin a + sin b? Test it before you trust it.', 'Равно ли sin(a + b) сумме sin a + sin b? Проверьте, прежде чем верить.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Test a guess', 'Проверьте догадку'),
+    text: T('Take a = π/6 and b = π/3, so a + b = π/2.', 'Возьмите a = π/6 и b = π/3, тогда a + b = π/2.'),
+    parts: [{ k: 'blanks', lines: [
+      ['sin(a + b) = sin(π/2) = ', { a: '1', w: 3 }],
+      ['sin a + sin b = 1/2 + √3/2 ≈ ', { a: '1.37', w: 4 }, T('. Equal? ', '. Равно? '), { a: 'no', sel: YN }],
+      ['sin a cos b + cos a sin b = 1/2 · 1/2 + √3/2 · √3/2 = ', { a: '1', w: 3 }, T('. Equal to sin(a + b)? ', '. Равно sin(a + b)? '), { a: 'yes', sel: YN }]] }],
+    hint: T('√3/2 ≈ 0.87. 1/4 + 3/4 = 1.', '√3/2 ≈ 0,87. 1/4 + 3/4 = 1.') },
+  { t: 'rule', label: T('Sum formulas 两角和差公式', 'Формулы суммы 两角和差公式'), text: T('sin(a ± b) = sin a cos b ± cos a sin b.  cos(a ± b) = cos a cos b ∓ sin a sin b (note the opposite sign).  tan(a ± b) = (tan a ± tan b) / (1 ∓ tan a tan b).', 'sin(a ± b) = sin a cos b ± cos a sin b.  cos(a ± b) = cos a cos b ∓ sin a sin b (обратите внимание на противоположный знак).  tan(a ± b) = (tan a ± tan b) / (1 ∓ tan a tan b).') },
+  { t: 'task', id: '3.2', title: T('Angles that are not in the table', 'Углы, которых нет в таблице'),
+    text: T('75° = 45° + 30° and 15° = 45° − 30°. You may type sqrt(6) for √6.', '75° = 45° + 30° и 15° = 45° − 30°. √6 можно вводить как sqrt(6).'),
+    parts: [{ k: 'blanks', lines: [
+      ['sin 75° = ', { a: '(√6+√2)/4', w: 7 }],
+      ['cos 75° = ', { a: '(√6−√2)/4', w: 7 }],
+      ['tan(π/4 + π/4) ', T('has no value, because 1 − tan(π/4)·tan(π/4) = ', 'не существует, потому что 1 − tan(π/4)·tan(π/4) = '), { a: '0', w: 2 }]] }],
+    hint: T('sin 45° = cos 45° = √2/2, sin 30° = 1/2, cos 30° = √3/2. √2 · √3 = √6.', 'sin 45° = cos 45° = √2/2, sin 30° = 1/2, cos 30° = √3/2. √2 · √3 = √6.') },
+  { t: 'task', id: '3.3', title: T('Put b = a', 'Положите b = a'),
+    text: T('Use the sum formulas with b = a to get the double-angle formulas 二倍角公式. Then use them with sin α = 3/5, cos α = −4/5 (from task 2.2).', 'Подставьте b = a в формулы суммы и получите формулы двойного угла 二倍角公式. Затем примените их при sin α = 3/5, cos α = −4/5 (из задания 2.2).'),
+    parts: [
+      { k: 'open', lines: [{ q: T('Write sin 2a and cos 2a in terms of sin a and cos a.', 'Запишите sin 2a и cos 2a через sin a и cos a.'), a: T('sin 2a = 2 sin a cos a.  cos 2a = cos²a − sin²a = 2cos²a − 1 = 1 − 2sin²a.', 'sin 2a = 2 sin a cos a.  cos 2a = cos²a − sin²a = 2cos²a − 1 = 1 − 2sin²a.') }] },
+      { k: 'blanks', lines: [['sin 2α = ', { a: '-24/25', w: 5 }, '   cos 2α = ', { a: '7/25', w: 5 }]] }],
+    hint: T('sin 2α = 2 · (3/5) · (−4/5). cos 2α = 1 − 2 · (3/5)².', 'sin 2α = 2 · (3/5) · (−4/5). cos 2α = 1 − 2 · (3/5)².') },
+  { t: 'task', id: '3.4', title: T('Two terms become one', 'Два слагаемых становятся одним'),
+    text: T('The exam often gives a sum like sin x + √3 cos x and asks for its period or largest value. Turn it into one sine.', 'Экзамен часто даёт сумму вида sin x + √3 cos x и спрашивает её период или наибольшее значение. Превратите её в один синус.'),
+    parts: [{ k: 'blanks', lines: [
+      ['sin x + √3 cos x = 2(½ sin x + (√3/2) cos x) = 2 sin(x + ', { a: 'π/3', w: 4 }, ')'],
+      [T('Largest value: ', 'Наибольшее значение: '), { a: '2', w: 3 }, T('   period: ', '   период: '), { a: '2π', w: 3 }],
+      ['sin x cos x = ½ sin 2x. ', T('Period: ', 'Период: '), { a: 'π', w: 3 }, T('   largest value: ', '   наибольшее значение: '), { a: '1/2', w: 3 }],
+      ['cos²x − sin²x = cos 2x. ', T('Period: ', 'Период: '), { a: 'π', w: 3 }]] }],
+    hint: T('½ = cos(π/3) and √3/2 = sin(π/3), so the bracket is sin x cos(π/3) + cos x sin(π/3).', '½ = cos(π/3) и √3/2 = sin(π/3), поэтому скобка равна sin x cos(π/3) + cos x sin(π/3).') },
+  { t: 'rule', label: T('Rule (auxiliary angle 辅助角)', 'Правило (вспомогательный угол 辅助角)'), text: T('a sin x + b cos x = √(a² + b²) · sin(x + φ), where cos φ = a/√(a² + b²) and sin φ = b/√(a² + b²). Its largest value is √(a² + b²).', 'a sin x + b cos x = √(a² + b²) · sin(x + φ), где cos φ = a/√(a² + b²) и sin φ = b/√(a² + b²). Его наибольшее значение равно √(a² + b²).') }
+  ]},
+
+/* ================= PART 4 ================= */
+{ id: 4, title: T('Moving the graph of y = A sin(ωx + φ)', 'Сдвиги графика y = A sin(ωx + φ)'),
+  intro: T('Changing the formula moves or stretches the graph. The exam asks "how do you get graph 2 from graph 1?" (图象平移).', 'Изменение формулы сдвигает или растягивает график. Экзамен спрашивает: «как получить график 2 из графика 1?» (图象平移).'),
+  items: [
+  { t: 'task', id: '4.1', title: T('Where did the peak go?', 'Куда ушла вершина?'),
+    text: T('Compare y = sin x and y = sin(x − π/3). The peak of sin x is where the inside equals π/2.', 'Сравните y = sin x и y = sin(x − π/3). Вершина синуса там, где выражение внутри равно π/2.'),
+    parts: [{ k: 'fig', id: 'shift' },
+      { k: 'blanks', lines: [
+        [T('Peak of sin x: x = ', 'Вершина sin x: x = '), { a: 'π/2', w: 4 }, T('.   Peak of sin(x − π/3): x − π/3 = π/2, so x = ', '.   Вершина sin(x − π/3): x − π/3 = π/2, поэтому x = '), { a: '5π/6', w: 4 }],
+        [T('The graph moved ', 'График сдвинулся '), { a: 'right', sel: LR }, T(' by π/3.', ' на π/3.')]] }],
+    hint: T('π/2 + π/3 = 3π/6 + 2π/6.', 'π/2 + π/3 = 3π/6 + 2π/6.') },
+  { t: 'notice', id: 'n4', rule: T('y = f(x − c) is the graph of f moved **right** by c; y = f(x + c) is moved **left** by c ("left add, right subtract": 左加右减). The change acts on x itself.', 'y = f(x − c) — это график f, сдвинутый **вправо** на c; y = f(x + c) — сдвинутый **влево** на c («влево — плюс, вправо — минус»: 左加右减). Изменение действует на сам x.') },
+  { t: 'task', id: '4.2', title: T('The trap with ω', 'Ловушка с ω'),
+    text: T('y = sin(2x + π/3) = sin 2(x + π/6). Start from y = sin 2x.', 'y = sin(2x + π/3) = sin 2(x + π/6). Начните с y = sin 2x.'),
+    parts: [
+      { k: 'blanks', lines: [[T('The graph of y = sin 2x moves ', 'График y = sin 2x сдвигается '), { a: 'left', sel: LR }, T(' by ', ' на '), { a: 'π/6', w: 4 }]] },
+      { k: 'open', lines: [{ q: T('Why not π/3?', 'Почему не на π/3?'), a: T('The shift acts on x itself. Take 2 out of the bracket: 2x + π/3 = 2(x + π/6), so x is replaced by x + π/6.', 'Сдвиг действует на сам x. Вынесите 2 за скобку: 2x + π/3 = 2(x + π/6), значит, x заменяется на x + π/6.') }] }],
+    hint: T('Take the number in front of x out of the bracket first.', 'Сначала вынесите число перед x за скобку.') },
+  { t: 'task', id: '4.3', title: T('Read A, ω and φ', 'Найдите A, ω и φ'),
+    text: T('y = 3 sin(2x − π/4) + 1.', 'y = 3 sin(2x − π/4) + 1.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('Largest value ', 'Наибольшее значение '), { a: '4', w: 3 }, T('   smallest value ', '   наименьшее значение '), { a: '-2', w: 3 }, T('   period ', '   период '), { a: 'π', w: 3 }],
+      [T('The first peak to the right of 0 is where 2x − π/4 = π/2, so x = ', 'Первая вершина справа от 0 там, где 2x − π/4 = π/2, поэтому x = '), { a: '3π/8', w: 4 }]] }],
+    hint: T('3 sin(…) lies between −3 and 3; then add 1. Period = 2π/ω.', '3 sin(…) лежит между −3 и 3; затем прибавьте 1. Период = 2π/ω.') }
+  ]},
+
+/* ================= PART 5 ================= */
+{ id: 5, title: T('Solving triangles', 'Решение треугольников'),
+  intro: T('In any triangle ABC, two laws connect the sides and the angles: the law of sines 正弦定理 and the law of cosines 余弦定理. Find both from examples.', 'В любом треугольнике ABC стороны и углы связывают две теоремы: теорема синусов 正弦定理 и теорема косинусов 余弦定理. Найдите обе на примерах.'),
+  items: [
+  { t: 'task', id: '5.1', title: T('Divide each side by the sine of its angle', 'Разделите сторону на синус противолежащего угла'),
+    text: T('Two right triangles. Compute side ÷ sine of the opposite angle.', 'Два прямоугольных треугольника. Вычислите сторону ÷ синус противолежащего угла.'),
+    parts: [{ k: 'fig', id: 'tri' },
+      { k: 'table', head: [T('Triangle', 'Треугольник'), 'a / sin A', 'b / sin B', 'c / sin C'], rows: [
+        [T('A = 30°, B = 60°, C = 90°; a = 1, b = √3, c = 2', 'A = 30°, B = 60°, C = 90°; a = 1, b = √3, c = 2'), { a: '2' }, { a: '2' }, { a: '2' }],
+        [T('A = 45°, B = 45°, C = 90°; a = 1, b = 1, c = √2', 'A = 45°, B = 45°, C = 90°; a = 1, b = 1, c = √2'), { a: '√2' }, { a: '√2' }, { a: '√2' }]] }],
+    hint: T('1 ÷ (1/2) = 2. 1 ÷ (√2/2) = 2/√2 = √2.', '1 ÷ (1/2) = 2. 1 ÷ (√2/2) = 2/√2 = √2.') },
+  { t: 'notice', id: 'n5', rule: T('Law of sines: a / sin A = b / sin B = c / sin C = 2R, where R is the radius of the circumscribed circle. Use it when you know two angles and a side, or two sides and the angle opposite one of them.', 'Теорема синусов: a / sin A = b / sin B = c / sin C = 2R, где R — радиус описанной окружности. Применяйте её, когда известны два угла и сторона или две стороны и угол напротив одной из них.') },
+  { t: 'task', id: '5.2', title: T('Pythagoras with a correction', 'Пифагор с поправкой'),
+    text: T('Pythagoras works only when C = 90°. Measure how far off it is for other angles.', 'Теорема Пифагора верна только при C = 90°. Измерьте, насколько она ошибается при других углах.'),
+    parts: [{ k: 'table', head: ['a, b, C', 'c', 'a² + b²', 'c²', 'a² + b² − c²', '2ab·cos C'], rows: [
+      ['3, 4, 90°', '5', { a: '25' }, { a: '25' }, { a: '0' }, { a: '0' }],
+      ['1, 1, 60°', '1', { a: '2' }, { a: '1' }, { a: '1' }, { a: '1' }],
+      ['1, 1, 120°', '√3', { a: '2' }, { a: '3' }, { a: '-1' }, { a: '-1' }]] }],
+    hint: T('cos 60° = 1/2 and cos 120° = −1/2. (√3)² = 3.', 'cos 60° = 1/2 и cos 120° = −1/2. (√3)² = 3.') },
+  { t: 'notice', id: 'n5b', rule: T('Law of cosines: c² = a² + b² − 2ab·cos C, or cos C = (a² + b² − c²) / (2ab). Use it when you know three sides, or two sides and the angle between them.', 'Теорема косинусов: c² = a² + b² − 2ab·cos C, или cos C = (a² + b² − c²) / (2ab). Применяйте её, когда известны три стороны или две стороны и угол между ними.') },
+  { t: 'task', id: '5.3', title: T('Try it', 'Попробуйте сами'),
+    text: T('Choose the right law each time. Angles in radians.', 'Каждый раз выберите нужную теорему. Углы — в радианах.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('(a) a = 3, b = 5, C = 2π/3. Then c² = ', '(a) a = 3, b = 5, C = 2π/3. Тогда c² = '), { a: '49', w: 3 }, ', c = ', { a: '7', w: 3 }],
+      [T('(b) The sides are 3, 5 and 7. The largest angle is opposite 7; its cosine is ', '(b) Стороны равны 3, 5 и 7. Наибольший угол лежит напротив 7; его косинус равен '), { a: '-1/2', w: 4 }, T(', so the angle is ', ', значит, угол равен '), { a: '2π/3', w: 4 }],
+      [T('(c) A = π/4, B = π/3, a = 2. Then b = ', '(c) A = π/4, B = π/3, a = 2. Тогда b = '), { a: '√6', w: 4 }],
+      [T('(d) Area: a = 4, b = 5, C = π/6. S = ½ab·sin C = ', '(d) Площадь: a = 4, b = 5, C = π/6. S = ½ab·sin C = '), { a: '5', w: 3 }]] }],
+    hint: T('(a) cos(2π/3) = −1/2, so −2ab·cos C = +15. (c) b = a·sin B / sin A.', '(a) cos(2π/3) = −1/2, поэтому −2ab·cos C = +15. (c) b = a·sin B / sin A.') },
+  { t: 'note', label: T('Careful', 'Осторожно'), text: T('The largest side is opposite the largest angle. If cos C < 0, the angle C is obtuse. A + B + C = π, so sin(A + B) = sin C.', 'Наибольшая сторона лежит напротив наибольшего угла. Если cos C < 0, угол C тупой. A + B + C = π, поэтому sin(A + B) = sin C.') }
+  ]}
+];
+
+const EXAM = [
+  { part: 1, q: T('2π/3 radians in degrees is', '2π/3 радиан в градусах —'), o: ['60°', '120°', '135°', '150°'], a: 1 },
+  { part: 2, q: T('sin α = 4/5 and π/2 < α < π. Then tan α =', 'sin α = 4/5 и π/2 < α < π. Тогда tan α ='), o: ['4/3', '3/4', '−4/3', '−3/4'], a: 2 },
+  { part: 2, q: T('tan α = 3. Then (sin α + cos α)/(sin α − cos α) =', 'tan α = 3. Тогда (sin α + cos α)/(sin α − cos α) ='), o: ['2', '−2', '1/2', '4'], a: 0 },
+  { part: 2, q: T('sin α = 1/3. Then cos(π/2 + α) =', 'sin α = 1/3. Тогда cos(π/2 + α) ='), o: ['1/3', '2√2/3', '−2√2/3', '−1/3'], a: 3 },
+  { part: 3, q: 'sin 15° · cos 15° =', o: ['1/2', '1/4', '√3/4', '√3/2'], a: 1 },
+  { part: 3, q: 'cos²(π/8) − sin²(π/8) =', o: ['√2/2', '1/2', '−√2/2', '1'], a: 0 },
+  { part: 3, q: T('The largest value of y = sin x + √3 cos x is', 'Наибольшее значение y = sin x + √3 cos x равно'), o: ['1 + √3', '√3', '4', '2'], a: 3 },
+  { part: 3, q: T('The minimum positive period of y = sin x cos x is', 'Наименьший положительный период y = sin x cos x равен'), o: ['π/2', '2π', 'π', '4π'], a: 2 },
+  { part: 4, q: T('To get the graph of y = sin(2x + π/3) from the graph of y = sin 2x, move it', 'Чтобы получить график y = sin(2x + π/3) из графика y = sin 2x, его нужно сдвинуть'), o: [T('left by π/3', 'влево на π/3'), T('left by π/6', 'влево на π/6'), T('right by π/6', 'вправо на π/6'), T('right by π/3', 'вправо на π/3')], a: 1 },
+  { part: 5, q: T('In △ABC, a = 3, b = 5, c = 7. Then C =', 'В △ABC a = 3, b = 5, c = 7. Тогда C ='), o: ['π/3', 'π/6', '5π/6', '2π/3'], a: 3 },
+  { part: 5, q: T('In △ABC, A = 30°, B = 45°, a = 1. Then b =', 'В △ABC A = 30°, B = 45°, a = 1. Тогда b ='), o: ['√2', '√2/2', '√3', '2'], a: 0 },
+  { part: 5, q: T('In △ABC, a = 2, b = 3, C = 60°. The area is', 'В △ABC a = 2, b = 3, C = 60°. Площадь равна'), o: ['3', '3√3', '3√3/2', '3/2'], a: 2 }
+];
+
+const TOPICS = [
+  [T('Radians, signs by quadrant 弧度制 / 象限', 'Радианы, знаки по четвертям 弧度制 / 象限'), 1, '"Convert 120° to radians"; "the terminal side of α is in quadrant …"'],
+  [T('sin² + cos² = 1, reduction formulas 同角关系 / 诱导公式', 'sin² + cos² = 1, формулы приведения 同角关系 / 诱导公式'), 2, '"Given sin α = 3/5, α ∈ (π/2, π), then tan α ="'],
+  [T('Sum and double angle 两角和差 / 二倍角', 'Сумма и двойной угол 两角和差 / 二倍角'), 3, '"sin 15° cos 15° ="; "the maximum value of the function … is"'],
+  [T('Graph shifts 图象平移', 'Сдвиги графиков 图象平移'), 4, '"To obtain the graph of …, shift the graph of … to the left by"'],
+  [T('Laws of sines and cosines 正弦定理 / 余弦定理', 'Теоремы синусов и косинусов 正弦定理 / 余弦定理'), 5, '"In △ABC, a = …, b = …, c = …, then C ="']
+];
+
+</script>
+<script>
+/* Engine for every CSCA investigation sheet. No external dependencies.
+   Globals set by build.py: SUBJECT (subject.json), NAV (links). Set by the sheet: SHEET, PARTS, EXAM, TOPICS. */
+(function () {
+  const KEY = SHEET.key;
+  let state = { lang: null, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false } };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  /* saved exam answers are option indices: if the questions or option order change, start the exam fresh */
+  const EXAMSIG = (() => { let x = 5381; const t = EXAM.map(q => q.a + ':' + q.o.map(o => typeof o === 'string' ? o : o.en).join('|')).join('#');
+    for (let i = 0; i < t.length; i++) x = (x * 33 + t.charCodeAt(i)) >>> 0; return x.toString(36); })();
+  if (state.quiz.sig !== EXAMSIG) state.quiz = { ans: {}, checked: false, sig: EXAMSIG };
+  const SUBJ = (typeof SUBJECT !== 'undefined' && SUBJECT) || {};
+  const LINKS = (typeof NAV !== 'undefined' && NAV) || {};
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem('csca-lang', state.lang);
+      const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+      if (total) localStorage.setItem('csca-progress:' + KEY, JSON.stringify({ done, total, quiz: state.quiz.checked ? state.quiz.score : null, n: EXAM.length }));
+    } catch (e) {}
+  }
+  try { const g = localStorage.getItem('csca-lang'); if (g === 'en' || g === 'ru') state.lang = g; } catch (e) {}
+  if (!state.lang) state.lang = /^ru|^kk|^uk|^be/i.test(navigator.language || '') ? 'ru' : 'en';
+  let lang = state.lang;
+  const ui = () => UI[lang];
+  const tr = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] != null ? v[lang] : v.en));
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(c)); }
+    return el;
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fmt = (s) => esc(tr(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const P = (s, cls) => h('p', { class: cls, html: fmt(s) });
+
+  /* ---------- answer checking ---------- */
+  const NONE = /^(none|no value|undefined|undef|dne|n\/a|нет|нет значения|не существует|не определено|нет ответа|∅|—|–|x|✗)$/i;
+  function num(raw) {
+    let s = String(raw).toLowerCase().trim()
+      .replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+      .replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, '');
+    if (!s) return NaN;
+    s = s.replace(/π|pi/g, 'P').replace(/√|sqrt/g, 'S');
+    s = s.replace(/S(\d+(\.\d+)?|P)/g, 'Math.sqrt($1)').replace(/S\(/g, 'Math.sqrt(');
+    s = s.replace(/P/g, 'Math.PI');
+    s = s.replace(/(\d|\))(?=Math|\()/g, '$1*');
+    if (!/^[0-9+\-*/().]*$/.test(s.replace(/Math\.sqrt|Math\.PI/g, '1'))) return NaN;
+    try { const v = Function('"use strict";return (' + s + ')')(); return typeof v === 'number' && isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+  }
+  const norm = (s) => String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[()]/g, '');
+  function isCorrect(f, val) {
+    val = String(val == null ? '' : val).trim();
+    if (!val) return false;
+    if (f.sel) return val === f.exp;
+    if (f.exp === 'none') return NONE.test(val);
+    if (NONE.test(val)) return false;
+    const e = num(f.exp), v = num(val);
+    if (!isNaN(e) && !isNaN(v)) return Math.abs(e - v) < 1e-3;
+    return norm(val) === norm(f.exp);
+  }
+
+  /* ---------- figures (inline SVG) ---------- */
+  function plot(o) {
+    const W = o.w || 360, H = o.h || 250, m = { l: 30, r: 12, t: 14, b: 26 };
+    const X = (x) => m.l + (x - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const Y = (y) => H - m.b - (y - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="${esc(o.label || 'graph')}">`;
+    const ax0 = Y(Math.max(o.y0, Math.min(0, o.y1))), ay0 = X(Math.max(o.x0, Math.min(0, o.x1)));
+    s += `<line class="ax" x1="${m.l}" y1="${ax0}" x2="${W - m.r}" y2="${ax0}"/><line class="ax" x1="${ay0}" y1="${m.t}" x2="${ay0}" y2="${H - m.b}"/>`;
+    (o.xt || []).forEach(t => { const x = X(t.v);
+      if (o.xlow) s += `<line class="grid" x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}"/><text class="tl" x="${x}" y="${H - 8}" text-anchor="middle">${t.l}</text>`;
+      else s += `<line class="tk" x1="${x}" y1="${ax0 - 3}" x2="${x}" y2="${ax0 + 3}"/><text class="tl" x="${x}" y="${ax0 + 15}" text-anchor="middle">${t.l}</text>`; });
+    (o.yt || []).forEach(t => { const y = Y(t.v); s += `<line class="tk" x1="${ay0 - 3}" y1="${y}" x2="${ay0 + 3}" y2="${y}"/><text class="tl" x="${ay0 - 6}" y="${y + 4}" text-anchor="end">${t.l}</text>`; });
+    (o.vlines || []).forEach(v => { s += `<line class="asy" x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H - m.b}"/>`; });
+    (o.curves || []).forEach(c => {
+      let d = '', pen = false, py = null; const N = 500;
+      for (let i = 0; i <= N; i++) {
+        const x = c.x0 != null ? c.x0 + (c.x1 - c.x0) * i / N : o.x0 + (o.x1 - o.x0) * i / N, y = c.f(x);
+        const bad = !isFinite(y) || y < o.y0 - 0.5 || y > o.y1 + 0.5 || (py != null && Math.abs(y - py) > (o.y1 - o.y0) * 0.6);
+        if (bad) { pen = false; py = null; continue; }
+        d += (pen ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; py = y;
+      }
+      s += `<path d="${d}" class="cv ${c.cls || 'c1'}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`;
+    });
+    (o.segs || []).forEach(g => { s += `<line class="asy" x1="${X(g[0])}" y1="${Y(g[1])}" x2="${X(g[2])}" y2="${Y(g[3])}"/>`; });
+    (o.pts || []).forEach(p => {
+      s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" class="${p.hollow ? 'pt hol' : 'pt'}"/>`;
+      if (p.l) s += `<text class="pl" x="${X(p.x) + (p.dx || 7)}" y="${Y(p.y) + (p.dy || -7)}" text-anchor="${p.anc || 'start'}">${p.l}</text>`;
+    });
+    (o.tx || []).forEach(t => { s += `<text class="cl ${t.cls || ''}" x="${X(t.x)}" y="${Y(t.y)}" text-anchor="${t.anc || 'start'}">${t.t}</text>`; });
+    return s + '</svg>';
+  }
+  const piT = (a, b) => { const r = []; for (let k = a; k <= b; k++) if (k) r.push({ v: k * Math.PI, l: (k === 1 ? '' : k === -1 ? '−' : k) + 'π' }); return r; };
+  const FIGS = SHEET.figs ? SHEET.figs({ h, plot, piT, esc }) : {};
+
+  /* ---------- rendering ---------- */
+  const root = document.getElementById('app');
+  const EXAMID = PARTS.length + 1;
+  let tasksIndex = [];     // {id, el, ctx}
+  let uid = 0;
+
+  function selOptions(opts) { return opts.map(o => typeof o === 'string' ? { v: o, t: o } : o.en != null ? { v: o.k, t: tr(o) } : { v: o.k, t: ui().opt[o.k] }); }
+
+  function buildTask(it) {
+    const ctx = { id: it.id, fields: [], opens: [], el: null, msg: null };
+    const st = (state.tasks[it.id] = state.tasks[it.id] || {});
+    const key = (pi, n) => `${it.id}|${pi}|${n}`;
+    const card = h('article', { class: 'card task', id: 't' + it.id.replace('.', '-') });
+    ctx.el = card;
+    const head = h('div', { class: 'thead' }, h('span', { class: 'tnum' }, ui().task + ' ' + it.id), h('span', { class: 'ttitle' }, tr(it.title)), h('span', { class: 'tdone', 'aria-hidden': 'true' }, '✓'));
+    card.append(head, P(it.text, 'ttext'));
+
+    const mkField = (pi, n, spec, extra) => {
+      const k = key(pi, n);
+      let el, f;
+      if (spec.sel) {
+        const opts = selOptions(spec.sel);
+        el = h('select', { class: 'fld sel', 'aria-label': 'answer' }, h('option', { value: '' }, '—'), opts.map(o => h('option', { value: o.v }, o.t)));
+        f = { el, exp: spec.a, sel: true };
+      } else {
+        el = h('input', { class: 'fld', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', style: spec.w ? `width:${spec.w + 1.2}em` : null, 'aria-label': 'answer' });
+        f = { el, exp: spec.a };
+      }
+      el.value = state.inputs[k] || '';
+      el.addEventListener('input', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); st.checked = false; save(); });
+      el.addEventListener('change', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); save(); });
+      f.key = k; ctx.fields.push(f);
+      return el;
+    };
+
+    it.parts.forEach((part, pi) => {
+      let n = 0;
+      if (part.k === 'html') card.append(h('div', { html: typeof part.html === 'string' ? part.html : tr(part.html) }));
+      else if (part.k === 'fig') card.append(FIGS[part.id]());
+      else if (part.k === 'table') {
+        const tbl = h('table', { class: 'tbl' });
+        tbl.append(h('thead', null, h('tr', null, part.head.map(c => h('th', null, tr(c))))));
+        const tb = h('tbody');
+        part.rows.forEach(r => tb.append(h('tr', null, r.map((c, ci) => ci === 0 ? h('th', { scope: 'row' }, tr(c)) : (typeof c === 'string' ? h('td', null, c) : h('td', null, mkField(pi, n++, c)))))));
+        tbl.append(tb); card.append(h('div', { class: 'tw' }, tbl));
+      } else if (part.k === 'blanks') {
+        part.lines.forEach(line => card.append(h('p', { class: 'bl' }, line.map(seg => typeof seg === 'string' ? seg : seg.en != null ? tr(seg) : mkField(pi, n++, seg)))));
+      } else if (part.k === 'mc') {
+        const k = key(pi, 0), box = h('div', { class: 'mc' });
+        box.append(P(part.q, 'mcq'));
+        const f = { key: k, mc: true, exp: String(part.a), btns: [] };
+        part.opts.forEach((o, i) => {
+          const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': 'false' }, h('span', { class: 'lab' }, 'abcd'[i] + ')'), h('span', null, tr(o)));
+          b.addEventListener('click', () => { state.inputs[k] = String(i); f.btns.forEach((x, j) => { x.setAttribute('aria-pressed', String(i === j)); x.classList.remove('ok', 'bad'); }); st.checked = false; save(); });
+          if (state.inputs[k] === String(i)) b.setAttribute('aria-pressed', 'true');
+          f.btns.push(b); box.append(b);
+        });
+        ctx.fields.push(f); card.append(box);
+      } else if (part.k === 'open') {
+        part.lines.forEach((ln, li) => {
+          const k = key(pi, 'o' + li);
+          const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().mine, 'aria-label': ui().mine });
+          ta.value = state.inputs[k] || '';
+          ta.addEventListener('input', () => { state.inputs[k] = ta.value; save(); });
+          const ans = h('div', { class: 'ref', hidden: true }, h('b', null, ui().ref + ': '), h('span', { html: fmt(ln.a) }));
+          card.append(h('div', { class: 'open' }, P(ln.q, 'oq'), ta, ans));
+          ctx.opens.push({ ans, k: key(pi, 'o' + li) });
+        });
+      }
+    });
+
+    const msg = h('div', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+    ctx.msg = msg;
+    const tickRow = h('div', { class: 'tick', hidden: true });
+    const tickBtn = h('button', { type: 'button', class: 'btn tickbtn' });
+    const updTick = () => { const on = st.self; tickBtn.textContent = on ? '✓ ' + ui().gotItOn : ui().gotIt; tickBtn.setAttribute('aria-pressed', String(!!on)); };
+    tickBtn.addEventListener('click', () => { st.self = !st.self; updTick(); recalc(it, ctx); save(); });
+    tickRow.append(tickBtn); updTick();
+    ctx.tickRow = tickRow;
+
+    const hintBox = h('div', { class: 'hintbox', hidden: true }, h('b', null, ui().hint + ': '), tr(it.hint));
+    const bar = h('div', { class: 'acts' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => doCheck(it, ctx) }, ui().check),
+      it.hint ? h('button', { type: 'button', class: 'btn', onclick: () => { hintBox.hidden = !hintBox.hidden; } }, ui().hint) : null,
+      h('button', { type: 'button', class: 'btn ghost', onclick: () => doShow(it, ctx) }, ui().showAns));
+    card.append(bar, hintBox, msg, tickRow);
+    if (st.checked) { applyMarks(ctx, false); revealOpens(ctx); }
+    else if (st.revealed) revealOpens(ctx);
+    if (st.done) card.classList.add('done');
+    return card;
+  }
+
+  function applyMarks(ctx, say) {
+    let good = 0, total = ctx.fields.length, empty = 0;
+    ctx.fields.forEach(f => {
+      if (f.mc) {
+        const v = state.inputs[f.key]; if (v == null) { empty++; return; }
+        const ok = v === f.exp; if (ok) good++;
+        f.btns.forEach((b, i) => { b.classList.remove('ok', 'bad'); if (String(i) === v) b.classList.add(ok ? 'ok' : 'bad'); if (ok && String(i) === v) b.classList.add('ok'); });
+        return;
+      }
+      const v = state.inputs[f.key] || '';
+      if (!v.trim()) { empty++; f.el.classList.remove('ok'); f.el.classList.add('bad'); return; }
+      const ok = isCorrect(f, v); if (ok) good++;
+      f.el.classList.toggle('ok', ok); f.el.classList.toggle('bad', !ok);
+    });
+    return { good, total, empty };
+  }
+  function revealOpens(ctx) { ctx.opens.forEach(o => { o.ans.hidden = false; }); if (ctx.opens.length) ctx.tickRow.hidden = false; }
+
+  function doCheck(it, ctx) {
+    const st = state.tasks[it.id];
+    const r = applyMarks(ctx, true);
+    st.checked = true; st.revealed = true; revealOpens(ctx);
+    st.auto = ctx.fields.length === 0 ? true : r.good === r.total;
+    if (ctx.fields.length) {
+      if (r.empty && r.good < r.total && r.empty === r.total - r.good) ctx.msg.textContent = ui().fill;
+      else ctx.msg.textContent = r.good === r.total ? ui().allGood : ui().some(r.good, r.total);
+      ctx.msg.className = 'msg ' + (r.good === r.total ? 'good' : 'warn');
+    } else { ctx.msg.textContent = ''; }
+    recalc(it, ctx); save();
+  }
+  function doShow(it, ctx) {
+    const st = state.tasks[it.id];
+    ctx.fields.forEach(f => {
+      if (f.mc) { state.inputs[f.key] = f.exp; f.btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(String(i) === f.exp)); b.classList.remove('bad'); b.classList.toggle('ok', String(i) === f.exp); }); return; }
+      const shown = f.sel ? f.exp : (f.exp === 'none' ? ui().none : f.exp.replace(/^-/, '−'));
+      f.el.value = f.sel ? f.exp : shown; state.inputs[f.key] = f.el.value;
+      f.el.classList.remove('bad'); f.el.classList.add('ok');
+    });
+    st.checked = true; st.revealed = true; st.shown = true; revealOpens(ctx);
+    ctx.msg.textContent = ''; save();
+  }
+  function recalc(it, ctx) {
+    const st = state.tasks[it.id];
+    const hasOpen = ctx.opens.length > 0, hasAuto = ctx.fields.length > 0;
+    const ok = (!hasAuto || (st.auto && !st.shown)) && (!hasOpen || st.self);
+    st.done = !!ok;
+    ctx.el.classList.toggle('done', st.done);
+    updateProgress(); save();
+  }
+
+  function buildNotice(it) {
+    const st = (state.notices[it.id] = state.notices[it.id] || { text: '', open: false });
+    const card = h('article', { class: 'card notice' });
+    const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().noticePh, 'aria-label': ui().notice });
+    ta.value = st.text || '';
+    const ruleBox = h('div', { class: 'rulebox' }, h('b', null, ui().rule + '. '), h('span', { html: fmt(it.rule) }));
+    const btn = h('button', { type: 'button', class: 'btn primary' }, '🔒 ' + ui().showRule);
+    const stuck = h('button', { type: 'button', class: 'linkbtn' }, ui().stuck);
+    const sync = () => { const open = st.open || (ta.value.trim().length >= 8); ruleBox.hidden = !open; btn.disabled = open; btn.hidden = open; stuck.hidden = open; };
+    ta.addEventListener('input', () => { st.text = ta.value; if (ta.value.trim().length >= 8) st.open = true; sync(); save(); });
+    btn.addEventListener('click', () => { st.open = true; sync(); save(); });
+    stuck.addEventListener('click', () => { st.open = true; sync(); save(); });
+    btn.disabled = true;
+    card.append(h('div', { class: 'nlabel' }, '✎ ' + ui().notice), ta, h('div', { class: 'acts' }, stuck), ruleBox);
+    // before the writing is long enough the "show" button stays hidden; students can still press the link below the box
+    sync();
+    return card;
+  }
+
+  function buildExam() {
+    const sec = h('section', { class: 'part', id: 'part-' + EXAMID });
+    sec.append(h('h2', null, `${EXAMID}. ${ui().exam}`));
+    const ex = SUBJ.exam || { questions: 48, minutes: 60 };
+    const per = Math.round(ex.minutes * 60 / ex.questions);
+    const mins = Math.max(1, Math.ceil(EXAM.length * per / 60)), full = mins * 60;
+    sec.append(P(ui().examIntro(ex.minutes, ex.questions, per, mins, EXAM.length)));
+    const mm = String(mins).padStart(2, '0') + ':00';
+    const timer = h('span', { class: 'timer', role: 'timer' }, mm);
+    let tick = null, left = full;
+    const tbtn = h('button', { type: 'button', class: 'btn' }, ui().start(mm));
+    const drawT = () => { timer.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); timer.classList.toggle('low', left < 60); };
+    tbtn.addEventListener('click', () => {
+      if (tick) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); return; }
+      left = full; drawT(); tbtn.textContent = ui().stop;
+      tick = setInterval(() => { left--; drawT(); if (left <= 0) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); timer.textContent = ui().timeUp; } }, 1000);
+    });
+    sec.append(h('div', { class: 'timerrow' }, tbtn, timer));
+    const qs = state.quiz;
+    const cards = [];
+    EXAM.forEach((q, i) => {
+      const card = h('article', { class: 'card q' });
+      card.append(h('div', { class: 'qq' }, h('span', { class: 'qn' }, (i + 1) + '.'), h('span', null, tr(q.q)), h('span', { class: 'qpart' }, `(${ui().part.toLowerCase()} ${q.part})`)));
+      const opts = h('div', { class: 'qopts' }); const btns = [];
+      q.o.forEach((o, j) => {
+        const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': String(qs.ans[i] === j) }, h('span', { class: 'lab' }, 'abcd'[j] + ')'), h('span', null, tr(o)));
+        b.addEventListener('click', () => { qs.ans[i] = j; qs.checked = false; btns.forEach((x, k) => { x.setAttribute('aria-pressed', String(k === j)); x.classList.remove('ok', 'bad'); }); fb.textContent = ''; result.textContent = ''; save(); });
+        btns.push(b); opts.append(b);
+      });
+      const fb = h('div', { class: 'qfb' });
+      card.append(opts, fb); cards.push({ btns, fb, q, i }); sec.append(card);
+    });
+    const result = h('div', { class: 'result', role: 'status', 'aria-live': 'polite' });
+    const mark = () => {
+      let sc = 0;
+      cards.forEach(({ btns, fb, q, i }) => {
+        const a = qs.ans[i]; btns.forEach(b => b.classList.remove('ok', 'bad'));
+        if (a == null) { fb.textContent = lang === 'ru' ? 'Нет ответа' : 'No answer'; fb.className = 'qfb bad'; return; }
+        if (a === q.a) { sc++; btns[a].classList.add('ok'); fb.textContent = '✓'; fb.className = 'qfb good'; }
+        else { btns[a].classList.add('bad'); fb.className = 'qfb bad'; fb.innerHTML = `✗ ${ui().review}: <a href="#part-${q.part}">${lang === 'ru' ? 'часть' : 'Part'} ${q.part}</a>`; }
+      });
+      result.textContent = ui().score(sc, EXAM.length); qs.checked = true; qs.score = sc; save();
+    };
+    const go = h('button', { type: 'button', class: 'btn primary', onclick: mark }, ui().checkAll);
+    const again = h('button', { type: 'button', class: 'btn', onclick: () => { qs.ans = {}; qs.checked = false; save(); render(); document.getElementById('part-' + EXAMID).scrollIntoView(); } }, ui().again);
+    sec.append(h('div', { class: 'acts' }, go, again), result);
+    if (qs.checked) mark();
+    return sec;
+  }
+
+  function updateProgress() {
+    const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const b = document.getElementById('pbar'); if (b) b.style.width = pct + '%';
+    const t = document.getElementById('ptxt'); if (t) t.textContent = `${done} / ${total}`;
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.title = tr(SHEET.title);
+    tasksIndex = [];
+    root.textContent = '';
+    /* top bar */
+    const langSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Language' }, ['en', 'ru'].map(l => h('button', { type: 'button', 'aria-pressed': String(l === lang), onclick: () => { lang = state.lang = l; save(); render(); } }, l === 'en' ? 'EN' : 'RU')));
+    let rs = false, rt = null;
+    const resetBtn = h('button', { type: 'button', class: 'btn ghost small' }, ui().reset);
+    resetBtn.addEventListener('click', () => {
+      if (!rs) { rs = true; resetBtn.textContent = ui().resetSure; rt = setTimeout(() => { rs = false; resetBtn.textContent = ui().reset; }, 3500); return; }
+      clearTimeout(rt); state = { lang, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false, sig: EXAMSIG } }; save(); render(); window.scrollTo(0, 0);
+    });
+    const top = h('header', { class: 'topbar' }, h('div', { class: 'topin' },
+      LINKS.subject ? h('a', { class: 'back', href: LINKS.subject, 'aria-label': ui().back }, '← ' + ui().topics) : null,
+      h('div', { class: 'brand' }, h('span', { class: 'bt' }, tr(SHEET.title))),
+      h('div', { class: 'prog', 'aria-label': ui().progress }, h('div', { class: 'ptxtrow' }, h('span', null, ui().progress), h('span', { id: 'ptxt' }, '0 / 0')), h('div', { class: 'bar' }, h('span', { id: 'pbar' }))),
+      langSeg, resetBtn),
+      h('nav', { class: 'chips', 'aria-label': ui().parts }, PARTS.map(p => h('a', { href: '#part-' + p.id }, p.id + '')), h('a', { href: '#part-' + EXAMID }, String(EXAMID))));
+    root.append(top);
+    const wrap = h('main', { class: 'wrap' });
+    wrap.append(h('h1', null, tr(SHEET.title)), h('p', { class: 'sub' }, tr(SHEET.sub)));
+    /* how to use */
+    const how = h('section', { class: 'card how' }, h('h2', null, ui().howTitle), h('ol', null, ui().steps.map(s => h('li', { html: fmt(s) }))), P(SHEET.stats));
+    const tt = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, ui().topic), h('th', null, ui().partCol), h('th', null, ui().wording))),
+      h('tbody', null, TOPICS.map(r => h('tr', null, h('td', null, tr(r[0])), h('td', null, h('a', { href: '#part-' + r[1] }, r[1] + '')), h('td', { class: 'wd' }, r[2])))));
+    how.append(h('div', { class: 'tw' }, tt), P(SHEET.symbols, 'small'), P(ui().photoNote, 'small'));
+    wrap.append(how);
+    PARTS.forEach(p => {
+      const sec = h('section', { class: 'part', id: 'part-' + p.id }, h('h2', null, h('span', { class: 'pn' }, ui().part + ' ' + p.id + '.'), ' ' + tr(p.title)), P(p.intro, 'intro'));
+      p.items.forEach(it => {
+        if (it.t === 'task') { const el = buildTask(it); tasksIndex.push({ id: it.id }); sec.append(el); }
+        else if (it.t === 'notice') sec.append(buildNotice(it));
+        else if (it.t === 'rule') sec.append(h('div', { class: 'rulebox plain' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'worked') sec.append(h('div', { class: 'worked' }, h('b', null, ui().worked + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'note') sec.append(h('div', { class: 'careful' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+      });
+      wrap.append(sec);
+    });
+    wrap.append(buildExam());
+    if (LINKS.next) wrap.append(h('p', { class: 'nextlink' }, h('a', { href: LINKS.next.href }, ui().next + ': ' + tr(LINKS.next.title) + ' →')));
+    root.append(wrap);
+    updateProgress();
+  }
+  render();
+  save();
+  if (window.__FN_TEST) window.__fnt = { num, isCorrect };
+})();
+
+</script>
+</body>
+</html>

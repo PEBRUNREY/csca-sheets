@@ -1,0 +1,392 @@
+/* Sheet: Functions (CSCA Mathematics). Everything specific to this topic lives in this file.
+   Uses helpers from engine/ui.js: T(en, ru), O(), YN, SON, MON, mini(). */
+const SHEET = {
+  key: 'csca-functions-sheet-v1',            // localStorage key: change it for every new sheet
+  title: T('Investigation sheet: Functions', 'Исследовательский лист: функции'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('Functions are about 8 to 10 of the 48 questions in each of the five 2025–2026 CSCA papers (December 2025, then January, March, April and June 2026). The same few question types come back every time:',
+           'Функции — это около 8–10 из 48 вопросов в каждой из пяти работ CSCA 2025–2026 (декабрь 2025, затем январь, март, апрель и июнь 2026). Одни и те же типы вопросов повторяются каждый раз:'),
+  symbols: T('Symbols: √ is the square root, lg x is the logarithm of x to base 10, ∞ is infinity. An interval (a, b) leaves out its ends, [a, b] includes them. Type fractions like 1/2 and write "none" when there is no value.',
+             'Обозначения: √ — квадратный корень, lg x — логарифм x по основанию 10, ∞ — бесконечность. Интервал (a, b) не включает концы, [a, b] включает. Дроби вводите так: 1/2. Если значения нет, пишите «нет».')
+};
+
+/* Figures: functions that return a DOM node. kit = { h, plot, piT }. */
+  SHEET.figs = ({ h, plot, piT }) => ({
+    parity() {
+      const a = plot({ label: 'y = x squared', x0: -3, x1: 3, y0: -1, y1: 10, xt: [-2, -1, 1, 2].map(v => ({ v, l: v < 0 ? '−' + (-v) : v })), yt: [{ v: 4, l: '4' }, { v: 8, l: '8' }],
+        curves: [{ f: x => x * x, cls: 'c1' }], segs: [[-2, 0, -2, 4], [2, 0, 2, 4]], pts: [{ x: -2, y: 4, l: '(−2, 4)', anc: 'end', dx: -8, dy: -8 }, { x: 2, y: 4, l: '(2, 4)', anc: 'start', dx: 8, dy: -8 }], tx: [{ x: 1.3, y: 9.4, t: 'y = x²', cls: 'c1t' }] });
+      const b = plot({ label: 'y = x cubed', x0: -3, x1: 3, y0: -12, y1: 12, xt: [-2, -1, 1, 2].map(v => ({ v, l: v < 0 ? '−' + (-v) : v })), yt: [{ v: 8, l: '8' }, { v: -8, l: '−8' }],
+        curves: [{ f: x => x * x * x, cls: 'c2' }], segs: [[-2, 0, -2, -8], [2, 0, 2, 8]], pts: [{ x: -2, y: -8, l: '(−2, −8)', anc: 'start', dx: 7, dy: 14 }, { x: 2, y: 8, l: '(2, 8)', anc: 'end', dx: -7, dy: -4 }], tx: [{ x: -2.9, y: 10.5, t: 'y = x³', cls: 'c2t' }] });
+      return h('div', { class: 'figrow' }, h('div', { html: a }), h('div', { html: b }));
+    },
+    inverse() {
+      const s = plot({ label: 'y = 2^x, y = log2 x and the line y = x', w: 420, h: 330, x0: -3, x1: 6, y0: -3, y1: 6.2, xt: [-2, -1, 1, 2, 3, 4, 5].map(v => ({ v, l: v < 0 ? '−' + (-v) : v })), yt: [-2, -1, 1, 2, 3, 4, 5].map(v => ({ v, l: v < 0 ? '−' + (-v) : v })),
+        curves: [{ f: x => Math.pow(2, x), cls: 'c1' }, { f: x => Math.log2(x), cls: 'c2', x0: 0.005, x1: 6 }, { f: x => x, cls: 'c3', dash: true }],
+        segs: [[0, 1, 1, 0], [2, 4, 4, 2]],
+        pts: [{ x: 0, y: 1, l: '(0, 1)', dx: -7, anc: 'end', dy: -7 }, { x: 2, y: 4, l: '(2, 4)', dx: -7, anc: 'end' }, { x: 1, y: 0, hollow: true }, { x: 4, y: 2, hollow: true }],
+        tx: [{ x: -2.9, y: 0.6, t: 'y = 2ˣ', cls: 'c1t' }, { x: 5.9, y: 2.7, t: 'y = log₂ x', cls: 'c2t', anc: 'end' }, { x: 4.4, y: 5.6, t: 'y = x', cls: 'c3t', anc: 'end' }] });
+      return h('div', { class: 'figone', html: s });
+    },
+    trig() {
+      const a = plot({ label: 'sin x and cos x', xlow: true, w: 460, h: 220, x0: -2 * Math.PI - 0.7, x1: 2 * Math.PI + 0.7, y0: -1.5, y1: 1.5, xt: piT(-2, 2), yt: [{ v: 1, l: '1' }, { v: -1, l: '−1' }],
+        curves: [{ f: Math.sin, cls: 'c1' }, { f: Math.cos, cls: 'c2' }], tx: [{ x: 0.2 + Math.PI / 2, y: 1.28, t: 'sin x', cls: 'c1t' }, { x: -0.2, y: 1.28, t: 'cos x', cls: 'c2t', anc: 'end' }] });
+      const b = plot({ label: 'tan x', xlow: true, w: 460, h: 220, x0: -Math.PI - 0.7, x1: Math.PI + 0.7, y0: -3.2, y1: 3.2, xt: piT(-1, 1).concat([{ v: Math.PI / 2, l: 'π/2' }, { v: -Math.PI / 2, l: '−π/2' }]), yt: [{ v: 1, l: '1' }, { v: -1, l: '−1' }],
+        vlines: [-Math.PI / 2, Math.PI / 2], curves: [{ f: Math.tan, cls: 'c3' }], tx: [{ x: 0.35, y: 2.6, t: 'tan x', cls: 'c3t' }] });
+      return h('div', { class: 'figstack' }, h('div', { html: a }), h('div', { html: b }));
+    }
+  });
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('One input, one output', 'Один вход, один выход'),
+  chip: T('Same function', 'Одна функция'),
+  intro: T('A function 函数 takes an input x and gives exactly one output. Two functions are the same (同一函数) only if they accept the same inputs and give the same outputs.',
+           'Функция 函数 берёт вход x и выдаёт ровно один выход. Две функции одинаковы (同一函数), только если у них одинаковые допустимые входы и одинаковые выходы.'),
+  items: [
+  { t: 'task', id: '1.1', title: T('The machine', 'Машина'),
+    text: T('The rule is f(x) = 2x + 1. Fill in the outputs.', 'Правило: f(x) = 2x + 1. Заполните выходы.'),
+    parts: [{ k: 'table', head: ['x', '−2', '−1', '0', '1', '2', '3'], rows: [['f(x)', { a: '-3' }, { a: '-1' }, { a: '1' }, { a: '3' }, { a: '5' }, { a: '7' }]] }],
+    hint: T('Replace x by the number, multiply by 2, then add 1. For x = −2: 2·(−2) + 1.', 'Подставьте число вместо x, умножьте на 2, затем прибавьте 1. Для x = −2: 2·(−2) + 1.') },
+  { t: 'task', id: '1.2', title: T('Could it be a function?', 'Может ли это быть функцией?'),
+    text: T('Look at the two tables. In each one, does any input give two different outputs?', 'Посмотрите на две таблицы. Есть ли в какой-нибудь из них вход, которому соответствуют два разных выхода?'),
+    parts: [
+      mini([['Table A: x', '1', '2', '3'], ['y', '5', '5', '7']]),
+      mini([['Table B: x', '1', '1', '2'], ['y', '4', '6', '8']]),
+      { k: 'blanks', lines: [[T('Table A could be a function: ', 'Таблица A может быть функцией: '), { a: 'yes', sel: YN }], [T('Table B could be a function: ', 'Таблица B может быть функцией: '), { a: 'no', sel: YN }]] }],
+    hint: T('Find the same x written twice. Does it have the same y both times?', 'Найдите x, который встречается дважды. Одинаковый ли у него y?') },
+  { t: 'notice', id: 'n1', rule: T('A function gives exactly one output for each input. Different inputs may share the same output.', 'Функция даёт ровно один выход для каждого входа. Разные входы могут давать один и тот же выход.') },
+  { t: 'task', id: '1.3', title: T('Same function?', 'Одна и та же функция?'),
+    text: T('Fill in the table. If a function has no value at an input, write "none".', 'Заполните таблицу. Если у функции нет значения при этом входе, напишите «нет».'),
+    parts: [
+      { k: 'table', head: [T('Function', 'Функция'), 'x = −3', 'x = 4'], rows: [['y = x', { a: '-3' }, { a: '4' }], ['y = ∣x∣', { a: '3' }, { a: '4' }], ['y = √(x²)', { a: '3' }, { a: '4' }], ['y = (√x)²', { a: 'none' }, { a: '4' }]] },
+      { k: 'mc', q: T('Which two functions agree at both inputs?', 'Какие две функции совпадают в обоих входах?'), opts: ['y = x and y = ∣x∣', 'y = ∣x∣ and y = √(x²)', 'y = x and y = (√x)²', 'y = √(x²) and y = (√x)²'], a: 1 },
+      { k: 'open', lines: [{ q: T('Which function refuses one of the inputs, and why?', 'Какая функция не принимает один из входов, и почему?'), a: T('y = (√x)²: −3 has no real square root.', 'y = (√x)²: у числа −3 нет действительного квадратного корня.') }] }],
+    hint: T('√ of a negative number does not exist. Remember √(x²) always gives a number that is not negative.', 'Корень из отрицательного числа не существует. Помните: √(x²) всегда даёт неотрицательное число.') },
+  { t: 'task', id: '1.4', title: T('Try it', 'Попробуйте сами'),
+    text: T('Are y = x² / x and y = x the same function? Test x = 2 and then x = 0.', 'Одинаковы ли функции y = x² / x и y = x? Проверьте x = 2, затем x = 0.'),
+    parts: [
+      { k: 'blanks', lines: [[T('Same function? ', 'Одна функция? '), { a: 'no', sel: YN }]] },
+      { k: 'open', lines: [{ q: T('Explain in one sentence.', 'Объясните одним предложением.'), a: T('At x = 0, x² / x has no value (division by zero), but y = x gives 0. The allowed inputs are different.', 'При x = 0 у x² / x нет значения (деление на ноль), а y = x даёт 0. Допустимые входы разные.') }] }],
+    hint: T('Compute both at x = 2. Then try x = 0 in each.', 'Вычислите обе функции при x = 2, потом при x = 0.') },
+  { t: 'notice', id: 'n1b', rule: T('Two functions are the same when (1) they allow the same inputs, and (2) they give the same output for every allowed input. On the exam, check the allowed inputs first, then simplify.', 'Две функции одинаковы, когда (1) у них одинаковые допустимые входы и (2) для каждого допустимого входа выходы равны. На экзамене сначала проверьте допустимые входы, потом упрощайте.') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('Domain: which inputs are allowed?', 'Область определения: какие входы разрешены?'),
+  chip: T('Domain 定义域', 'Область определения 定义域'),
+  intro: T('The domain 定义域 is the set of inputs a function accepts. Three things can block an input: zero in a denominator, a negative number under a square root, and a number that is not positive inside a logarithm.',
+           'Область определения 定义域 — это множество входов, которые принимает функция. Вход могут закрыть три вещи: ноль в знаменателе, отрицательное число под корнем и число, не большее нуля, под логарифмом.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Division', 'Деление'),
+    text: T('f(x) = 1 / (x − 2). Fill in the outputs. Write "none" where there is no output.', 'f(x) = 1 / (x − 2). Заполните выходы. Где выхода нет, напишите «нет».'),
+    parts: [
+      { k: 'table', head: ['x', '0', '1', '3', '2'], rows: [['f(x)', { a: '-1/2' }, { a: '-1' }, { a: '1' }, { a: 'none' }]] },
+      { k: 'open', lines: [{ q: T('Which input has no output, and why?', 'Какой вход не имеет выхода, и почему?'), a: T('x = 2, because the denominator becomes 0.', 'x = 2, потому что знаменатель становится равным 0.') }] }],
+    hint: T('For x = 0: 1 / (0 − 2) = 1 / (−2).', 'При x = 0: 1 / (0 − 2) = 1 / (−2).') },
+  { t: 'rule', label: T('Rule A', 'Правило A'), text: T('A denominator can never be 0.', 'Знаменатель не может быть равен 0.') },
+  { t: 'task', id: '2.2', title: T('Square roots', 'Квадратные корни'),
+    text: T('g(x) = √(x + 1). Fill in the outputs.', 'g(x) = √(x + 1). Заполните выходы.'),
+    parts: [
+      { k: 'table', head: ['x', '8', '3', '0', '−1', '−2'], rows: [['g(x)', { a: '3' }, { a: '2' }, { a: '1' }, { a: '0' }, { a: 'none' }]] },
+      { k: 'blanks', lines: [[T('The expression under the root must be ', 'Выражение под корнем должно быть '), { a: '≥ 0', sel: ['> 0', '≥ 0', '≤ 0', '≠ 0'] }]] }],
+    hint: T('For x = −1 the root is √0. For x = −2 it is √(−1).', 'При x = −1 получается √0. При x = −2 получается √(−1).') },
+  { t: 'rule', label: T('Rule B', 'Правило B'), text: T('Under a square root (or any even root) the expression must be greater than or equal to 0.', 'Под квадратным корнем (и под любым корнем чётной степени) выражение должно быть больше или равно 0.') },
+  { t: 'task', id: '2.3', title: T('Logarithms', 'Логарифмы'),
+    text: T('lg x asks: "10 to what power gives x?" Fill in the table.', 'lg x спрашивает: «в какую степень надо возвести 10, чтобы получить x?» Заполните таблицу.'),
+    parts: [
+      { k: 'table', head: ['x', '100', '10', '1', '0', '−10'], rows: [['lg x', { a: '2' }, { a: '1' }, { a: '0' }, { a: 'none' }, { a: 'none' }]] },
+      { k: 'open', lines: [{ q: T('Which inputs fail? Think: can 10 to any power equal 0 or a negative number?', 'Какие входы не подходят? Подумайте: может ли 10 в какой-то степени равняться 0 или отрицательному числу?'), a: T('x = 0 and x = −10. 10 to any power is always positive.', 'x = 0 и x = −10. 10 в любой степени всегда положительно.') }] }],
+    hint: T('10² = 100, so lg 100 = 2. And 10⁰ = 1.', '10² = 100, поэтому lg 100 = 2. А 10⁰ = 1.') },
+  { t: 'rule', label: T('Rule C', 'Правило C'), text: T('The number inside a logarithm must be greater than 0.', 'Число под логарифмом должно быть больше 0.') },
+  { t: 'task', id: '2.4', title: T('Combine the rules', 'Соберите правила вместе'),
+    text: T('For each function, write every condition, solve each one, then keep the x that satisfy all of them. Write the domain with intervals (use ∪ for "or", +∞ for infinity).', 'Для каждой функции запишите все условия, решите каждое и оставьте только те x, которые подходят всем. Запишите область определения интервалами (∪ значит «или», +∞ — бесконечность).'),
+    parts: [
+      { k: 'open', lines: [
+        { q: 'y = √(x − 1) + 1 / (x − 3)', a: T('[1, 3) ∪ (3, +∞). Conditions: x − 1 ≥ 0 and x ≠ 3.', '[1, 3) ∪ (3, +∞). Условия: x − 1 ≥ 0 и x ≠ 3.') },
+        { q: 'y = lg(x + 2) / (x − 1)', a: T('(−2, 1) ∪ (1, +∞). Conditions: x + 2 > 0 and x ≠ 1.', '(−2, 1) ∪ (1, +∞). Условия: x + 2 > 0 и x ≠ 1.') }] },
+      { k: 'html', html: T('<p class="sub"><b>(c)</b> A real exam question: y = 1 / lg∣x − 5∣. Follow the steps.</p>', '<p class="sub"><b>(c)</b> Настоящий вопрос с экзамена: y = 1 / lg∣x − 5∣. Пройдите по шагам.</p>') },
+      { k: 'blanks', lines: [
+        [T('The logarithm needs ∣x − 5∣ ', 'Логарифм требует, чтобы ∣x − 5∣ было '), { a: '> 0', sel: ['> 0', '≥ 0', '< 0', '≠ 0'] }, T('. This excludes x = 5.', '. Это исключает x = 5.')],
+        [T('The fraction needs lg∣x − 5∣ ', 'Дробь требует, чтобы lg∣x − 5∣ было '), { a: '≠ 0', sel: ['> 0', '≥ 0', '< 0', '≠ 0'] }],
+        [T('lg of what number equals 0? So ∣x − 5∣ must not equal ', 'lg от какого числа равен 0? Значит, ∣x − 5∣ не должно равняться '), { a: '1', w: 3 }]] },
+      { k: 'open', lines: [{ q: T('Which two values of x does this exclude? Write the domain.', 'Какие два значения x исключаются? Запишите область определения.'), a: T('∣x − 5∣ = 1 gives x = 4 and x = 6. Domain: (−∞, 4) ∪ (4, 5) ∪ (5, 6) ∪ (6, +∞).', '∣x − 5∣ = 1 даёт x = 4 и x = 6. Область определения: (−∞, 4) ∪ (4, 5) ∪ (5, 6) ∪ (6, +∞).') }] }],
+    hint: T('Write one condition for each trouble spot: denominator, root, log. Then solve and combine.', 'Запишите по одному условию на каждое «опасное место»: знаменатель, корень, логарифм. Решите и объедините.') },
+  { t: 'task', id: '2.5', title: T('What goes inside f?', 'Что подставляется в f?'),
+    text: T('A function f accepts only inputs between −1 and 0. Which x can you put into f(2x + 1)?', 'Функция f принимает только входы между −1 и 0. Какие x можно подставить в f(2x + 1)?'),
+    parts: [{ k: 'open', lines: [{ q: T('Write the answer as an inequality for x.', 'Запишите ответ как неравенство для x.'), a: T('−1 < x < −1/2, because −1 < 2x + 1 < 0.', '−1 < x < −1/2, потому что −1 < 2x + 1 < 0.') }] }],
+    hint: T('The whole expression 2x + 1 must land between −1 and 0. Solve −1 < 2x + 1 < 0.', 'Всё выражение 2x + 1 должно оказаться между −1 и 0. Решите −1 < 2x + 1 < 0.') },
+  { t: 'notice', id: 'n2', rule: T('For f(g(x)), the value of g(x) must lie in the domain of f. Solve for x from that.', 'Для f(g(x)) значение g(x) должно лежать в области определения f. Из этого условия находят x.') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('Odd and even functions', 'Нечётные и чётные функции'),
+  chip: T('Odd and even 奇函数 / 偶函数', 'Нечётные и чётные 奇函数 / 偶函数'),
+  intro: T('A function is even 偶函数 if the inputs x and −x always give the same output. It is odd 奇函数 if they always give opposite outputs.',
+           'Функция чётная 偶函数, если входы x и −x всегда дают один и тот же выход. Она нечётная 奇函数, если они всегда дают противоположные выходы.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Pairs', 'Пары'),
+    text: T('Fill in the table. In the last column choose same, opposite or neither.', 'Заполните таблицу. В последнем столбце выберите: одинаковые, противоположные или ни то, ни другое.'),
+    parts: [{ k: 'table', head: [T('Function', 'Функция'), 'f(2)', 'f(−2)', 'f(3)', 'f(−3)', T('f(−x) compared with f(x)', 'f(−x) по сравнению с f(x)')], rows: [
+      ['f(x) = x²', { a: '4' }, { a: '4' }, { a: '9' }, { a: '9' }, { a: 'same', sel: SON }],
+      ['f(x) = x³', { a: '8' }, { a: '-8' }, { a: '27' }, { a: '-27' }, { a: 'opposite', sel: SON }],
+      ['f(x) = x⁴ + 3', { a: '19' }, { a: '19' }, { a: '84' }, { a: '84' }, { a: 'same', sel: SON }],
+      ['f(x) = ∣x∣', { a: '2' }, { a: '2' }, { a: '3' }, { a: '3' }, { a: 'same', sel: SON }],
+      ['f(x) = x + 1', { a: '3' }, { a: '-1' }, { a: '4' }, { a: '-2' }, { a: 'neither', sel: SON }]] }],
+    hint: T('(−2)² = 4 but (−2)³ = −8. An even power hides the sign; an odd power keeps it.', '(−2)² = 4, но (−2)³ = −8. Чётная степень скрывает знак, нечётная сохраняет.') },
+  { t: 'task', id: '3.2', title: T('Look at the graphs', 'Посмотрите на графики'),
+    text: T('Compare the left and right halves of y = x². Then imagine turning the graph of y = x³ half a turn around the origin.', 'Сравните левую и правую половины y = x². Затем представьте, что график y = x³ повернули на пол-оборота вокруг начала координат.'),
+    parts: [{ k: 'fig', id: 'parity' },
+      { k: 'blanks', lines: [
+        [T('An even function has a graph that is symmetric about ', 'График чётной функции симметричен относительно '), { a: 'yaxis', sel: [O('yaxis'), O('origin'), O('xaxis')] }, '.'],
+        [T('An odd function has a graph that is symmetric about ', 'График нечётной функции симметричен относительно '), { a: 'origin', sel: [O('yaxis'), O('origin'), O('xaxis')] }, '.']] }],
+    hint: T('The left half of y = x² is a mirror image of the right half. The graph of y = x³ looks the same after a half-turn.', 'Левая половина y = x² — зеркальное отражение правой. График y = x³ после пол-оборота выглядит так же.') },
+  { t: 'task', id: '3.3', title: T('Domain first', 'Сначала область определения'),
+    text: T('For f(x) = √x, try to find f(−4). Can this function be odd or even? Why must the domain look the same on both sides of 0?', 'Для f(x) = √x попробуйте найти f(−4). Может ли эта функция быть нечётной или чётной? Почему область определения должна быть одинаковой по обе стороны от 0?'),
+    parts: [{ k: 'open', lines: [{ q: T('Your answer', 'Ваш ответ'), a: T('√(−4) has no real value. The domain [0, +∞) is not symmetric about 0, so f is neither odd nor even.', 'У √(−4) нет действительного значения. Область определения [0, +∞) не симметрична относительно 0, поэтому f ни чётная, ни нечётная.') }] }],
+    hint: T('To compare f(x) and f(−x), both x and −x must be allowed.', 'Чтобы сравнить f(x) и f(−x), должны быть разрешены и x, и −x.') },
+  { t: 'notice', id: 'n3', rule: T('First check that the domain is symmetric about 0 (if x is allowed, −x must be allowed). Then compute f(−x). If f(−x) = f(x), the function is even. If f(−x) = −f(x), it is odd. Otherwise it is neither.', 'Сначала проверьте, что область определения симметрична относительно 0 (если x разрешён, то −x тоже). Затем вычислите f(−x). Если f(−x) = f(x), функция чётная. Если f(−x) = −f(x), нечётная. Иначе ни та, ни другая.') },
+  { t: 'worked', text: T('f(x) = x³ + x. Then f(−x) = (−x)³ + (−x) = −x³ − x = −(x³ + x) = −f(x), so f is odd.', 'f(x) = x³ + x. Тогда f(−x) = (−x)³ + (−x) = −x³ − x = −(x³ + x) = −f(x), значит, f нечётная.') },
+  { t: 'task', id: '3.4', title: T('Try it', 'Попробуйте сами'),
+    text: T('Decide odd, even or neither by computing f(−x). Choose "same" if f(−x) = f(x) (even), "opposite" if f(−x) = −f(x) (odd).', 'Определите чётность, вычислив f(−x). Выберите «одинаковые», если f(−x) = f(x) (чётная), и «противоположные», если f(−x) = −f(x) (нечётная).'),
+    parts: [{ k: 'table', head: [T('Function', 'Функция'), T('f(−x) compared with f(x)', 'f(−x) по сравнению с f(x)')], rows: [
+      ['(a) f(x) = x⁴ − 2x²', { a: 'same', sel: SON }],
+      ['(b) f(x) = x² + x', { a: 'neither', sel: SON }],
+      ['(c) f(x) = x³ + 1', { a: 'neither', sel: SON }],
+      [T('(d) Challenge: f(x) = lg(x²)', '(d) Вызов: f(x) = lg(x²)'), { a: 'same', sel: SON }]] }],
+    hint: T('(b) f(−x) = x² − x. That is not f(x) and not −f(x). (d) The domain is x ≠ 0, which is symmetric. Then lg((−x)²) = lg(x²).', '(b) f(−x) = x² − x. Это не f(x) и не −f(x). (d) Область определения x ≠ 0 симметрична. Тогда lg((−x)²) = lg(x²).') }
+  ]},
+
+/* ================= PART 4 ================= */
+{ id: 4, title: T('Increasing and decreasing', 'Возрастание и убывание'),
+  chip: T('Increasing and decreasing 单调递增 / 单调递减', 'Возрастание и убывание 单调递增 / 单调递减'),
+  intro: T('A function is increasing 单调递增 when a bigger input always gives a bigger output. It is decreasing 单调递减 when a bigger input always gives a smaller output. Always say on which interval.',
+           'Функция возрастает 单调递增, когда большему входу всегда соответствует больший выход. Она убывает 单调递减, когда большему входу всегда соответствует меньший выход. Всегда указывайте, на каком промежутке.'),
+  items: [
+  { t: 'task', id: '4.1', title: T('Tables', 'Таблицы'),
+    text: T('Fill in the outputs. Hint: a negative power flips the number, so 2⁻² = 1/2² = 1/4, and (1/2)⁻¹ = 2.', 'Заполните выходы. Подсказка: отрицательная степень переворачивает число: 2⁻² = 1/2² = 1/4, а (1/2)⁻¹ = 2.'),
+    parts: [{ k: 'table', head: ['x', '−2', '−1', '0', '1', '2'], rows: [
+      ['y = x²', { a: '4' }, { a: '1' }, { a: '0' }, { a: '1' }, { a: '4' }],
+      ['y = x³', { a: '-8' }, { a: '-1' }, { a: '0' }, { a: '1' }, { a: '8' }],
+      ['y = 2ˣ', { a: '1/4' }, { a: '1/2' }, { a: '1' }, { a: '2' }, { a: '4' }],
+      ['y = (1/2)ˣ', { a: '4' }, { a: '2' }, { a: '1' }, { a: '1/2' }, { a: '1/4' }],
+      ['y = −x + 3', { a: '5' }, { a: '4' }, { a: '3' }, { a: '2' }, { a: '1' }]] }],
+    hint: T('(1/2)⁻² = 2² = 4. Anything to the power 0 is 1.', '(1/2)⁻² = 2² = 4. Любое число в степени 0 равно 1.') },
+  { t: 'task', id: '4.2', title: T('Read left to right', 'Читайте слева направо'),
+    text: T('Move along each row of your table as x gets bigger. Does y always go up, always go down, or change direction?', 'Двигайтесь по каждой строке вашей таблицы, пока x растёт. Всегда ли y растёт, всегда убывает или меняет направление?'),
+    parts: [{ k: 'table', head: [T('Function', 'Функция'), T('As x gets bigger, y', 'Когда x растёт, y')], rows: [
+      ['y = x²', { a: 'change', sel: MON }], ['y = x³', { a: 'up', sel: MON }], ['y = 2ˣ', { a: 'up', sel: MON }], ['y = (1/2)ˣ', { a: 'down', sel: MON }], ['y = −x + 3', { a: 'down', sel: MON }]] }],
+    hint: T('For y = x²: 4, 1, 0, 1, 4. It goes down and then up.', 'Для y = x²: 4, 1, 0, 1, 4. Сначала вниз, потом вверх.') },
+  { t: 'task', id: '4.3', title: T('One family, two behaviours', 'Одно семейство, два поведения'),
+    text: T('Fill in the table for two bases, 3 and 1/3.', 'Заполните таблицу для двух оснований, 3 и 1/3.'),
+    parts: [{ k: 'table', head: ['x', '−1', '0', '1', '2'], rows: [
+      ['y = 3ˣ', { a: '1/3' }, { a: '1' }, { a: '3' }, { a: '9' }],
+      ['y = (1/3)ˣ', { a: '3' }, { a: '1' }, { a: '1/3' }, { a: '1/9' }]] },
+      { k: 'blanks', lines: [
+        [T('Increasing function: base ', 'Возрастающая функция: основание '), { a: '3', sel: ['3', '1/3'] }],
+        [T('Decreasing function: base ', 'Убывающая функция: основание '), { a: '1/3', sel: ['3', '1/3'] }],
+        [T('Both rows share the point (0, ', 'У обеих строк общая точка (0, '), { a: '1', w: 3 }, ').'],
+        [T('Does y ever become 0 or negative? ', 'Бывает ли y равным 0 или отрицательным? '), { a: 'no', sel: YN }]] }],
+    hint: T('(1/3)⁻¹ = 3 and (1/3)² = 1/9.', '(1/3)⁻¹ = 3 и (1/3)² = 1/9.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('For y = aˣ (a > 0 and a ≠ 1): the domain is all real numbers, the range is (0, +∞), and the graph passes through (0, 1). If a > 1 the function is increasing. If 0 < a < 1 it is decreasing.', 'Для y = aˣ (a > 0 и a ≠ 1): область определения — все действительные числа, множество значений — (0, +∞), график проходит через (0, 1). Если a > 1, функция возрастает. Если 0 < a < 1, убывает.') },
+  { t: 'task', id: '4.4', title: T('Try it', 'Попробуйте сами'),
+    text: T('(a) Is y = x² increasing on the whole line (−∞, +∞)? (b) Which of these are decreasing on the whole line? Test with x = −1, 0, 1. (c) For which values of a is y = (2a − 1)ˣ increasing on the whole line?', '(a) Возрастает ли y = x² на всей прямой (−∞, +∞)? (b) Какие из этих функций убывают на всей прямой? Проверьте при x = −1, 0, 1. (c) При каких a функция y = (2a − 1)ˣ возрастает на всей прямой?'),
+    parts: [
+      { k: 'blanks', lines: [['(a) y = x²: ', { a: 'no', sel: YN }]] },
+      { k: 'open', lines: [{ q: T('On which interval is x² decreasing, and on which increasing?', 'На каком промежутке x² убывает, а на каком возрастает?'), a: T('Decreasing on (−∞, 0], increasing on [0, +∞).', 'Убывает на (−∞, 0], возрастает на [0, +∞).') }] },
+      { k: 'table', head: [T('(b) Decreasing on the whole line?', '(b) Убывает на всей прямой?'), ''], rows: [['y = x + 1', { a: 'no', sel: YN }], ['y = −x³', { a: 'yes', sel: YN }], ['y = (1/2)ˣ', { a: 'yes', sel: YN }], ['y = 2ˣ', { a: 'no', sel: YN }]] },
+      { k: 'open', lines: [{ q: T('(c) Find a.', '(c) Найдите a.'), a: T('The base 2a − 1 must be bigger than 1, so 2a − 1 > 1 and a > 1.', 'Основание 2a − 1 должно быть больше 1, поэтому 2a − 1 > 1 и a > 1.') }] }],
+    hint: T('(b) Check whether y goes down when x goes from −1 to 0 to 1. (c) What must the base be bigger than?', '(b) Проверьте, убывает ли y, когда x идёт от −1 к 0 и к 1. (c) Чем должно быть больше основание?') },
+  { t: 'note', label: T('Careful', 'Осторожно'), text: T('A function that goes down and then up, like y = x², is not monotonic on the whole line. The exam likes to offer "decreasing on its domain" for such functions.', 'Функция, которая сначала убывает, а потом возрастает, как y = x², не монотонна на всей прямой. Экзамен любит предлагать вариант «убывает на области определения» для таких функций.') }
+  ]},
+
+/* ================= PART 5 ================= */
+{ id: 5, title: T('Inverse functions', 'Обратные функции'),
+  chip: T('Inverse 反函数', 'Обратная функция 反函数'),
+  intro: T('An inverse function 反函数 undoes the original: it takes an output and gives back the input.',
+           'Обратная функция 反函数 «отменяет» исходную: она берёт выход и возвращает вход.'),
+  items: [
+  { t: 'task', id: '5.1', title: T('Run the machine backwards', 'Запустите машину в обратную сторону'),
+    text: T('f(x) = x³ + 3. First fill in the outputs. Then use the outputs as inputs and write down which x each came from.', 'f(x) = x³ + 3. Сначала заполните выходы. Затем используйте выходы как входы и запишите, из какого x каждый получился.'),
+    parts: [
+      { k: 'table', head: ['x', '−1', '0', '1', '2'], rows: [['f(x)', { a: '2' }, { a: '3' }, { a: '4' }, { a: '11' }]] },
+      { k: 'table', head: ['y', '2', '3', '4', '11'], rows: [['x', { a: '-1' }, { a: '0' }, { a: '1' }, { a: '2' }]] },
+      { k: 'blanks', lines: [
+        [T('To get back to x, first ', 'Чтобы вернуться к x, сначала '), { a: 'sub', sel: [{ k: 'sub', en: 'subtract 3', ru: 'вычтите 3' }, { k: 'add', en: 'add 3', ru: 'прибавьте 3' }, { k: 'cbrt', en: 'take the cube root', ru: 'извлеките кубический корень' }] }, T(', then ', ', затем '), { a: 'cbrt', sel: [{ k: 'cbrt', en: 'take the cube root', ru: 'извлеките кубический корень' }, { k: 'sq', en: 'square it', ru: 'возведите в квадрат' }, { k: 'add3', en: 'add 3', ru: 'прибавьте 3' }] }, '.']] }],
+    hint: T('f does two things in order: cube, then add 3. To undo, reverse the order.', 'f делает два действия по порядку: куб, потом +3. Чтобы отменить, выполните их в обратном порядке.') },
+  { t: 'rule', label: T('Rule: how to find an inverse', 'Правило: как найти обратную функцию'), text: T('(1) Write y = f(x). (2) Solve for x. (3) Swap the letters x and y. (4) The domain of the inverse is the range of f.', '(1) Запишите y = f(x). (2) Выразите x. (3) Поменяйте буквы x и y. (4) Область определения обратной функции — это множество значений f.') },
+  { t: 'worked', text: T('y = 2x − 1. Solve for x: x = (y + 1) / 2. Swap the letters: the inverse is y = (x + 1) / 2. Check: f(3) = 5, and the inverse sends 5 back to 3.', 'y = 2x − 1. Выразим x: x = (y + 1) / 2. Поменяем буквы: обратная функция y = (x + 1) / 2. Проверка: f(3) = 5, и обратная функция возвращает 5 в 3.') },
+  { t: 'task', id: '5.2', title: T('Exponentials', 'Показательные функции'),
+    text: T('The inverse of y = 10ˣ + 3 is a real exam question. Follow the steps.', 'Обратная функция к y = 10ˣ + 3 — настоящий вопрос с экзамена. Пройдите по шагам.'),
+    parts: [{ k: 'open', lines: [
+      { q: T('Subtract 3: 10ˣ = ?', 'Вычтите 3: 10ˣ = ?'), a: 'y − 3' },
+      { q: T('10 to the power x equals that number, so x = lg( ? )', '10 в степени x равно этому числу, поэтому x = lg( ? )'), a: 'x = lg(y − 3)' },
+      { q: T('Swap the letters: y = ?', 'Поменяйте буквы: y = ?'), a: 'y = lg(x − 3)' },
+      { q: T('What must x be bigger than, so that lg is defined?', 'Чему должно быть больше x, чтобы lg был определён?'), a: 'x > 3' },
+      { q: T('What is the inverse of y = 2ˣ?', 'Чему равна обратная функция к y = 2ˣ?'), a: T('y = log₂ x (the inverse of an exponential is a logarithm)', 'y = log₂ x (обратная к показательной — логарифм)') }] }],
+    hint: T('The inverse of an exponential is a logarithm with the same base.', 'Обратная к показательной функции — логарифм с тем же основанием.') },
+  { t: 'task', id: '5.3', title: T('Domains swap', 'Области меняются местами'),
+    text: T('y = 2ˣ with x only allowed between −1 and 1. Compute y for x = −1, 0 and 1. The outputs fill an interval. That interval is the domain of the inverse function y = log₂ x.', 'y = 2ˣ, где x разрешён только от −1 до 1. Вычислите y при x = −1, 0 и 1. Выходы заполняют промежуток. Этот промежуток — область определения обратной функции y = log₂ x.'),
+    parts: [
+      { k: 'table', head: ['x', '−1', '0', '1'], rows: [['y = 2ˣ', { a: '1/2' }, { a: '1' }, { a: '2' }]] },
+      { k: 'blanks', lines: [[T('The interval is [ ', 'Промежуток: [ '), { a: '1/2', w: 4 }, ' , ', { a: '2', w: 4 }, ' ].']] }],
+    hint: T('2⁻¹ = 1/2.', '2⁻¹ = 1/2.') },
+  { t: 'task', id: '5.4', title: T('The mirror', 'Зеркало'),
+    text: T('Look at the graph of y = 2ˣ and its inverse. Complete the pairs.', 'Посмотрите на график y = 2ˣ и обратной к ней функции. Дополните пары.'),
+    parts: [{ k: 'fig', id: 'inverse' },
+      { k: 'blanks', lines: [
+        [T('The point (0, 1) on y = 2ˣ pairs with (', 'Точка (0, 1) на y = 2ˣ соответствует ('), { a: '1', w: 3 }, ' , ', { a: '0', w: 3 }, T(') on y = log₂ x.', ') на y = log₂ x.')],
+        [T('The point (2, 4) pairs with (', 'Точка (2, 4) соответствует ('), { a: '4', w: 3 }, ' , ', { a: '2', w: 3 }, ').'],
+        [T('The mirror line is ', 'Линия зеркала: '), { a: 'y = x', sel: ['y = x', 'y = 0', 'x = 0'] }]] }],
+    hint: T('Swap the coordinates of the point: (a, b) becomes (b, a).', 'Поменяйте координаты точки местами: (a, b) становится (b, a).') },
+  { t: 'notice', id: 'n5', rule: T('The graph of the inverse is the mirror image of the graph of f in the line y = x. If (a, b) is on f, then (b, a) is on the inverse.', 'График обратной функции — зеркальное отражение графика f относительно прямой y = x. Если (a, b) лежит на f, то (b, a) лежит на обратной функции.') },
+  { t: 'task', id: '5.5', title: T('Try it', 'Попробуйте сами'),
+    text: T('Find the inverse of each function.', 'Найдите обратную функцию для каждой.'),
+    parts: [{ k: 'open', lines: [
+      { q: '(a) y = (x − 1) / 3', a: 'y = 3x + 1' },
+      { q: '(b) y = 2ˣ − 5', a: 'y = log₂(x + 5)' },
+      { q: T('(c) y = 5ˣ with 0 ≤ x ≤ 2. Give the domain of the inverse too.', '(c) y = 5ˣ при 0 ≤ x ≤ 2. Укажите и область определения обратной функции.'), a: T('y = log₅ x, with domain [1, 25]', 'y = log₅ x, область определения [1, 25]') }] }],
+    hint: T('Follow the four steps: solve for x, swap the letters. For (c) the outputs of 5ˣ run from 5⁰ to 5².', 'Выполните четыре шага: выразите x, поменяйте буквы. В (c) значения 5ˣ идут от 5⁰ до 5².') }
+  ]},
+
+/* ================= PART 6 ================= */
+{ id: 6, title: T('Exponential and logarithmic functions', 'Показательные и логарифмические функции'),
+  chip: T('Exponential and log 指数函数 / 对数函数', 'Показательные и логарифмические 指数函数 / 对数函数'),
+  intro: T('A logarithm asks a question: log₂ 8 means "2 to what power gives 8?" The answer is 3. Part 4 covered y = aˣ. Here you meet its inverse, y = logₐ x 对数函数.',
+           'Логарифм задаёт вопрос: log₂ 8 значит «в какую степень надо возвести 2, чтобы получить 8?» Ответ: 3. В части 4 мы изучали y = aˣ. Здесь вы встретите обратную к ней функцию y = logₐ x 对数函数.'),
+  items: [
+  { t: 'task', id: '6.1', title: T('Logs by hand', 'Логарифмы вручную'),
+    text: T('Complete each table by asking the power question. log_(1/2) x means the logarithm with base 1/2. Hint for the second row: (1/2) to what power gives 4? (1/2)⁻² = 4.', 'Заполните таблицы, задавая вопрос о степени. log_(1/2) x — логарифм по основанию 1/2. Подсказка для второй строки: в какую степень надо возвести 1/2, чтобы получить 4? (1/2)⁻² = 4.'),
+    parts: [
+      { k: 'table', head: ['x', '1/4', '1/2', '1', '2', '4', '8'], rows: [
+        ['y = log₂ x', { a: '-2' }, { a: '-1' }, { a: '0' }, { a: '1' }, { a: '2' }, { a: '3' }],
+        ['y = log_(1/2) x', { a: '2' }, { a: '1' }, { a: '0' }, { a: '-1' }, { a: '-2' }, { a: '-3' }]] },
+      { k: 'blanks', lines: [
+        [T('Increasing row: ', 'Возрастающая строка: '), { a: 'y = log₂ x', sel: ['y = log₂ x', 'y = log_(1/2) x'] }],
+        [T('Decreasing row: ', 'Убывающая строка: '), { a: 'y = log_(1/2) x', sel: ['y = log₂ x', 'y = log_(1/2) x'] }],
+        [T('Both rows share the point (1, ', 'У обеих строк общая точка (1, '), { a: '0', w: 3 }, ').'],
+        [T('Can x be 0 or negative? ', 'Может ли x быть равным 0 или отрицательным? '), { a: 'no', sel: YN }]] }],
+    hint: T('log₂ 8 = 3 because 2³ = 8. log₂(1/4) = −2 because 2⁻² = 1/4.', 'log₂ 8 = 3, так как 2³ = 8. log₂(1/4) = −2, так как 2⁻² = 1/4.') },
+  { t: 'notice', id: 'n6', rule: T('For y = logₐ x (a > 0, a ≠ 1): the domain is (0, +∞), the graph passes through (1, 0). If a > 1 it is increasing. If 0 < a < 1 it is decreasing. Compare with y = aˣ: the roles of x and y are swapped.', 'Для y = logₐ x (a > 0, a ≠ 1): область определения (0, +∞), график проходит через (1, 0). Если a > 1, функция возрастает. Если 0 < a < 1, убывает. Сравните с y = aˣ: роли x и y поменялись.') },
+  { t: 'task', id: '6.2', title: T('The fixed point', 'Неподвижная точка'),
+    text: T('The graph of f(x) = 2 + logₐ(x − 3) passes through one point for every value of a. Find it step by step.', 'График f(x) = 2 + logₐ(x − 3) проходит через одну и ту же точку при любом a. Найдите её по шагам.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('Which value is the same for every base: logₐ 1 = ', 'Какое значение не зависит от основания: logₐ 1 = '), { a: '0', w: 3 }],
+      [T('Choose x so that x − 3 equals 1. x = ', 'Выберите x так, чтобы x − 3 равнялось 1. x = '), { a: '4', w: 3 }],
+      [T('Then f(x) = 2 + 0 = ', 'Тогда f(x) = 2 + 0 = '), { a: '2', w: 3 }],
+      [T('The fixed point is ( ', 'Неподвижная точка ( '), { a: '4', w: 3 }, ' , ', { a: '2', w: 3 }, ' ).']] }],
+    hint: T('You want the inside of the logarithm to be 1, because logₐ 1 = 0 whatever a is.', 'Нужно, чтобы выражение под логарифмом равнялось 1, ведь logₐ 1 = 0 при любом a.') },
+  { t: 'task', id: '6.3', title: T('Same trick for exponentials', 'Тот же приём для показательных'),
+    text: T('y = aˣ⁻¹ + 5 also has a fixed point. Which exponent gives the same value for every a? (Hint: a⁰.) Find x, then y.', 'У y = aˣ⁻¹ + 5 тоже есть неподвижная точка. Какой показатель даёт одинаковое значение при любом a? (Подсказка: a⁰.) Найдите x, затем y.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('The exponent must be 0, so x = ', 'Показатель должен быть равен 0, поэтому x = '), { a: '1', w: 3 }],
+      [T('Then y = 1 + 5 = ', 'Тогда y = 1 + 5 = '), { a: '6', w: 3 }],
+      [T('The fixed point is ( ', 'Неподвижная точка ( '), { a: '1', w: 3 }, ' , ', { a: '6', w: 3 }, ' ).']] }],
+    hint: T('a⁰ = 1 for every a. So set x − 1 = 0.', 'a⁰ = 1 при любом a. Значит, положите x − 1 = 0.') },
+  { t: 'task', id: '6.4', title: T('A log inequality', 'Логарифмическое неравенство'),
+    text: T('Solve log₅(2x + 1) ≥ 0. Fill in the table first. Write "none" where log₅ is not defined.', 'Решите log₅(2x + 1) ≥ 0. Сначала заполните таблицу. Где log₅ не определён, напишите «нет».'),
+    parts: [
+      { k: 'table', head: ['x', '−1', '−1/2', '0', '2'], rows: [['2x + 1', { a: '-1' }, { a: '0' }, { a: '1' }, { a: '5' }], ['log₅(2x + 1)', { a: 'none' }, { a: 'none' }, { a: '0' }, { a: '1' }]] },
+      { k: 'blanks', lines: [
+        [T('log₅ of what number equals 0? ', 'log₅ от какого числа равен 0? '), { a: '1', w: 3 }],
+        [T('So log₅(2x + 1) ≥ 0 means 2x + 1 ≥ ', 'Значит, log₅(2x + 1) ≥ 0 означает 2x + 1 ≥ '), { a: '1', w: 3 }],
+        [T('Does your answer keep 2x + 1 positive? ', 'Остаётся ли 2x + 1 положительным в вашем ответе? '), { a: 'yes', sel: YN }]] },
+      { k: 'open', lines: [{ q: T('Solve for x.', 'Найдите x.'), a: 'x ≥ 0' }] }],
+    hint: T('Base 5 is bigger than 1, so log₅ is increasing. Keep the inside the same direction: 2x + 1 ≥ 1.', 'Основание 5 больше 1, значит, log₅ возрастает. Знак неравенства сохраняется: 2x + 1 ≥ 1.') },
+  { t: 'task', id: '6.5', title: T('Base smaller than 1', 'Основание меньше 1'),
+    text: T('Now solve log_(1/2)(2x + 1) ≥ 0. A decreasing function flips the direction of the inequality. Write two conditions, 2x + 1 > 0 and 2x + 1 ≤ ?, and combine them.', 'Теперь решите log_(1/2)(2x + 1) ≥ 0. Убывающая функция переворачивает неравенство. Запишите два условия: 2x + 1 > 0 и 2x + 1 ≤ ?, и объедините их.'),
+    parts: [{ k: 'open', lines: [{ q: T('Write the solution.', 'Запишите решение.'), a: T('−1/2 < x ≤ 0. Conditions: 2x + 1 > 0 and 2x + 1 ≤ 1.', '−1/2 < x ≤ 0. Условия: 2x + 1 > 0 и 2x + 1 ≤ 1.') }] }],
+    hint: T('Use the same number as before (log of what equals 0?), but flip the sign.', 'Возьмите то же число, что и раньше (логарифм чего равен 0?), но переверните знак.') },
+  { t: 'note', label: T('Careful', 'Осторожно'), text: T('For a log inequality: (1) the inside must be positive, (2) compare the inside with the right number, (3) flip the sign if the base is between 0 and 1.', 'Для логарифмического неравенства: (1) выражение под логарифмом должно быть положительным, (2) сравните его с нужным числом, (3) переверните знак, если основание между 0 и 1.') }
+  ]},
+
+/* ================= PART 7 ================= */
+{ id: 7, title: T('sin, cos and tan: values, properties and periods', 'sin, cos и tan: значения, свойства и периоды'),
+  chip: T('sin, cos, tan and periods 最小正周期', 'sin, cos, tan и периоды 最小正周期'),
+  intro: T('The period 最小正周期 is the smallest distance you move along the x-axis before the graph starts to repeat. Most trig questions on the exam ask for a period, a range, or whether the function is odd, even, increasing or decreasing.',
+           'Период 最小正周期 — это наименьшее расстояние по оси x, после которого график начинает повторяться. Большинство тригонометрических вопросов на экзамене касаются периода, множества значений или того, является ли функция нечётной, чётной, возрастающей или убывающей.'),
+  items: [
+  { t: 'task', id: '7.1', title: T('Exact values', 'Точные значения'),
+    text: T('Fill in the table. Write "none" when the function has no value. Hint: tan x = sin x / cos x, so tan has no value where cos x = 0. You can type √3/2 or sqrt(3)/2, and π as pi.', 'Заполните таблицу. Напишите «нет», если у функции нет значения. Подсказка: tan x = sin x / cos x, поэтому у tan нет значения там, где cos x = 0. Можно вводить √3/2 или sqrt(3)/2, а π как pi.'),
+    parts: [{ k: 'table', head: ['x', '0', 'π/6', 'π/3', 'π/2', 'π', '3π/2', '2π'], rows: [
+      ['sin x', { a: '0' }, { a: '1/2' }, { a: '√3/2' }, { a: '1' }, { a: '0' }, { a: '-1' }, { a: '0' }],
+      ['cos x', { a: '1' }, { a: '√3/2' }, { a: '1/2' }, { a: '0' }, { a: '-1' }, { a: '0' }, { a: '1' }],
+      ['tan x', { a: '0' }, { a: '√3/3' }, { a: '√3' }, { a: 'none' }, { a: '0' }, { a: 'none' }, { a: '0' }]] }],
+    hint: T('Use the unit circle. sin π/6 = 1/2, cos π/3 = 1/2. tan = sin ÷ cos.', 'Используйте единичную окружность. sin π/6 = 1/2, cos π/3 = 1/2. tan = sin ÷ cos.') },
+  { t: 'task', id: '7.2', title: T('Negative inputs', 'Отрицательные входы'),
+    text: T('Compute sin(−π/6), cos(−π/6) and tan(−π/6). Compare each with the value at π/6 and choose same or opposite.', 'Вычислите sin(−π/6), cos(−π/6) и tan(−π/6). Сравните каждое со значением при π/6 и выберите: одинаковые или противоположные.'),
+    parts: [{ k: 'table', head: [T('Function', 'Функция'), T('Value at −π/6', 'Значение при −π/6'), T('Compared with π/6', 'По сравнению с π/6')], rows: [
+      ['sin(−π/6)', { a: '-1/2' }, { a: 'opposite', sel: SON }],
+      ['cos(−π/6)', { a: '√3/2' }, { a: 'same', sel: SON }],
+      ['tan(−π/6)', { a: '-√3/3' }, { a: 'opposite', sel: SON }]] }],
+    hint: T('Moving from π/6 to −π/6 flips the point on the unit circle across the x-axis. What happens to its height and to its width?', 'При переходе от π/6 к −π/6 точка на единичной окружности отражается относительно оси x. Что происходит с её высотой и с её шириной?') },
+  { t: 'task', id: '7.3', title: T('Biggest, smallest, missing', 'Наибольшее, наименьшее, отсутствующее'),
+    text: T('Look at your table and at the graphs.', 'Посмотрите на вашу таблицу и на графики.'),
+    parts: [{ k: 'fig', id: 'trig' },
+      { k: 'blanks', lines: [
+        [T('(a) Biggest value of sin x or cos x: ', '(a) Наибольшее значение sin x или cos x: '), { a: '1', w: 3 }, T('   smallest value: ', '   наименьшее значение: '), { a: '-1', w: 3 }],
+        [T('(b) Can tan x be any number? ', '(b) Может ли tan x быть любым числом? '), { a: 'yes', sel: YN }],
+        [T('tan x has no value at ', 'У tan x нет значения при '), { a: 'x = π/2 + kπ', sel: ['x = kπ', 'x = π/2 + kπ', 'x = 2kπ'] }, T(' (k is a whole number).', ' (k — целое число).')]] }],
+    hint: T('Where does cos x equal 0? That is where the tan graph has a vertical dashed line.', 'Где cos x равен 0? Именно там у графика tan проходит вертикальная пунктирная линия.') },
+  { t: 'notice', id: 'n7', rule: T('For sin x and cos x: the domain is all real numbers and the range is [−1, 1]. sin x and tan x are odd, cos x is even. For tan x: the domain leaves out x = π/2 + kπ (k is a whole number), and the range is all real numbers.', 'Для sin x и cos x: область определения — все действительные числа, множество значений — [−1, 1]. sin x и tan x нечётные, cos x чётная. Для tan x: из области определения исключены x = π/2 + kπ (k — целое), множество значений — все действительные числа.') },
+  { t: 'task', id: '7.4', title: T('Read the period from the graph', 'Прочитайте период по графику'),
+    text: T('How far along the x-axis does the pattern repeat? Use the marks on the axis.', 'Через какое расстояние по оси x узор повторяется? Используйте отметки на оси.'),
+    parts: [{ k: 'fig', id: 'trig' },
+      { k: 'blanks', lines: [['sin x: ', { a: '2π', w: 4 }, '   cos x: ', { a: '2π', w: 4 }, '   tan x: ', { a: 'π', w: 4 }]] }],
+    hint: T('Pick a peak of sin x and find the next peak. For tan x, measure from one vertical dashed line to the next.', 'Возьмите вершину sin x и найдите следующую. Для tan x измерьте расстояние от одной вертикальной пунктирной линии до следующей.') },
+  { t: 'task', id: '7.5', title: T('Squeeze and stretch', 'Сжатие и растяжение'),
+    text: T('Fill in the tables, then find how far you must go before the pattern of numbers repeats. The number in front of x is called ω.', 'Заполните таблицы, затем найдите, через какое расстояние числа начинают повторяться. Число перед x называется ω.'),
+    parts: [
+      { k: 'table', head: ['x', '0', 'π/4', 'π/2', '3π/4', 'π'], rows: [['sin 2x', { a: '0' }, { a: '1' }, { a: '0' }, { a: '-1' }, { a: '0' }]] },
+      { k: 'table', head: ['x', '0', 'π', '2π', '3π', '4π'], rows: [['sin(x/2)', { a: '0' }, { a: '1' }, { a: '0' }, { a: '-1' }, { a: '0' }]] },
+      { k: 'table', head: [T('Function', 'Функция'), 'ω', T('Period', 'Период')], rows: [['sin x', '1', '2π'], ['sin 2x', { a: '2' }, { a: 'π' }], ['sin(x/2)', '1/2', { a: '4π' }]] },
+      { k: 'open', lines: [{ q: T('Can you write a formula for the period of sin ωx in terms of ω?', 'Можете ли вы записать формулу периода sin ωx через ω?'), a: 'T = 2π / |ω|' }] }],
+    hint: T('sin 2x repeats twice as fast as sin x, so its period is half as long.', 'sin 2x повторяется вдвое быстрее, чем sin x, значит, период вдвое короче.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('For y = A sin(ωx + φ) and y = A cos(ωx + φ): the period is 2π / ∣ω∣. For y = A tan(ωx + φ): the period is π / ∣ω∣. The shift φ and any number added outside do not change the period. A negative ω is treated as ∣ω∣.', 'Для y = A sin(ωx + φ) и y = A cos(ωx + φ): период равен 2π / ∣ω∣. Для y = A tan(ωx + φ): период равен π / ∣ω∣. Сдвиг φ и любое число, прибавленное снаружи, период не меняют. Отрицательное ω берётся по модулю ∣ω∣.') },
+  { t: 'task', id: '7.6', title: T('Try it: periods', 'Попробуйте сами: периоды'),
+    text: T('Find the minimum positive period 最小正周期 of each function.', 'Найдите наименьший положительный период 最小正周期 каждой функции.'),
+    parts: [
+      { k: 'table', head: [T('Function', 'Функция'), T('Period', 'Период')], rows: [['(a) y = 3 cos(4x − π/3)', { a: 'π/2' }], ['(b) y = 2 tan(3x + π/4)', { a: 'π/3' }], ['(c) y = tan(−2x)', { a: 'π/2' }], ['(d) y = sin(x/3) + 1', { a: '6π' }]] },
+      { k: 'open', lines: [{ q: T('For (c) the exam offers "π" as a wrong option. Why is it wrong?', 'В (c) экзамен предлагает неверный вариант «π». Почему он неверен?'), a: T('ω = −2, so ∣ω∣ = 2 and the period is π / 2, not π. The 2 cannot be ignored.', 'ω = −2, поэтому ∣ω∣ = 2, и период равен π / 2, а не π. Двойку нельзя игнорировать.') }] }],
+    hint: T('Pick the right formula: 2π/∣ω∣ for sin and cos, π/∣ω∣ for tan. Ignore everything except the number in front of x.', 'Выберите нужную формулу: 2π/∣ω∣ для sin и cos, π/∣ω∣ для tan. Всё, кроме числа перед x, не учитывайте.') },
+  { t: 'task', id: '7.7', title: T('Biggest and smallest values', 'Наибольшие и наименьшие значения'),
+    text: T('Complete the sentences.', 'Завершите предложения.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('cos 5x is always between ', 'cos 5x всегда лежит между '), { a: '-1', w: 3 }, T(' and ', ' и '), { a: '1', w: 3 }, '.'],
+      [T('So y = cos 5x + 4 is always between ', 'Поэтому y = cos 5x + 4 всегда лежит между '), { a: '3', w: 3 }, T(' and ', ' и '), { a: '5', w: 3 }, '.'],
+      [T('The smallest value of y = 3 sin x − 1 is ', 'Наименьшее значение y = 3 sin x − 1 равно '), { a: '-4', w: 3 }]] }],
+    hint: T('The number inside the brackets changes only the period. 3 sin x lies between −3 and 3; then subtract 1.', 'Число внутри скобок меняет только период. 3 sin x лежит между −3 и 3; затем вычтите 1.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('The number inside the brackets (ω) changes only the period. A number multiplied outside stretches the graph. A number added outside moves it up or down.', 'Число внутри скобок (ω) меняет только период. Число, на которое умножают снаружи, растягивает график. Число, прибавленное снаружи, сдвигает график вверх или вниз.') },
+  { t: 'task', id: '7.8', title: T('Increasing or decreasing?', 'Возрастает или убывает?'),
+    text: T('Find cos 2π, cos 5π/2 and cos 3π. Is cos x increasing on [2π, 3π]? Hint: the graph repeats every 2π, so [2π, 3π] looks like [0, π].', 'Найдите cos 2π, cos 5π/2 и cos 3π. Возрастает ли cos x на [2π, 3π]? Подсказка: график повторяется каждые 2π, поэтому [2π, 3π] выглядит как [0, π].'),
+    parts: [
+      { k: 'table', head: ['x', '2π', '5π/2', '3π'], rows: [['cos x', { a: '1' }, { a: '0' }, { a: '-1' }]] },
+      { k: 'blanks', lines: [[T('cos x is increasing on [2π, 3π]: ', 'cos x возрастает на [2π, 3π]: '), { a: 'no', sel: YN }]] }],
+    hint: T('Look at your three values from left to right: do they go up or down?', 'Посмотрите на три значения слева направо: они растут или убывают?') }
+  ]}
+];
+
+/* ================= PART 8: exam-style ================= */
+const EXAM = [
+  { part: 2, q: T('The domain of y = √(x − 2) / (x − 5) is', 'Область определения функции y = √(x − 2) / (x − 5) —'), o: ['[2, +∞)', '(2, 5) ∪ (5, +∞)', '[2, 5) ∪ (5, +∞)', '(−∞, 2] ∪ (5, +∞)'], a: 2 },
+  { part: 2, q: T('The domain of y = lg(3 − x) + √(x + 1) is', 'Область определения функции y = lg(3 − x) + √(x + 1) —'), o: ['(−1, 3)', '(−∞, 3)', '[−1, 3]', '[−1, 3)'], a: 3 },
+  { part: 1, q: T('Which function is the same as y = ∣x∣?', 'Какая функция совпадает с y = ∣x∣?'), o: ['y = √(x²)', 'y = (√x)²', 'y = x² / x', 'y = x'], a: 0 },
+  { part: 3, q: T('Which function is odd?', 'Какая функция нечётная?'), o: ['y = x² + 1', 'y = x³ + x', 'y = x³ + 1', 'y = ∣x∣ + x'], a: 1 },
+  { part: 3, q: T('Over its domain, the function f(x) = lg(x²) is', 'На своей области определения функция f(x) = lg(x²) —'), o: [T('even', 'чётная'), T('odd', 'нечётная'), T('neither odd nor even', 'ни нечётная, ни чётная'), T('both odd and even', 'и нечётная, и чётная')], a: 0 },
+  { part: 4, q: T('Which function is decreasing on (−∞, +∞)?', 'Какая функция убывает на (−∞, +∞)?'), o: ['y = x²', 'y = 3ˣ', 'y = (1/2)ˣ', 'y = x + 1'], a: 2 },
+  { part: 5, q: T('The inverse function of y = 2ˣ + 3 is', 'Обратная функция к y = 2ˣ + 3 —'), o: ['y = log₂ x − 3', 'y = 2ˣ − 3', 'y = log₂(x + 3)', 'y = log₂(x − 3)'], a: 3 },
+  { part: 6, q: T('The graph of y = 3 + aˣ⁻² (a > 0 and a ≠ 1) always passes through the point', 'График y = 3 + aˣ⁻² (a > 0 и a ≠ 1) всегда проходит через точку'), o: ['(2, 3)', '(2, 4)', '(0, 4)', '(3, 3)'], a: 1 },
+  { part: 6, q: T('The solution set of log₃(x − 1) ≤ 1 is', 'Множество решений неравенства log₃(x − 1) ≤ 1 —'), o: ['(1, 4]', '(−∞, 4]', '(1, 4)', '[4, +∞)'], a: 0 },
+  { part: 7, q: T('The minimum positive period of y = 3 sin 4x + 1 is', 'Наименьший положительный период функции y = 3 sin 4x + 1 равен'), o: ['2π', 'π', 'π/2', 'π/4'], a: 2 },
+  { part: 7, q: T('The minimum positive period of y = tan(−3x) is', 'Наименьший положительный период функции y = tan(−3x) равен'), o: ['3π', '2π', '2π/3', 'π/3'], a: 3 },
+  { part: 7, q: T('Which statement about y = cos x is correct?', 'Какое утверждение о y = cos x верно?'), o: [T('Its graph is symmetric about the origin.', 'Её график симметричен относительно начала координат.'), T('It is decreasing on [0, π].', 'Она убывает на [0, π].'), T('Its range is [0, 1].', 'Множество её значений — [0, 1].'), T('Its minimum positive period is π.', 'Её наименьший положительный период равен π.')], a: 1 }
+];
+
+const TOPICS = [
+  [T('Same function', 'Одна функция'), 1, '"The following function is the same as y = |x|"'],
+  [T('Domain 定义域', 'Область определения 定义域'), 2, '"The domain of the function y = … is"'],
+  [T('Odd and even 奇函数 / 偶函数', 'Нечётность и чётность 奇函数 / 偶函数'), 3, '"Which of the following functions is odd?"'],
+  [T('Increasing and decreasing 单调递增 / 单调递减', 'Возрастание и убывание 单调递增 / 单调递减'), 4, '"Which function is decreasing on (−∞, +∞)?"'],
+  [T('Inverse 反函数', 'Обратная функция 反函数'), 5, '"The inverse function of y = 10^x + 3 is"'],
+  [T('Exponential and logarithmic 指数函数 / 对数函数', 'Показательные и логарифмические 指数函数 / 对数函数'), 6, '"…passes through a fixed point P"; "the solution set of f(x) ≥ 0"'],
+  [T('sin, cos, tan and periods 最小正周期', 'sin, cos, tan и периоды 最小正周期'), 7, '"The minimum positive period of the function … is"']
+];

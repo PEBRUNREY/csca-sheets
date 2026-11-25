@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSCA preparation</title><style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#1b2430;--muted:#5b6674;--line:#d9d6cc;--accent:#2457a6;--accent-soft:#e0e9f7;--good:#17803d;
+--font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171e;--surface:#1b222c;--ink:#e8edf3;--muted:#9aa7b6;--line:#2e3846;--accent:#7fb0ff;--accent-soft:#1e2f4d;--good:#5fd38a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12171e;--surface:#1b222c;--ink:#e8edf3;--muted:#9aa7b6;--line:#2e3846;--accent:#7fb0ff;--accent-soft:#1e2f4d;--good:#5fd38a;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 var(--font)}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 70px}
+.top{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.crumb{font-weight:600;text-decoration:none;color:var(--accent)}
+h1{font-size:clamp(1.6rem,5.5vw,2.2rem);line-height:1.15;margin:22px 0 6px;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 18px;max-width:62ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);margin-left:auto}
+.seg button{font:inherit;border:0;background:transparent;padding:5px 12px;font-weight:700;font-size:.85rem;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+ol,ul{list-style:none;padding:0;margin:0}
+.card{display:block;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;text-decoration:none;color:var(--ink)}
+a.card:hover{border-color:var(--accent)}
+.card b{font-size:1.08rem;color:var(--accent)}
+.card .zh{color:var(--muted);font-weight:400;margin-left:6px}
+.card p{margin:3px 0 0;color:var(--muted);font-size:.93rem}
+.card .num{position:absolute;left:-2px;top:14px;transform:translateX(-100%);color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums;padding-right:8px}
+@media(max-width:820px){.card .num{position:static;transform:none;padding:0 6px 0 0}}
+.soon{opacity:.65}.soon b{color:var(--ink)}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-left:8px;color:var(--muted);vertical-align:2px}
+.pg{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pg .bar{flex:1;max-width:220px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.pg .bar span{display:block;height:100%;background:var(--good)}
+.how{background:var(--accent-soft);border-radius:12px;padding:12px 16px;margin:18px 0;font-size:.95rem}
+.how p{margin:4px 0}
+footer{margin-top:30px;color:var(--muted);font-size:.85rem}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+</style></head>
+<body><main class="wrap">
+<div class="top"><span></span><div class="seg" role="group" aria-label="Language"><button type="button" value="en">EN</button><button type="button" value="ru">RU</button></div></div>
+<h1><span data-en="CSCA preparation" data-ru="Подготовка к CSCA">CSCA preparation</span></h1>
+<p class="lead" data-en="Investigation sheets for the China Scholastic Competency Assessment (CSCA). Every topic is taught from the start: you fill in tables, notice the pattern, write it in your own words, and only then read the rule. Each topic ends with exam-style questions." data-ru="Исследовательские листы для подготовки к CSCA (China Scholastic Competency Assessment). Каждая тема объясняется с самого начала: вы заполняете таблицы, замечаете закономерность, записываете её своими словами и только потом читаете правило. В конце каждой темы есть вопросы в формате экзамена.">Investigation sheets for the China Scholastic Competency Assessment (CSCA). Every topic is taught from the start: you fill in tables, notice the pattern, write it in your own words, and only then read the rule. Each topic ends with exam-style questions.</p>
+<ul>
+<li><a class="card" href="math/index.html"><b data-en="Mathematics" data-ru="Математика">Mathematics</b><span class="zh">数学</span>
+<p data-en="Sets and inequalities, functions, trigonometry, sequences, derivatives, vectors and complex numbers, analytic and solid geometry, probability and statistics." data-ru="Множества и неравенства, функции, тригонометрия, последовательности, производные, векторы и комплексные числа, аналитическая и стереометрия, вероятность и статистика.">Sets and inequalities, functions, trigonometry, sequences, derivatives, vectors and complex numbers, analytic and solid geometry, probability and statistics.</p>
+<p data-en="10 topics" data-ru="Тем: 10">10 topics</p>
+<div class="pg" data-key="csca-math-sets-inequalities-v1 csca-functions-sheet-v1 csca-math-trigonometry-v1 csca-math-sequences-v1 csca-math-derivatives-v1 csca-math-vectors-complex-v1 csca-math-lines-circles-v1 csca-math-conics-v1 csca-math-solid-geometry-v1 csca-math-probability-statistics-v1" hidden><span class="bar"><span></span></span><span class="t"></span></div></a></li>
+<li><div class="card soon"><b data-en="Physics" data-ru="Физика">Physics</b><span class="zh">物理</span><span class="tag" data-en="coming soon" data-ru="скоро">coming soon</span>
+<p data-en="Investigation sheets for CSCA Physics will appear here." data-ru="Здесь появятся исследовательские листы по физике CSCA.">Investigation sheets for CSCA Physics will appear here.</p></div></li>
+<li><div class="card soon"><b data-en="Chemistry" data-ru="Химия">Chemistry</b><span class="zh">化学</span><span class="tag" data-en="coming soon" data-ru="скоро">coming soon</span>
+<p data-en="Investigation sheets for CSCA Chemistry will appear here." data-ru="Здесь появятся исследовательские листы по химии CSCA.">Investigation sheets for CSCA Chemistry will appear here.</p></div></li>
+<li><div class="card soon"><b data-en="Chinese" data-ru="Китайский язык">Chinese</b><span class="zh">中文</span><span class="tag" data-en="coming soon" data-ru="скоро">coming soon</span>
+<p data-en="Investigation sheets for the CSCA Chinese test will appear here." data-ru="Здесь появятся исследовательские листы по китайскому языку CSCA.">Investigation sheets for the CSCA Chinese test will appear here.</p></div></li>
+</ul>
+<footer><span data-en="Progress is saved in this browser only. Nothing is sent anywhere." data-ru="Прогресс сохраняется только в этом браузере. Никакие данные никуда не отправляются.">Progress is saved in this browser only. Nothing is sent anywhere.</span></footer>
+</main><script>
+(function(){
+  var lang='en';
+  try{var g=localStorage.getItem('csca-lang');if(g==='en'||g==='ru')lang=g;else if(/^ru|^kk|^uk|^be/i.test(navigator.language||''))lang='ru';}catch(e){}
+  function apply(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+lang)||el.getAttribute('data-en');});
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.value===lang));});
+    document.querySelectorAll('[data-key]').forEach(function(el){
+      var k=el.getAttribute('data-key').split(' '),done=0,total=0,seen=0;
+      k.forEach(function(key){try{var p=JSON.parse(localStorage.getItem('csca-progress:'+key)||'null');if(p){done+=p.done;total+=p.total;seen++;}}catch(e){}});
+      if(!seen){el.hidden=true;return;}
+      el.hidden=false;
+      el.querySelector('span span').style.width=Math.round(done/total*100)+'%';
+      el.querySelector('.t').textContent=(lang==='ru'?'Выполнено заданий: ':'Tasks done: ')+done+' / '+total;
+    });
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){lang=b.value;try{localStorage.setItem('csca-lang',lang);}catch(e){}apply();});});
+  apply();
+})();
+</script></body></html>

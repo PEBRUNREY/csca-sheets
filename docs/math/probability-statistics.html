@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probability and statistics</title>
+<style>
+:root{
+  --bg:#f6f5f1; --bar:rgba(246,245,241,.94); --surface:#fff; --ink:#1b2430; --muted:#5b6674; --line:#d9d6cc;
+  --accent:#2457a6; --accent-ink:#fff; --accent-soft:#e0e9f7;
+  --hint:#8a5300; --hint-soft:#fbf0d9;
+  --good:#17803d; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --c1:#2457a6; --c2:#c2410c; --c3:#2f7d57;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --bar:rgba(18,23,30,.94); --surface:#1b222c; --ink:#e8edf3; --muted:#9aa7b6; --line:#2e3846;
+  --accent:#7fb0ff; --accent-ink:#0c1b33; --accent-soft:#1e2f4d;
+  --hint:#f5b84a; --hint-soft:#33280f;
+  --good:#5fd38a; --good-soft:#123221; --bad:#ff8a80; --bad-soft:#3d1c19;
+  --c1:#7fb0ff; --c2:#ff9a6b; --c3:#6fd9a1; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.brand{font-weight:700;margin-right:auto;font-size:1.02rem;min-width:0}
+.prog{min-width:130px;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ptxtrow{display:flex;justify-content:space-between;gap:10px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar>span{display:block;height:100%;width:0;background:var(--good);transition:width .25s}
+.chips{max-width:900px;margin:0 auto;padding:0 14px 8px;display:flex;gap:6px;overflow-x:auto}
+.chips a{flex:none;min-width:34px;text-align:center;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.chips a:hover{border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:5px 11px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-weight:600;font-size:.93rem;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:32px;padding:3px 10px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:6px 2px;font-size:.9rem}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px 90px}
+h1{font-size:clamp(1.55rem,5vw,2.1rem);line-height:1.15;margin:24px 0 4px;text-wrap:balance}
+h2{font-size:1.3rem;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 16px}
+.small{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.how ol{margin:6px 0 10px;padding-left:22px}
+.how li{margin-bottom:3px}
+.part{margin-top:34px;scroll-margin-top:96px}
+.part>h2{padding-top:6px;border-top:3px solid var(--accent)}
+.pn{color:var(--accent)}
+.intro{color:var(--muted);max-width:68ch;margin:4px 0 8px}
+.task{scroll-margin-top:100px}
+.task.done{border-color:var(--good)}
+.thead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:4px}
+.tnum{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.ttitle{font-weight:700}
+.tdone{margin-left:auto;color:var(--good);font-weight:800;visibility:hidden}
+.task.done .tdone{visibility:visible}
+.ttext{margin:2px 0 10px;max-width:70ch}
+.tw{overflow-x:auto;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.tbl{border-collapse:collapse;font-size:.97rem;min-width:min(100%,0px)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:center;vertical-align:middle;white-space:nowrap}
+.tbl thead th{background:var(--accent-soft)}
+.tbl tbody th,.tbl tr>th:first-child{background:var(--bg);text-align:left;font-weight:600}
+.tbl td.wd{white-space:normal;text-align:left;font-size:.9rem;color:var(--muted)}
+.how .tbl td:first-child{text-align:left;white-space:normal}
+.fld{width:4.6em;max-width:100%;padding:5px 7px;border:1.5px solid var(--line);border-radius:7px;background:var(--bg);text-align:center;font-size:1rem;min-height:36px}
+.fld.sel{width:auto;max-width:15em;text-align:left;padding-right:4px}
+.fld:focus{border-color:var(--accent)}
+.fld.ok{border-color:var(--good);background:var(--good-soft)}
+.fld.bad{border-color:var(--bad);background:var(--bad-soft)}
+.bl{margin:8px 0;line-height:2.3}
+.bl .fld{margin:0 3px}
+.mc{margin:10px 0}.mcq{margin:0 0 6px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 12px;margin:6px 0;min-height:44px}
+.opt .lab{font-weight:700;color:var(--muted);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.open{margin:10px 0}
+.oq{margin:0 0 4px;font-weight:600}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);padding:8px 10px;resize:vertical;min-height:48px}
+.ta:focus{border-color:var(--accent)}
+.ref{margin-top:6px;background:var(--good-soft);border-left:4px solid var(--good);padding:7px 11px;border-radius:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.hintbox{margin-top:10px;background:var(--hint-soft);border-left:4px solid var(--hint);padding:8px 12px;border-radius:6px}
+.hintbox b{color:var(--hint)}
+.msg{min-height:1.4em;margin-top:8px;font-weight:600;font-size:.95rem}
+.msg.good{color:var(--good)}.msg.warn{color:var(--bad)}
+.tick{margin-top:8px}
+.tickbtn[aria-pressed=true]{background:var(--good-soft);border-color:var(--good)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.nlabel{font-weight:700;margin-bottom:6px}
+.notice .ta{background:var(--surface)}
+.rulebox{margin-top:10px;background:var(--surface);border-left:5px solid var(--accent);padding:10px 14px;border-radius:8px}
+.rulebox.plain{margin:12px 0;border:1px solid var(--line);border-left:5px solid var(--accent)}
+.rulebox[hidden]{display:none}
+.worked{margin:12px 0;border:1px dashed var(--line);padding:10px 14px;border-radius:8px;background:var(--surface)}
+.careful{margin:12px 0;background:var(--hint-soft);border-left:5px solid var(--hint);padding:10px 14px;border-radius:8px}
+.figrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.figrow>div{flex:1 1 260px;min-width:0}
+.figone{max-width:460px;margin:8px 0}.figstack{max-width:520px;margin:8px 0}
+.plot{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.plot .ax{stroke:var(--muted);stroke-width:1.2}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .tk{stroke:var(--muted);stroke-width:1}
+.plot text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.plot .tl,.plot .pl{fill:var(--muted);font-size:11px}
+.plot .pl{fill:var(--ink);font-weight:600}
+.plot .asy{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.8}
+.plot .cv{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plot .c1{stroke:var(--c1)}.plot .c2{stroke:var(--c2)}.plot .c3{stroke:var(--c3)}
+.plot .cl{font-size:13px;font-weight:700}
+.plot .c1t{fill:var(--c1)}.plot .c2t{fill:var(--c2)}.plot .c3t{fill:var(--c3)}
+.plot .pt{fill:var(--ink)}
+.plot .pt.hol{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.timerrow{display:flex;gap:12px;align-items:center;margin:8px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2rem}
+.timer.low{color:var(--bad)}
+.q .qq{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:600}
+.qn{color:var(--accent)}
+.qpart{margin-left:auto;font-weight:400;color:var(--muted);font-size:.85rem}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin-top:6px}
+@media (max-width:560px){.qopts{grid-template-columns:1fr}.topin{gap:4px 10px}.brand{flex:1 1 100%}.prog{flex:1}}
+.qfb{min-height:1.3em;font-weight:600;font-size:.92rem;margin-top:2px}
+.qfb.good{color:var(--good)}.qfb.bad{color:var(--bad)}
+.result{margin-top:10px;font-weight:700;font-size:1.15rem}
+
+.back{flex:none;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.back:hover{border-color:var(--accent)}
+.nextlink{margin:34px 0 0;font-weight:700;font-size:1.05rem}
+.nextlink a{display:inline-block;text-decoration:none;border:1.5px solid var(--accent);border-radius:10px;padding:10px 16px}
+.geo{width:100%;max-width:420px;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.geo line,.geo path,.geo polygon,.geo circle,.geo ellipse,.geo polyline{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.geo .hid{stroke-dasharray:5 4;stroke:var(--muted)}
+.geo .acc{stroke:var(--c1);stroke-width:2.2}.geo .acc2{stroke:var(--c2);stroke-width:2.2}.geo .acc3{stroke:var(--c3);stroke-width:2.2}
+.geo .dot{fill:var(--ink);stroke:none}
+.geo text{fill:var(--ink);font-size:13px;font-weight:600;stroke:none;paint-order:stroke}
+.geo .mt{fill:var(--muted);font-weight:400;font-size:12px}
+.geo .fillsoft{fill:var(--accent-soft);stroke:var(--c1)}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript. / Для этой страницы нужен JavaScript.</noscript>
+<script>
+const SUBJECT = {"id": "math", "title_en": "Mathematics", "title_ru": "Математика", "exam": {"questions": 48, "minutes": 60}};
+const NAV = {"home": "../index.html", "subject": "index.html", "next": null};
+/* Shared UI text and helpers for every sheet. English + Russian.
+   T(en, ru) makes a bilingual string. Math and Chinese terms are shared. */
+const T = (en, ru) => ({ en, ru });
+
+const UI = {
+  en: {
+    progress: 'Progress',
+    reset: 'Reset', resetSure: 'Click again to erase',
+    check: 'Check', hint: 'Hint', showAns: 'Show answers',
+    allGood: 'All correct. Well done.',
+    some: (a, b) => `${a} of ${b} correct. Red cells are wrong, try again.`,
+    fill: 'Fill in every answer first.',
+    mine: 'My answer', ref: 'Answer', gotIt: 'I got it', notYet: 'Not yet', gotItOn: 'Marked as understood',
+    notice: 'What I notice', noticePh: 'Write one sentence in your own words…',
+    showRule: 'Show the rule', stuck: 'I am stuck, show the rule anyway',
+    rule: 'Rule', careful: 'Careful', worked: 'Worked example',
+    exam: 'Exam-style check', start: (m) => `Start ${m} timer`,
+    examIntro: (min, q, per, mins, n) => `The real exam gives ${min} minutes for ${q} questions, about ${per} seconds each. Give yourself ${mins} minutes for these ${n}, then press Check my answers. For every wrong answer, go back to the Part named and redo its tasks.`,
+    back: 'Back to the list of topics', topics: 'Topics', next: 'Next topic', stop: 'Stop timer', timeUp: 'Time is up',
+    checkAll: 'Check my answers', score: (a, b) => `Score: ${a} / ${b}`,
+    review: 'Review', again: 'Try again',
+    howTitle: 'How to use this sheet',
+    steps: [
+      'Do the tasks in order. Fill in every empty cell, then press Check.',
+      'Where you see **What I notice**, write one sentence in your own words. The rule unlocks after that.',
+      'Read the **Rule**, then do the **Try it** tasks.',
+      'Finish with the exam-style questions at the end.'
+    ],
+    topic: 'Topic', partCol: 'Part', wording: 'How the exam words it',
+    photoNote: 'Your progress is saved on this device only.',
+    parts: 'Parts', none: 'none', task: 'Task', part: 'Part',
+    opt: { yes: 'yes', no: 'no', same: 'same', opposite: 'opposite', neither: 'neither', up: 'always goes up', down: 'always goes down', change: 'changes direction', yaxis: 'the y-axis', origin: 'the origin', xaxis: 'the x-axis' }
+  },
+  ru: {
+    progress: 'Прогресс',
+    reset: 'Сбросить', resetSure: 'Нажмите ещё раз, чтобы стереть',
+    check: 'Проверить', hint: 'Подсказка', showAns: 'Показать ответы',
+    allGood: 'Всё верно. Отлично.',
+    some: (a, b) => `Верно ${a} из ${b}. Красные ячейки неверны, попробуйте ещё раз.`,
+    fill: 'Сначала заполните все ответы.',
+    mine: 'Мой ответ', ref: 'Ответ', gotIt: 'Я понял(а)', notYet: 'Пока нет', gotItOn: 'Отмечено: понял(а)',
+    notice: 'Что я заметил(а)', noticePh: 'Напишите одно предложение своими словами…',
+    showRule: 'Показать правило', stuck: 'Не получается, показать правило',
+    rule: 'Правило', careful: 'Осторожно', worked: 'Разобранный пример',
+    exam: 'Проверка в формате экзамена', start: (m) => `Запустить таймер ${m}`,
+    examIntro: (min, q, per, mins, n) => `На настоящем экзамене даётся ${min} минут на ${q} вопросов, то есть около ${per} секунд на вопрос. Дайте себе ${mins} мин. на эти ${n}. Затем нажмите «Проверить ответы». За каждый неверный ответ вернитесь к названной части и повторите её задания.`,
+    back: 'Назад к списку тем', topics: 'Темы', next: 'Следующая тема', stop: 'Остановить таймер', timeUp: 'Время вышло',
+    checkAll: 'Проверить ответы', score: (a, b) => `Результат: ${a} / ${b}`,
+    review: 'Повторить', again: 'Ещё раз',
+    howTitle: 'Как пользоваться листом',
+    steps: [
+      'Выполняйте задания по порядку. Заполните все пустые ячейки и нажмите «Проверить».',
+      'Там, где написано **Что я заметил(а)**, напишите одно предложение своими словами. После этого откроется правило.',
+      'Прочитайте **Правило**, затем выполните задания **Попробуйте сами**.',
+      'В конце решите вопросы в формате экзамена.'
+    ],
+    topic: 'Тема', partCol: 'Часть', wording: 'Как это формулируют на экзамене',
+    photoNote: 'Ваш прогресс сохраняется только на этом устройстве.',
+    parts: 'Части', none: 'нет', task: 'Задание', part: 'Часть',
+    opt: { yes: 'да', no: 'нет', same: 'одинаковые', opposite: 'противоположные', neither: 'ни то, ни другое', up: 'всегда растёт', down: 'всегда убывает', change: 'меняет направление', yaxis: 'оси y', origin: 'начала координат', xaxis: 'оси x' }
+  }
+};
+
+/* option helpers */
+const O = (k) => ({ k });                      // key into UI.opt
+const YN = [O('yes'), O('no')];
+const SON = [O('same'), O('opposite'), O('neither')];
+const MON = [O('up'), O('down'), O('change')];
+const LR = [{ k: 'left', en: 'left', ru: 'влево' }, { k: 'right', en: 'right', ru: 'вправо' }];
+const COND = [{ k: 'suf', en: 'sufficient, not necessary', ru: 'достаточное, не необходимое' }, { k: 'nec', en: 'necessary, not sufficient', ru: 'необходимое, не достаточное' },
+  { k: 'both', en: 'necessary and sufficient', ru: 'необходимое и достаточное' }, { k: 'neither', en: 'neither', ru: 'ни то, ни другое' }];
+
+/* small static table */
+const mini = (rows) => ({ k: 'html', html: '<div class="tw"><table class="tbl">' + rows.map((r, i) => '<tr>' + r.map(c => i === 0 || c === r[0] ? `<th>${c}</th>` : `<td>${c}</td>`).join('') + '</tr>').join('') + '</table></div>' });
+
+/* Sheet: Probability and statistics (CSCA Mathematics): classical probability, rules, mean and variance, normal distribution. */
+const SHEET = {
+  key: 'csca-math-probability-statistics-v1',
+  title: T('Investigation sheet: Probability and statistics', 'Исследовательский лист: вероятность и статистика'),
+  sub: T('CSCA Mathematics · find each rule yourself, then read it', 'CSCA, математика · найдите каждое правило сами, потом прочитайте его'),
+  stats: T('The syllabus covers classical probability, how to combine probabilities, the mean and variance of data, and basic facts about the normal distribution. Typical questions:',
+           'Программа охватывает классическую вероятность, правила сложения и умножения вероятностей, среднее и дисперсию данных и основные свойства нормального распределения. Типичные вопросы:'),
+  symbols: T('Symbols: P(A) is the probability of the event A, Ā is "A does not happen", x̄ is the mean, s² the variance, σ the standard deviation, X ~ N(μ, σ²) "X is normally distributed with mean μ and variance σ²". Type fractions like 1/6 or decimals like 0.92.',
+             'Обозначения: P(A) — вероятность события A, Ā — «A не происходит», x̄ — среднее, s² — дисперсия, σ — стандартное отклонение, X ~ N(μ, σ²) — «X распределена нормально со средним μ и дисперсией σ²». Дроби вводите так: 1/6, десятичные — так: 0.92.')
+};
+
+SHEET.figs = ({ h, plot }) => ({
+  bell() {
+    const f = x => Math.exp(-((x - 1) ** 2) / 2) * 2.6;
+    const s = plot({ label: 'Normal curve with mean 1, symmetric about the line x = 1, with the points −1 and 3 marked', w: 420, h: 220, x0: -3, x1: 5, y0: -0.3, y1: 3,
+      xt: [{ v: -1, l: '−1' }, { v: 1, l: 'μ = 1' }, { v: 3, l: '3' }], vlines: [1],
+      curves: [{ f, cls: 'c1' }], segs: [[-1, 0, -1, f(-1)], [3, 0, 3, f(3)]],
+      tx: [{ x: 3.6, y: 0.5, t: '0.2', cls: 'c2t' }, { x: -2.6, y: 0.5, t: '?', cls: 'c2t' }] });
+    return h('div', { class: 'figone', html: s });
+  }
+});
+
+const PARTS = [
+/* ================= PART 1 ================= */
+{ id: 1, title: T('Count the outcomes', 'Посчитайте исходы'),
+  intro: T('In a classical probability model 古典概型 all outcomes are equally likely. Then a probability is just a count divided by a count.', 'В классической модели вероятности 古典概型 все исходы равновозможны. Тогда вероятность — это просто одно количество, делённое на другое.'),
+  items: [
+  { t: 'task', id: '1.1', title: T('One die', 'Один кубик'),
+    text: T('Roll one fair die: the outcomes are 1, 2, 3, 4, 5, 6.', 'Бросаем один честный кубик: исходы 1, 2, 3, 4, 5, 6.'),
+    parts: [{ k: 'table', head: [T('event', 'событие'), T('favourable outcomes', 'благоприятных исходов'), 'P'], rows: [
+      [T('an even number', 'чётное число'), { a: '3' }, { a: '1/2' }],
+      [T('a number greater than 4', 'число больше 4'), { a: '2' }, { a: '1/3' }],
+      [T('a 7', 'семёрка'), { a: '0' }, { a: '0' }],
+      [T('a number less than 7', 'число меньше 7'), { a: '6' }, { a: '1' }]] }],
+    hint: T('Even: 2, 4, 6. Greater than 4: 5 and 6.', 'Чётные: 2, 4, 6. Больше 4: 5 и 6.') },
+  { t: 'task', id: '1.2', title: T('Two dice', 'Два кубика'),
+    text: T('Roll two dice. There are 6 × 6 = 36 equally likely ordered pairs (first die, second die). Count how many pairs give each sum.', 'Бросаем два кубика. Есть 6 × 6 = 36 равновозможных упорядоченных пар (первый кубик, второй кубик). Посчитайте, сколько пар даёт каждую сумму.'),
+    parts: [
+      { k: 'table', head: [T('sum', 'сумма'), '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'], rows: [[T('pairs', 'пар'), { a: '1' }, { a: '2' }, { a: '3' }, { a: '4' }, { a: '5' }, { a: '6' }, { a: '5' }, { a: '4' }, { a: '3' }, { a: '2' }, { a: '1' }]] },
+      { k: 'blanks', lines: [['P(', T('sum = 7', 'сумма = 7'), ') = ', { a: '1/6', w: 4 }, '   P(', T('sum ≥ 10', 'сумма ≥ 10'), ') = ', { a: '1/6', w: 4 }, '   P(', T('sum = 2', 'сумма = 2'), ') = ', { a: '1/36', w: 4 }]] }],
+    hint: T('Sum 4: (1, 3), (2, 2), (3, 1). The pairs (1, 3) and (3, 1) are different.', 'Сумма 4: (1, 3), (2, 2), (3, 1). Пары (1, 3) и (3, 1) различны.') },
+  { t: 'notice', id: 'n1', rule: T('If all n outcomes are equally likely and m of them make A happen, P(A) = m / n. Always 0 ≤ P(A) ≤ 1; an impossible event has P = 0, a certain event P = 1.', 'Если все n исходов равновозможны и m из них благоприятны для A, то P(A) = m / n. Всегда 0 ≤ P(A) ≤ 1; невозможное событие имеет P = 0, достоверное — P = 1.') },
+  { t: 'task', id: '1.3', title: T('Draw two balls', 'Вытащите два шара'),
+    text: T('A bag has 3 red balls (R₁, R₂, R₃) and 2 white balls (W₁, W₂). Take 2 at once. List all pairs: R₁R₂, R₁R₃, …', 'В мешке 3 красных шара (R₁, R₂, R₃) и 2 белых (W₁, W₂). Вынимаем сразу 2. Выпишите все пары: R₁R₂, R₁R₃, …'),
+    parts: [{ k: 'blanks', lines: [
+      [T('Number of pairs: ', 'Число пар: '), { a: '10', w: 3 }, T('   both red: ', '   оба красные: '), { a: '3', w: 3 }, T('   one of each: ', '   по одному каждого цвета: '), { a: '6', w: 3 }, T('   both white: ', '   оба белые: '), { a: '1', w: 3 }],
+      ['P(', T('both red', 'оба красные'), ') = ', { a: '3/10', w: 4 }, '   P(', T('at least one white', 'хотя бы один белый'), ') = ', { a: '7/10', w: 4 }]] }],
+    hint: T('Pairs of red: R₁R₂, R₁R₃, R₂R₃. "At least one white" is everything except "both red".', 'Пары красных: R₁R₂, R₁R₃, R₂R₃. «Хотя бы один белый» — это всё, кроме «оба красные».') }
+  ]},
+
+/* ================= PART 2 ================= */
+{ id: 2, title: T('Combining probabilities', 'Сложение и умножение вероятностей'),
+  intro: T('Counting gets long. Three rules save time: the complement, "or" for events that cannot happen together, and "and" for independent events.', 'Перебор становится долгим. Три правила экономят время: противоположное событие, «или» для несовместных событий и «и» для независимых событий.'),
+  items: [
+  { t: 'task', id: '2.1', title: T('Coins', 'Монеты'),
+    text: T('Toss a coin twice. Outcomes: HH, HT, TH, TT (H = heads, T = tails).', 'Монету бросают дважды. Исходы: HH, HT, TH, TT (H — орёл, T — решка).'),
+    parts: [{ k: 'blanks', lines: [
+      ['P(HH) = ', { a: '1/4', w: 3 }, T('.   Compare: P(H) · P(H) = ½ · ½ = ', '.   Сравните: P(H) · P(H) = ½ · ½ = '), { a: '1/4', w: 3 }],
+      ['P(', T('at least one H', 'хотя бы один H'), ') = ', { a: '3/4', w: 3 }, T('.   Compare: 1 − P(TT) = ', '.   Сравните: 1 − P(TT) = '), { a: '3/4', w: 3 }],
+      [T('Three tosses: P(at least one H) = 1 − (½)³ = ', 'Три броска: P(хотя бы один H) = 1 − (½)³ = '), { a: '7/8', w: 3 }]] }],
+    hint: T('Only TT has no H.', 'Только в TT нет H.') },
+  { t: 'rule', label: T('Rules', 'Правила'), text: T('Complement 对立事件: P(Ā) = 1 − P(A). Mutually exclusive 互斥 (cannot both happen): P(A or B) = P(A) + P(B). Independent 相互独立 (one does not affect the other): P(A and B) = P(A)·P(B).', 'Противоположное событие 对立事件: P(Ā) = 1 − P(A). Несовместные 互斥 (не могут произойти вместе): P(A или B) = P(A) + P(B). Независимые 相互独立 (одно не влияет на другое): P(A и B) = P(A)·P(B).') },
+  { t: 'task', id: '2.2', title: T('Two shooters', 'Два стрелка'),
+    text: T('A hits the target with probability 0.8, B with probability 0.6, independently.', 'A попадает в цель с вероятностью 0,8, B — с вероятностью 0,6, независимо.'),
+    parts: [{ k: 'table', head: [T('event', 'событие'), 'P'], rows: [
+      [T('both hit', 'оба попали'), { a: '0.48' }],
+      [T('neither hits', 'оба промахнулись'), { a: '0.08' }],
+      [T('at least one hits', 'хотя бы один попал'), { a: '0.92' }],
+      [T('exactly one hits', 'ровно один попал'), { a: '0.44' }]] }],
+    hint: T('Neither: 0.2 · 0.4. Exactly one: 0.8 · 0.4 + 0.2 · 0.6.', 'Оба промахнулись: 0,2 · 0,4. Ровно один: 0,8 · 0,4 + 0,2 · 0,6.') },
+  { t: 'note', label: T('Careful', 'Осторожно'), text: T('"Mutually exclusive" and "independent" are different. If A and B are mutually exclusive and both possible, they are NOT independent: knowing A happened tells you B did not.', '«Несовместные» и «независимые» — разные понятия. Если A и B несовместны и оба возможны, они НЕ независимы: зная, что A произошло, вы знаете, что B не произошло.') }
+  ]},
+
+/* ================= PART 3 ================= */
+{ id: 3, title: T('Describing data: mean and variance', 'Описание данных: среднее и дисперсия'),
+  intro: T('The mean 平均数 tells where the data sit; the variance 方差 tells how spread out they are.', 'Среднее 平均数 показывает, где располагаются данные; дисперсия 方差 — насколько они разбросаны.'),
+  items: [
+  { t: 'task', id: '3.1', title: T('Centre', 'Центр'),
+    text: T('Data: 2, 4, 4, 5, 10.', 'Данные: 2, 4, 4, 5, 10.'),
+    parts: [{ k: 'blanks', lines: [
+      [T('mean x̄ = ', 'среднее x̄ = '), { a: '5', w: 3 }, T('   median 中位数 = ', '   медиана 中位数 = '), { a: '4', w: 3 }, T('   mode 众数 = ', '   мода 众数 = '), { a: '4', w: 3 }],
+      [T('Median of 3, 8, 1, 6, 5, 9 (sort first, six numbers): ', 'Медиана 3, 8, 1, 6, 5, 9 (сначала упорядочите, чисел шесть): '), { a: '5.5', w: 3 }]] }],
+    hint: T('Median: the middle number after sorting; for an even count, the mean of the two middle numbers.', 'Медиана — среднее по порядку число после сортировки; при чётном количестве — среднее двух средних чисел.') },
+  { t: 'task', id: '3.2', title: T('Same mean, different spread', 'Одинаковое среднее, разный разброс'),
+    text: T('Two groups both have mean 5. For each number compute (x − 5)², then take the average of those squares.', 'У обеих групп среднее 5. Для каждого числа вычислите (x − 5)², затем возьмите среднее этих квадратов.'),
+    parts: [{ k: 'table', head: [T('group', 'группа'), 'x', '(x − 5)²', T('average of (x − 5)²', 'среднее (x − 5)²')], rows: [
+      ['A', '4, 5, 5, 5, 6', '1, 0, 0, 0, 1', { a: '0.4' }],
+      ['B', '1, 3, 5, 7, 9', { a: '16, 4, 0, 4, 16', sel: ['16, 4, 0, 4, 16', '4, 2, 0, 2, 4', '16, 9, 0, 9, 16'] }, { a: '8' }]] },
+      { k: 'blanks', lines: [[T('Which group is more spread out? ', 'Какая группа разбросана сильнее? '), { a: 'B', sel: ['A', 'B'] }]] }],
+    hint: T('(1 − 5)² = 16. Average of 16, 4, 0, 4, 16 = 40/5.', '(1 − 5)² = 16. Среднее 16, 4, 0, 4, 16 = 40/5.') },
+  { t: 'notice', id: 'n3', rule: T('Variance s² = [(x₁ − x̄)² + … + (xₙ − x̄)²] / n; standard deviation s = √(s²). A bigger variance means the data are more spread out (less stable).', 'Дисперсия s² = [(x₁ − x̄)² + … + (xₙ − x̄)²] / n; стандартное отклонение s = √(s²). Большая дисперсия означает больший разброс (меньшую стабильность).') },
+  { t: 'task', id: '3.3', title: T('Change all the data', 'Измените все данные'),
+    text: T('Start with 1, 2, 3: mean 2, variance 2/3. Transform every number and recompute.', 'Начните с 1, 2, 3: среднее 2, дисперсия 2/3. Преобразуйте каждое число и пересчитайте.'),
+    parts: [{ k: 'table', head: [T('data', 'данные'), T('mean', 'среднее'), T('variance', 'дисперсия')], rows: [
+      ['x + 10:  11, 12, 13', { a: '12' }, { a: '2/3' }],
+      ['2x + 1:  3, 5, 7', { a: '5' }, { a: '8/3' }],
+      ['−3x:  −3, −6, −9', { a: '-6' }, { a: '6' }]] }],
+    hint: T('For 3, 5, 7: (3 − 5)² + 0 + (7 − 5)² = 8, then ÷ 3.', 'Для 3, 5, 7: (3 − 5)² + 0 + (7 − 5)² = 8, затем ÷ 3.') },
+  { t: 'notice', id: 'n3b', rule: T('If every x becomes ax + b: the mean becomes a·x̄ + b, and the variance becomes a²·s². Adding b does not change the spread.', 'Если каждое x заменить на ax + b: среднее станет a·x̄ + b, а дисперсия a²·s². Прибавление b не меняет разброс.') },
+  { t: 'task', id: '3.4', title: T('A frequency table', 'Таблица частот'),
+    text: T('Scores in a group: 60 points (2 students), 70 points (5 students), 80 points (3 students).', 'Баллы в группе: 60 баллов (2 ученика), 70 баллов (5 учеников), 80 баллов (3 ученика).'),
+    parts: [{ k: 'blanks', lines: [[T('Mean score = (60·2 + 70·5 + 80·3) / 10 = ', 'Средний балл = (60·2 + 70·5 + 80·3) / 10 = '), { a: '71', w: 3 }]] }],
+    hint: T('120 + 350 + 240.', '120 + 350 + 240.') }
+  ]},
+
+/* ================= PART 4 ================= */
+{ id: 4, title: T('The normal distribution', 'Нормальное распределение'),
+  intro: T('Heights, test scores and measurement errors often follow a bell-shaped curve: the normal distribution 正态分布 X ~ N(μ, σ²). The whole curve is symmetric about x = μ, and the total area under it is 1.', 'Рост, баллы за тест и ошибки измерений часто подчиняются колоколообразной кривой — нормальному распределению 正态分布 X ~ N(μ, σ²). Кривая симметрична относительно x = μ, а вся площадь под ней равна 1.'),
+  items: [
+  { t: 'task', id: '4.1', title: T('Use the symmetry', 'Используйте симметрию'),
+    text: T('X ~ N(1, σ²) and P(X > 3) = 0.2. The points 3 and −1 are the same distance from μ = 1.', 'X ~ N(1, σ²) и P(X > 3) = 0,2. Точки 3 и −1 находятся на одинаковом расстоянии от μ = 1.'),
+    parts: [{ k: 'fig', id: 'bell' },
+      { k: 'table', head: [T('probability', 'вероятность'), T('value', 'значение')], rows: [['P(X < −1)', { a: '0.2' }], ['P(−1 < X < 3)', { a: '0.6' }], ['P(1 < X < 3)', { a: '0.3' }], ['P(X < 1)', { a: '0.5' }]] }],
+    hint: T('The two tails are equal. The middle part is 1 − 0.2 − 0.2, and half of it lies on each side of 1.', 'Два «хвоста» равны. Средняя часть равна 1 − 0,2 − 0,2, и половина её лежит по каждую сторону от 1.') },
+  { t: 'rule', label: T('Rule', 'Правило'), text: T('For X ~ N(μ, σ²): P(X < μ) = P(X > μ) = 0.5, and P(X < μ − a) = P(X > μ + a). About 68.27% of values lie within one σ of μ, 95.45% within 2σ, 99.73% within 3σ. A smaller σ gives a taller, thinner curve.', 'Для X ~ N(μ, σ²): P(X < μ) = P(X > μ) = 0,5 и P(X < μ − a) = P(X > μ + a). Около 68,27% значений лежат в пределах одного σ от μ, 95,45% — в пределах 2σ, 99,73% — в пределах 3σ. Меньшее σ даёт более высокую и узкую кривую.') },
+  { t: 'task', id: '4.2', title: T('Try it', 'Попробуйте сами'),
+    text: T('Exam scores X ~ N(100, 10²). Use 0.6827 for one σ. Give 4 decimal places.', 'Баллы X ~ N(100, 10²). Используйте 0,6827 для одного σ. Дайте ответ с 4 знаками после запятой.'),
+    parts: [{ k: 'blanks', lines: [
+      ['P(90 < X < 110) ≈ ', { a: '0.6827', w: 5 }],
+      ['P(X > 110) ≈ (1 − 0.6827) / 2 ≈ ', { a: '0.1587', w: 5 }],
+      [T('Out of 1000 students, about how many score above 110? ', 'Из 1000 учеников примерно сколько наберут больше 110? '), { a: '159', w: 4 }]] }],
+    hint: T('90 and 110 are μ − σ and μ + σ.', '90 и 110 — это μ − σ и μ + σ.') }
+  ]}
+];
+
+const EXAM = [
+  { part: 1, q: T('A fair die is rolled once. The probability of getting a number greater than 4 is', 'Честный кубик бросают один раз. Вероятность выпадения числа больше 4 равна'), o: ['1/6', '1/3', '1/2', '2/3'], a: 1 },
+  { part: 1, q: T('Two fair dice are rolled. The probability that the sum is 7 is', 'Бросают два честных кубика. Вероятность того, что сумма равна 7, —'), o: ['7/36', '1/12', '1/6', '1/36'], a: 2 },
+  { part: 1, q: T('A bag has 3 red and 2 white balls. Two are taken at random. The probability that both are red is', 'В мешке 3 красных и 2 белых шара. Наугад вынимают два. Вероятность того, что оба красные, —'), o: ['3/5', '9/25', '1/2', '3/10'], a: 3 },
+  { part: 2, q: T('A coin is tossed 3 times. The probability of at least one head is', 'Монету бросают 3 раза. Вероятность хотя бы одного орла —'), o: ['7/8', '1/8', '3/8', '1/2'], a: 0 },
+  { part: 2, q: T('A and B hit a target with probabilities 0.8 and 0.6, independently. The probability that the target is hit at least once is', 'A и B попадают в цель с вероятностями 0,8 и 0,6 независимо. Вероятность хотя бы одного попадания —'), o: ['0.48', '0.92', '1.4', '0.44'], a: 1 },
+  { part: 3, q: T('The mean of 2, 4, 4, 5, 10 is', 'Среднее чисел 2, 4, 4, 5, 10 равно'), o: ['4', '4.5', '5', '6'], a: 2 },
+  { part: 3, q: T('The variance of 1, 3, 5, 7, 9 is', 'Дисперсия чисел 1, 3, 5, 7, 9 равна'), o: ['4', '√8', '10', '8'], a: 3 },
+  { part: 3, q: T('Data x₁, …, xₙ have mean 5 and variance 2. The data 2x₁ + 1, …, 2xₙ + 1 have', 'Данные x₁, …, xₙ имеют среднее 5 и дисперсию 2. Данные 2x₁ + 1, …, 2xₙ + 1 имеют'), o: [T('mean 11, variance 8', 'среднее 11, дисперсию 8'), T('mean 11, variance 5', 'среднее 11, дисперсию 5'), T('mean 10, variance 4', 'среднее 10, дисперсию 4'), T('mean 11, variance 4', 'среднее 11, дисперсию 4')], a: 0 },
+  { part: 4, q: T('X ~ N(1, σ²) and P(X > 3) = 0.2. Then P(X < −1) =', 'X ~ N(1, σ²) и P(X > 3) = 0,2. Тогда P(X < −1) ='), o: ['0.8', '0.2', '0.3', '0.6'], a: 1 },
+  { part: 4, q: T('X ~ N(1, σ²) and P(X > 3) = 0.2. Then P(1 < X < 3) =', 'X ~ N(1, σ²) и P(X > 3) = 0,2. Тогда P(1 < X < 3) ='), o: ['0.2', '0.6', '0.3', '0.8'], a: 2 },
+  { part: 3, q: T('The median of 3, 8, 1, 6, 5, 9 is', 'Медиана чисел 3, 8, 1, 6, 5, 9 равна'), o: ['5', '6', '7', '5.5'], a: 3 },
+  { part: 2, q: T('A and B are mutually exclusive, P(A) = 0.3 and P(B) = 0.5. Then P(A or B) =', 'A и B несовместны, P(A) = 0,3 и P(B) = 0,5. Тогда P(A или B) ='), o: ['0.8', '0.15', '0.65', '0.2'], a: 0 }
+];
+
+const TOPICS = [
+  [T('Classical probability 古典概型', 'Классическая вероятность 古典概型'), 1, '"The probability that the sum of the two numbers is 7 is"'],
+  [T('Complement, exclusive, independent 对立 / 互斥 / 独立', 'Противоположные, несовместные, независимые 对立 / 互斥 / 独立'), 2, '"The probability that the target is hit is"'],
+  [T('Mean, median, variance 平均数 / 中位数 / 方差', 'Среднее, медиана, дисперсия 平均数 / 中位数 / 方差'), 3, '"The variance of the data … is"'],
+  [T('Normal distribution 正态分布', 'Нормальное распределение 正态分布'), 4, '"X ~ N(1, σ²), P(X > 3) = 0.2, then P(X < −1) ="']
+];
+
+</script>
+<script>
+/* Engine for every CSCA investigation sheet. No external dependencies.
+   Globals set by build.py: SUBJECT (subject.json), NAV (links). Set by the sheet: SHEET, PARTS, EXAM, TOPICS. */
+(function () {
+  const KEY = SHEET.key;
+  let state = { lang: null, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false } };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  /* saved exam answers are option indices: if the questions or option order change, start the exam fresh */
+  const EXAMSIG = (() => { let x = 5381; const t = EXAM.map(q => q.a + ':' + q.o.map(o => typeof o === 'string' ? o : o.en).join('|')).join('#');
+    for (let i = 0; i < t.length; i++) x = (x * 33 + t.charCodeAt(i)) >>> 0; return x.toString(36); })();
+  if (state.quiz.sig !== EXAMSIG) state.quiz = { ans: {}, checked: false, sig: EXAMSIG };
+  const SUBJ = (typeof SUBJECT !== 'undefined' && SUBJECT) || {};
+  const LINKS = (typeof NAV !== 'undefined' && NAV) || {};
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem('csca-lang', state.lang);
+      const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+      if (total) localStorage.setItem('csca-progress:' + KEY, JSON.stringify({ done, total, quiz: state.quiz.checked ? state.quiz.score : null, n: EXAM.length }));
+    } catch (e) {}
+  }
+  try { const g = localStorage.getItem('csca-lang'); if (g === 'en' || g === 'ru') state.lang = g; } catch (e) {}
+  if (!state.lang) state.lang = /^ru|^kk|^uk|^be/i.test(navigator.language || '') ? 'ru' : 'en';
+  let lang = state.lang;
+  const ui = () => UI[lang];
+  const tr = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] != null ? v[lang] : v.en));
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(c)); }
+    return el;
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fmt = (s) => esc(tr(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const P = (s, cls) => h('p', { class: cls, html: fmt(s) });
+
+  /* ---------- answer checking ---------- */
+  const NONE = /^(none|no value|undefined|undef|dne|n\/a|нет|нет значения|не существует|не определено|нет ответа|∅|—|–|x|✗)$/i;
+  function num(raw) {
+    let s = String(raw).toLowerCase().trim()
+      .replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+      .replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, '');
+    if (!s) return NaN;
+    s = s.replace(/π|pi/g, 'P').replace(/√|sqrt/g, 'S');
+    s = s.replace(/S(\d+(\.\d+)?|P)/g, 'Math.sqrt($1)').replace(/S\(/g, 'Math.sqrt(');
+    s = s.replace(/P/g, 'Math.PI');
+    s = s.replace(/(\d|\))(?=Math|\()/g, '$1*');
+    if (!/^[0-9+\-*/().]*$/.test(s.replace(/Math\.sqrt|Math\.PI/g, '1'))) return NaN;
+    try { const v = Function('"use strict";return (' + s + ')')(); return typeof v === 'number' && isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+  }
+  const norm = (s) => String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[()]/g, '');
+  function isCorrect(f, val) {
+    val = String(val == null ? '' : val).trim();
+    if (!val) return false;
+    if (f.sel) return val === f.exp;
+    if (f.exp === 'none') return NONE.test(val);
+    if (NONE.test(val)) return false;
+    const e = num(f.exp), v = num(val);
+    if (!isNaN(e) && !isNaN(v)) return Math.abs(e - v) < 1e-3;
+    return norm(val) === norm(f.exp);
+  }
+
+  /* ---------- figures (inline SVG) ---------- */
+  function plot(o) {
+    const W = o.w || 360, H = o.h || 250, m = { l: 30, r: 12, t: 14, b: 26 };
+    const X = (x) => m.l + (x - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const Y = (y) => H - m.b - (y - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="${esc(o.label || 'graph')}">`;
+    const ax0 = Y(Math.max(o.y0, Math.min(0, o.y1))), ay0 = X(Math.max(o.x0, Math.min(0, o.x1)));
+    s += `<line class="ax" x1="${m.l}" y1="${ax0}" x2="${W - m.r}" y2="${ax0}"/><line class="ax" x1="${ay0}" y1="${m.t}" x2="${ay0}" y2="${H - m.b}"/>`;
+    (o.xt || []).forEach(t => { const x = X(t.v);
+      if (o.xlow) s += `<line class="grid" x1="${x}" y1="${m.t}" x2="${x}" y2="${H - m.b}"/><text class="tl" x="${x}" y="${H - 8}" text-anchor="middle">${t.l}</text>`;
+      else s += `<line class="tk" x1="${x}" y1="${ax0 - 3}" x2="${x}" y2="${ax0 + 3}"/><text class="tl" x="${x}" y="${ax0 + 15}" text-anchor="middle">${t.l}</text>`; });
+    (o.yt || []).forEach(t => { const y = Y(t.v); s += `<line class="tk" x1="${ay0 - 3}" y1="${y}" x2="${ay0 + 3}" y2="${y}"/><text class="tl" x="${ay0 - 6}" y="${y + 4}" text-anchor="end">${t.l}</text>`; });
+    (o.vlines || []).forEach(v => { s += `<line class="asy" x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H - m.b}"/>`; });
+    (o.curves || []).forEach(c => {
+      let d = '', pen = false, py = null; const N = 500;
+      for (let i = 0; i <= N; i++) {
+        const x = c.x0 != null ? c.x0 + (c.x1 - c.x0) * i / N : o.x0 + (o.x1 - o.x0) * i / N, y = c.f(x);
+        const bad = !isFinite(y) || y < o.y0 - 0.5 || y > o.y1 + 0.5 || (py != null && Math.abs(y - py) > (o.y1 - o.y0) * 0.6);
+        if (bad) { pen = false; py = null; continue; }
+        d += (pen ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; py = y;
+      }
+      s += `<path d="${d}" class="cv ${c.cls || 'c1'}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`;
+    });
+    (o.segs || []).forEach(g => { s += `<line class="asy" x1="${X(g[0])}" y1="${Y(g[1])}" x2="${X(g[2])}" y2="${Y(g[3])}"/>`; });
+    (o.pts || []).forEach(p => {
+      s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" class="${p.hollow ? 'pt hol' : 'pt'}"/>`;
+      if (p.l) s += `<text class="pl" x="${X(p.x) + (p.dx || 7)}" y="${Y(p.y) + (p.dy || -7)}" text-anchor="${p.anc || 'start'}">${p.l}</text>`;
+    });
+    (o.tx || []).forEach(t => { s += `<text class="cl ${t.cls || ''}" x="${X(t.x)}" y="${Y(t.y)}" text-anchor="${t.anc || 'start'}">${t.t}</text>`; });
+    return s + '</svg>';
+  }
+  const piT = (a, b) => { const r = []; for (let k = a; k <= b; k++) if (k) r.push({ v: k * Math.PI, l: (k === 1 ? '' : k === -1 ? '−' : k) + 'π' }); return r; };
+  const FIGS = SHEET.figs ? SHEET.figs({ h, plot, piT, esc }) : {};
+
+  /* ---------- rendering ---------- */
+  const root = document.getElementById('app');
+  const EXAMID = PARTS.length + 1;
+  let tasksIndex = [];     // {id, el, ctx}
+  let uid = 0;
+
+  function selOptions(opts) { return opts.map(o => typeof o === 'string' ? { v: o, t: o } : o.en != null ? { v: o.k, t: tr(o) } : { v: o.k, t: ui().opt[o.k] }); }
+
+  function buildTask(it) {
+    const ctx = { id: it.id, fields: [], opens: [], el: null, msg: null };
+    const st = (state.tasks[it.id] = state.tasks[it.id] || {});
+    const key = (pi, n) => `${it.id}|${pi}|${n}`;
+    const card = h('article', { class: 'card task', id: 't' + it.id.replace('.', '-') });
+    ctx.el = card;
+    const head = h('div', { class: 'thead' }, h('span', { class: 'tnum' }, ui().task + ' ' + it.id), h('span', { class: 'ttitle' }, tr(it.title)), h('span', { class: 'tdone', 'aria-hidden': 'true' }, '✓'));
+    card.append(head, P(it.text, 'ttext'));
+
+    const mkField = (pi, n, spec, extra) => {
+      const k = key(pi, n);
+      let el, f;
+      if (spec.sel) {
+        const opts = selOptions(spec.sel);
+        el = h('select', { class: 'fld sel', 'aria-label': 'answer' }, h('option', { value: '' }, '—'), opts.map(o => h('option', { value: o.v }, o.t)));
+        f = { el, exp: spec.a, sel: true };
+      } else {
+        el = h('input', { class: 'fld', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', style: spec.w ? `width:${spec.w + 1.2}em` : null, 'aria-label': 'answer' });
+        f = { el, exp: spec.a };
+      }
+      el.value = state.inputs[k] || '';
+      el.addEventListener('input', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); st.checked = false; save(); });
+      el.addEventListener('change', () => { state.inputs[k] = el.value; el.classList.remove('ok', 'bad'); save(); });
+      f.key = k; ctx.fields.push(f);
+      return el;
+    };
+
+    it.parts.forEach((part, pi) => {
+      let n = 0;
+      if (part.k === 'html') card.append(h('div', { html: typeof part.html === 'string' ? part.html : tr(part.html) }));
+      else if (part.k === 'fig') card.append(FIGS[part.id]());
+      else if (part.k === 'table') {
+        const tbl = h('table', { class: 'tbl' });
+        tbl.append(h('thead', null, h('tr', null, part.head.map(c => h('th', null, tr(c))))));
+        const tb = h('tbody');
+        part.rows.forEach(r => tb.append(h('tr', null, r.map((c, ci) => ci === 0 ? h('th', { scope: 'row' }, tr(c)) : (typeof c === 'string' ? h('td', null, c) : h('td', null, mkField(pi, n++, c)))))));
+        tbl.append(tb); card.append(h('div', { class: 'tw' }, tbl));
+      } else if (part.k === 'blanks') {
+        part.lines.forEach(line => card.append(h('p', { class: 'bl' }, line.map(seg => typeof seg === 'string' ? seg : seg.en != null ? tr(seg) : mkField(pi, n++, seg)))));
+      } else if (part.k === 'mc') {
+        const k = key(pi, 0), box = h('div', { class: 'mc' });
+        box.append(P(part.q, 'mcq'));
+        const f = { key: k, mc: true, exp: String(part.a), btns: [] };
+        part.opts.forEach((o, i) => {
+          const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': 'false' }, h('span', { class: 'lab' }, 'abcd'[i] + ')'), h('span', null, tr(o)));
+          b.addEventListener('click', () => { state.inputs[k] = String(i); f.btns.forEach((x, j) => { x.setAttribute('aria-pressed', String(i === j)); x.classList.remove('ok', 'bad'); }); st.checked = false; save(); });
+          if (state.inputs[k] === String(i)) b.setAttribute('aria-pressed', 'true');
+          f.btns.push(b); box.append(b);
+        });
+        ctx.fields.push(f); card.append(box);
+      } else if (part.k === 'open') {
+        part.lines.forEach((ln, li) => {
+          const k = key(pi, 'o' + li);
+          const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().mine, 'aria-label': ui().mine });
+          ta.value = state.inputs[k] || '';
+          ta.addEventListener('input', () => { state.inputs[k] = ta.value; save(); });
+          const ans = h('div', { class: 'ref', hidden: true }, h('b', null, ui().ref + ': '), h('span', { html: fmt(ln.a) }));
+          card.append(h('div', { class: 'open' }, P(ln.q, 'oq'), ta, ans));
+          ctx.opens.push({ ans, k: key(pi, 'o' + li) });
+        });
+      }
+    });
+
+    const msg = h('div', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+    ctx.msg = msg;
+    const tickRow = h('div', { class: 'tick', hidden: true });
+    const tickBtn = h('button', { type: 'button', class: 'btn tickbtn' });
+    const updTick = () => { const on = st.self; tickBtn.textContent = on ? '✓ ' + ui().gotItOn : ui().gotIt; tickBtn.setAttribute('aria-pressed', String(!!on)); };
+    tickBtn.addEventListener('click', () => { st.self = !st.self; updTick(); recalc(it, ctx); save(); });
+    tickRow.append(tickBtn); updTick();
+    ctx.tickRow = tickRow;
+
+    const hintBox = h('div', { class: 'hintbox', hidden: true }, h('b', null, ui().hint + ': '), tr(it.hint));
+    const bar = h('div', { class: 'acts' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => doCheck(it, ctx) }, ui().check),
+      it.hint ? h('button', { type: 'button', class: 'btn', onclick: () => { hintBox.hidden = !hintBox.hidden; } }, ui().hint) : null,
+      h('button', { type: 'button', class: 'btn ghost', onclick: () => doShow(it, ctx) }, ui().showAns));
+    card.append(bar, hintBox, msg, tickRow);
+    if (st.checked) { applyMarks(ctx, false); revealOpens(ctx); }
+    else if (st.revealed) revealOpens(ctx);
+    if (st.done) card.classList.add('done');
+    return card;
+  }
+
+  function applyMarks(ctx, say) {
+    let good = 0, total = ctx.fields.length, empty = 0;
+    ctx.fields.forEach(f => {
+      if (f.mc) {
+        const v = state.inputs[f.key]; if (v == null) { empty++; return; }
+        const ok = v === f.exp; if (ok) good++;
+        f.btns.forEach((b, i) => { b.classList.remove('ok', 'bad'); if (String(i) === v) b.classList.add(ok ? 'ok' : 'bad'); if (ok && String(i) === v) b.classList.add('ok'); });
+        return;
+      }
+      const v = state.inputs[f.key] || '';
+      if (!v.trim()) { empty++; f.el.classList.remove('ok'); f.el.classList.add('bad'); return; }
+      const ok = isCorrect(f, v); if (ok) good++;
+      f.el.classList.toggle('ok', ok); f.el.classList.toggle('bad', !ok);
+    });
+    return { good, total, empty };
+  }
+  function revealOpens(ctx) { ctx.opens.forEach(o => { o.ans.hidden = false; }); if (ctx.opens.length) ctx.tickRow.hidden = false; }
+
+  function doCheck(it, ctx) {
+    const st = state.tasks[it.id];
+    const r = applyMarks(ctx, true);
+    st.checked = true; st.revealed = true; revealOpens(ctx);
+    st.auto = ctx.fields.length === 0 ? true : r.good === r.total;
+    if (ctx.fields.length) {
+      if (r.empty && r.good < r.total && r.empty === r.total - r.good) ctx.msg.textContent = ui().fill;
+      else ctx.msg.textContent = r.good === r.total ? ui().allGood : ui().some(r.good, r.total);
+      ctx.msg.className = 'msg ' + (r.good === r.total ? 'good' : 'warn');
+    } else { ctx.msg.textContent = ''; }
+    recalc(it, ctx); save();
+  }
+  function doShow(it, ctx) {
+    const st = state.tasks[it.id];
+    ctx.fields.forEach(f => {
+      if (f.mc) { state.inputs[f.key] = f.exp; f.btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(String(i) === f.exp)); b.classList.remove('bad'); b.classList.toggle('ok', String(i) === f.exp); }); return; }
+      const shown = f.sel ? f.exp : (f.exp === 'none' ? ui().none : f.exp.replace(/^-/, '−'));
+      f.el.value = f.sel ? f.exp : shown; state.inputs[f.key] = f.el.value;
+      f.el.classList.remove('bad'); f.el.classList.add('ok');
+    });
+    st.checked = true; st.revealed = true; st.shown = true; revealOpens(ctx);
+    ctx.msg.textContent = ''; save();
+  }
+  function recalc(it, ctx) {
+    const st = state.tasks[it.id];
+    const hasOpen = ctx.opens.length > 0, hasAuto = ctx.fields.length > 0;
+    const ok = (!hasAuto || (st.auto && !st.shown)) && (!hasOpen || st.self);
+    st.done = !!ok;
+    ctx.el.classList.toggle('done', st.done);
+    updateProgress(); save();
+  }
+
+  function buildNotice(it) {
+    const st = (state.notices[it.id] = state.notices[it.id] || { text: '', open: false });
+    const card = h('article', { class: 'card notice' });
+    const ta = h('textarea', { class: 'ta', rows: 2, placeholder: ui().noticePh, 'aria-label': ui().notice });
+    ta.value = st.text || '';
+    const ruleBox = h('div', { class: 'rulebox' }, h('b', null, ui().rule + '. '), h('span', { html: fmt(it.rule) }));
+    const btn = h('button', { type: 'button', class: 'btn primary' }, '🔒 ' + ui().showRule);
+    const stuck = h('button', { type: 'button', class: 'linkbtn' }, ui().stuck);
+    const sync = () => { const open = st.open || (ta.value.trim().length >= 8); ruleBox.hidden = !open; btn.disabled = open; btn.hidden = open; stuck.hidden = open; };
+    ta.addEventListener('input', () => { st.text = ta.value; if (ta.value.trim().length >= 8) st.open = true; sync(); save(); });
+    btn.addEventListener('click', () => { st.open = true; sync(); save(); });
+    stuck.addEventListener('click', () => { st.open = true; sync(); save(); });
+    btn.disabled = true;
+    card.append(h('div', { class: 'nlabel' }, '✎ ' + ui().notice), ta, h('div', { class: 'acts' }, stuck), ruleBox);
+    // before the writing is long enough the "show" button stays hidden; students can still press the link below the box
+    sync();
+    return card;
+  }
+
+  function buildExam() {
+    const sec = h('section', { class: 'part', id: 'part-' + EXAMID });
+    sec.append(h('h2', null, `${EXAMID}. ${ui().exam}`));
+    const ex = SUBJ.exam || { questions: 48, minutes: 60 };
+    const per = Math.round(ex.minutes * 60 / ex.questions);
+    const mins = Math.max(1, Math.ceil(EXAM.length * per / 60)), full = mins * 60;
+    sec.append(P(ui().examIntro(ex.minutes, ex.questions, per, mins, EXAM.length)));
+    const mm = String(mins).padStart(2, '0') + ':00';
+    const timer = h('span', { class: 'timer', role: 'timer' }, mm);
+    let tick = null, left = full;
+    const tbtn = h('button', { type: 'button', class: 'btn' }, ui().start(mm));
+    const drawT = () => { timer.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); timer.classList.toggle('low', left < 60); };
+    tbtn.addEventListener('click', () => {
+      if (tick) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); return; }
+      left = full; drawT(); tbtn.textContent = ui().stop;
+      tick = setInterval(() => { left--; drawT(); if (left <= 0) { clearInterval(tick); tick = null; tbtn.textContent = ui().start(mm); timer.textContent = ui().timeUp; } }, 1000);
+    });
+    sec.append(h('div', { class: 'timerrow' }, tbtn, timer));
+    const qs = state.quiz;
+    const cards = [];
+    EXAM.forEach((q, i) => {
+      const card = h('article', { class: 'card q' });
+      card.append(h('div', { class: 'qq' }, h('span', { class: 'qn' }, (i + 1) + '.'), h('span', null, tr(q.q)), h('span', { class: 'qpart' }, `(${ui().part.toLowerCase()} ${q.part})`)));
+      const opts = h('div', { class: 'qopts' }); const btns = [];
+      q.o.forEach((o, j) => {
+        const b = h('button', { type: 'button', class: 'opt', 'aria-pressed': String(qs.ans[i] === j) }, h('span', { class: 'lab' }, 'abcd'[j] + ')'), h('span', null, tr(o)));
+        b.addEventListener('click', () => { qs.ans[i] = j; qs.checked = false; btns.forEach((x, k) => { x.setAttribute('aria-pressed', String(k === j)); x.classList.remove('ok', 'bad'); }); fb.textContent = ''; result.textContent = ''; save(); });
+        btns.push(b); opts.append(b);
+      });
+      const fb = h('div', { class: 'qfb' });
+      card.append(opts, fb); cards.push({ btns, fb, q, i }); sec.append(card);
+    });
+    const result = h('div', { class: 'result', role: 'status', 'aria-live': 'polite' });
+    const mark = () => {
+      let sc = 0;
+      cards.forEach(({ btns, fb, q, i }) => {
+        const a = qs.ans[i]; btns.forEach(b => b.classList.remove('ok', 'bad'));
+        if (a == null) { fb.textContent = lang === 'ru' ? 'Нет ответа' : 'No answer'; fb.className = 'qfb bad'; return; }
+        if (a === q.a) { sc++; btns[a].classList.add('ok'); fb.textContent = '✓'; fb.className = 'qfb good'; }
+        else { btns[a].classList.add('bad'); fb.className = 'qfb bad'; fb.innerHTML = `✗ ${ui().review}: <a href="#part-${q.part}">${lang === 'ru' ? 'часть' : 'Part'} ${q.part}</a>`; }
+      });
+      result.textContent = ui().score(sc, EXAM.length); qs.checked = true; qs.score = sc; save();
+    };
+    const go = h('button', { type: 'button', class: 'btn primary', onclick: mark }, ui().checkAll);
+    const again = h('button', { type: 'button', class: 'btn', onclick: () => { qs.ans = {}; qs.checked = false; save(); render(); document.getElementById('part-' + EXAMID).scrollIntoView(); } }, ui().again);
+    sec.append(h('div', { class: 'acts' }, go, again), result);
+    if (qs.checked) mark();
+    return sec;
+  }
+
+  function updateProgress() {
+    const total = tasksIndex.length, done = tasksIndex.filter(t => state.tasks[t.id] && state.tasks[t.id].done).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const b = document.getElementById('pbar'); if (b) b.style.width = pct + '%';
+    const t = document.getElementById('ptxt'); if (t) t.textContent = `${done} / ${total}`;
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.title = tr(SHEET.title);
+    tasksIndex = [];
+    root.textContent = '';
+    /* top bar */
+    const langSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Language' }, ['en', 'ru'].map(l => h('button', { type: 'button', 'aria-pressed': String(l === lang), onclick: () => { lang = state.lang = l; save(); render(); } }, l === 'en' ? 'EN' : 'RU')));
+    let rs = false, rt = null;
+    const resetBtn = h('button', { type: 'button', class: 'btn ghost small' }, ui().reset);
+    resetBtn.addEventListener('click', () => {
+      if (!rs) { rs = true; resetBtn.textContent = ui().resetSure; rt = setTimeout(() => { rs = false; resetBtn.textContent = ui().reset; }, 3500); return; }
+      clearTimeout(rt); state = { lang, notices: {}, tasks: {}, inputs: {}, quiz: { ans: {}, checked: false, sig: EXAMSIG } }; save(); render(); window.scrollTo(0, 0);
+    });
+    const top = h('header', { class: 'topbar' }, h('div', { class: 'topin' },
+      LINKS.subject ? h('a', { class: 'back', href: LINKS.subject, 'aria-label': ui().back }, '← ' + ui().topics) : null,
+      h('div', { class: 'brand' }, h('span', { class: 'bt' }, tr(SHEET.title))),
+      h('div', { class: 'prog', 'aria-label': ui().progress }, h('div', { class: 'ptxtrow' }, h('span', null, ui().progress), h('span', { id: 'ptxt' }, '0 / 0')), h('div', { class: 'bar' }, h('span', { id: 'pbar' }))),
+      langSeg, resetBtn),
+      h('nav', { class: 'chips', 'aria-label': ui().parts }, PARTS.map(p => h('a', { href: '#part-' + p.id }, p.id + '')), h('a', { href: '#part-' + EXAMID }, String(EXAMID))));
+    root.append(top);
+    const wrap = h('main', { class: 'wrap' });
+    wrap.append(h('h1', null, tr(SHEET.title)), h('p', { class: 'sub' }, tr(SHEET.sub)));
+    /* how to use */
+    const how = h('section', { class: 'card how' }, h('h2', null, ui().howTitle), h('ol', null, ui().steps.map(s => h('li', { html: fmt(s) }))), P(SHEET.stats));
+    const tt = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, ui().topic), h('th', null, ui().partCol), h('th', null, ui().wording))),
+      h('tbody', null, TOPICS.map(r => h('tr', null, h('td', null, tr(r[0])), h('td', null, h('a', { href: '#part-' + r[1] }, r[1] + '')), h('td', { class: 'wd' }, r[2])))));
+    how.append(h('div', { class: 'tw' }, tt), P(SHEET.symbols, 'small'), P(ui().photoNote, 'small'));
+    wrap.append(how);
+    PARTS.forEach(p => {
+      const sec = h('section', { class: 'part', id: 'part-' + p.id }, h('h2', null, h('span', { class: 'pn' }, ui().part + ' ' + p.id + '.'), ' ' + tr(p.title)), P(p.intro, 'intro'));
+      p.items.forEach(it => {
+        if (it.t === 'task') { const el = buildTask(it); tasksIndex.push({ id: it.id }); sec.append(el); }
+        else if (it.t === 'notice') sec.append(buildNotice(it));
+        else if (it.t === 'rule') sec.append(h('div', { class: 'rulebox plain' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'worked') sec.append(h('div', { class: 'worked' }, h('b', null, ui().worked + '. '), h('span', { html: fmt(it.text) })));
+        else if (it.t === 'note') sec.append(h('div', { class: 'careful' }, h('b', null, tr(it.label) + '. '), h('span', { html: fmt(it.text) })));
+      });
+      wrap.append(sec);
+    });
+    wrap.append(buildExam());
+    if (LINKS.next) wrap.append(h('p', { class: 'nextlink' }, h('a', { href: LINKS.next.href }, ui().next + ': ' + tr(LINKS.next.title) + ' →')));
+    root.append(wrap);
+    updateProgress();
+  }
+  render();
+  save();
+  if (window.__FN_TEST) window.__fnt = { num, isCorrect };
+})();
+
+</script>
+</body>
+</html>
